@@ -7,9 +7,6 @@
 
 <title>Ultimate Quiz</title>
 
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800&display=swap" rel="stylesheet">
 
 <style>
@@ -24,41 +21,57 @@ font-family:"Poppins",sans-serif;
 body{
 
 height:100vh;
-
 overflow:hidden;
 
 display:flex;
 justify-content:center;
 align-items:center;
 
-background:linear-gradient(-45deg,#3b82f6,#9333ea,#06b6d4,#ec4899);
-background-size:400% 400%;
+background:linear-gradient(
+-45deg,
+#2e1065,
+#581c87,
+#7e22ce,
+#a855f7,
+#4c1d95
+);
 
-animation:bgMove 15s ease infinite;
+background-size:400% 400%;
+animation:bgMove 12s ease infinite;
 
 }
+
 
 @keyframes bgMove{
 
-0%{background-position:0% 50%;}
-50%{background-position:100% 50%;}
-100%{background-position:0% 50%;}
+0%{
+background-position:0% 50%;
+}
+
+50%{
+background-position:100% 50%;
+}
+
+100%{
+background-position:0% 50%;
+}
 
 }
+
 
 .circle{
 
 position:absolute;
-
 border-radius:50%;
 
-background:rgba(255,255,255,.12);
+background:rgba(255,255,255,0.12);
 
-backdrop-filter:blur(8px);
+backdrop-filter:blur(10px);
 
 animation:float 12s infinite linear;
 
 }
+
 
 .circle:nth-child(1){
 
@@ -70,45 +83,49 @@ top:-80px;
 
 }
 
+
 .circle:nth-child(2){
 
-width:180px;
-height:180px;
+width:200px;
+height:200px;
 
-right:-40px;
-bottom:-30px;
+right:-60px;
+bottom:-50px;
 
 animation-duration:15s;
 
 }
 
+
 .circle:nth-child(3){
 
-width:120px;
-height:120px;
+width:140px;
+height:140px;
 
-left:15%;
-bottom:15%;
+left:20%;
+bottom:10%;
 
 animation-duration:18s;
 
 }
 
+
 @keyframes float{
 
 0%{
-transform:translateY(0px) rotate(0deg);
+transform:translateY(0) rotate(0);
 }
 
 50%{
-transform:translateY(-40px) rotate(180deg);
+transform:translateY(-50px) rotate(180deg);
 }
 
 100%{
-transform:translateY(0px) rotate(360deg);
+transform:translateY(0) rotate(360deg);
 }
 
 }
+
 
 .card{
 
@@ -117,21 +134,22 @@ max-width:90%;
 
 padding:60px;
 
-border-radius:28px;
+border-radius:30px;
 
-background:rgba(255,255,255,.12);
+background:rgba(255,255,255,0.15);
 
-border:1px solid rgba(255,255,255,.25);
+border:1px solid rgba(255,255,255,0.25);
 
 backdrop-filter:blur(20px);
 
-box-shadow:0 25px 60px rgba(0,0,0,.25);
+box-shadow:0 25px 60px rgba(0,0,0,.3);
 
 text-align:center;
 
 animation:appear 1s ease;
 
 }
+
 
 @keyframes appear{
 
@@ -151,10 +169,10 @@ transform:translateY(0);
 
 }
 
+
 h1{
 
 font-size:65px;
-
 font-weight:800;
 
 color:white;
@@ -162,6 +180,7 @@ color:white;
 margin-bottom:20px;
 
 }
+
 
 p{
 
@@ -175,6 +194,7 @@ margin-bottom:45px;
 
 }
 
+
 button{
 
 padding:18px 50px;
@@ -185,31 +205,27 @@ font-weight:700;
 
 border:none;
 
-border-radius:14px;
+border-radius:15px;
 
 cursor:pointer;
 
 background:white;
 
-color:#4f46e5;
+color:#7e22ce;
 
 transition:.35s;
 
 }
 
+
 button:hover{
 
-transform:translateY(-6px) scale(1.05);
+transform:scale(1.08) translateY(-5px);
 
-box-shadow:0 15px 40px rgba(255,255,255,.35);
-
-}
-
-button:active{
-
-transform:scale(.98);
+box-shadow:0 15px 40px rgba(255,255,255,.4);
 
 }
+
 
 footer{
 
@@ -221,21 +237,20 @@ color:white;
 
 opacity:.7;
 
-font-size:14px;
-
-letter-spacing:1px;
-
 }
 
 </style>
 
 </head>
 
+
 <body>
+
 
 <div class="circle"></div>
 <div class="circle"></div>
 <div class="circle"></div>
+
 
 <div class="card">
 
@@ -245,17 +260,19 @@ letter-spacing:1px;
 Challenge yourself with exciting quizzes and see how many answers you can get right.
 </p>
 
+
 <button onclick="window.location.href='question1.html'">
 Start Quiz
 </button>
 
+
 </div>
 
+
 <footer>
-
 © 2026 Ultimate Quiz
-
 </footer>
+
 
 </body>
 
