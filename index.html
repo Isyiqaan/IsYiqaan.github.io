@@ -1,72 +1,268 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Ultimate Quiz</title>
 
-  <style>
-    *{
-      margin:0;
-      padding:0;
-      box-sizing:border-box;
-      font-family:Arial,Helvetica,sans-serif;
-    }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    body{
-      height:100vh;
-      display:flex;
-      justify-content:center;
-      align-items:center;
-      background:linear-gradient(135deg,#1e3c72,#2a5298);
-      color:white;
-    }
+<title>Ultimate Quiz</title>
 
-    .box{
-      background:rgba(255,255,255,.12);
-      backdrop-filter:blur(12px);
-      padding:50px;
-      border-radius:20px;
-      text-align:center;
-      width:420px;
-    }
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 
-    h1{
-      font-size:50px;
-      margin-bottom:15px;
-    }
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800&display=swap" rel="stylesheet">
 
-    p{
-      margin-bottom:35px;
-      font-size:18px;
-    }
+<style>
 
-    button{
-      padding:16px 45px;
-      font-size:20px;
-      border:none;
-      border-radius:12px;
-      cursor:pointer;
-      background:white;
-      color:#1e3c72;
-      transition:.3s;
-    }
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:"Poppins",sans-serif;
+}
 
-    button:hover{
-      transform:scale(1.05);
-    }
-  </style>
+body{
+
+height:100vh;
+
+overflow:hidden;
+
+display:flex;
+justify-content:center;
+align-items:center;
+
+background:linear-gradient(-45deg,#3b82f6,#9333ea,#06b6d4,#ec4899);
+background-size:400% 400%;
+
+animation:bgMove 15s ease infinite;
+
+}
+
+@keyframes bgMove{
+
+0%{background-position:0% 50%;}
+50%{background-position:100% 50%;}
+100%{background-position:0% 50%;}
+
+}
+
+.circle{
+
+position:absolute;
+
+border-radius:50%;
+
+background:rgba(255,255,255,.12);
+
+backdrop-filter:blur(8px);
+
+animation:float 12s infinite linear;
+
+}
+
+.circle:nth-child(1){
+
+width:260px;
+height:260px;
+
+left:-80px;
+top:-80px;
+
+}
+
+.circle:nth-child(2){
+
+width:180px;
+height:180px;
+
+right:-40px;
+bottom:-30px;
+
+animation-duration:15s;
+
+}
+
+.circle:nth-child(3){
+
+width:120px;
+height:120px;
+
+left:15%;
+bottom:15%;
+
+animation-duration:18s;
+
+}
+
+@keyframes float{
+
+0%{
+
+transform:translateY(0px) rotate(0deg);
+
+}
+
+50%{
+
+transform:translateY(-40px) rotate(180deg);
+
+}
+
+100%{
+
+transform:translateY(0px) rotate(360deg);
+
+}
+
+}
+
+.card{
+
+width:700px;
+max-width:90%;
+
+padding:60px;
+
+border-radius:28px;
+
+background:rgba(255,255,255,.12);
+
+border:1px solid rgba(255,255,255,.25);
+
+backdrop-filter:blur(20px);
+
+box-shadow:0 25px 60px rgba(0,0,0,.25);
+
+text-align:center;
+
+animation:appear 1s ease;
+
+}
+
+@keyframes appear{
+
+from{
+
+opacity:0;
+transform:translateY(40px);
+
+}
+
+to{
+
+opacity:1;
+transform:translateY(0);
+
+}
+
+}
+
+h1{
+
+font-size:65px;
+
+font-weight:800;
+
+color:white;
+
+margin-bottom:20px;
+
+}
+
+p{
+
+font-size:22px;
+
+color:white;
+
+opacity:.9;
+
+margin-bottom:45px;
+
+}
+
+button{
+
+padding:18px 50px;
+
+font-size:22px;
+
+font-weight:700;
+
+border:none;
+
+border-radius:14px;
+
+cursor:pointer;
+
+background:white;
+
+color:#4f46e5;
+
+transition:.35s;
+
+}
+
+button:hover{
+
+transform:translateY(-6px) scale(1.05);
+
+box-shadow:0 15px 40px rgba(255,255,255,.35);
+
+}
+
+button:active{
+
+transform:scale(.98);
+
+}
+
+footer{
+
+position:absolute;
+
+bottom:25px;
+
+color:white;
+
+opacity:.7;
+
+font-size:14px;
+
+letter-spacing:1px;
+
+}
+
+</style>
+
 </head>
+
 <body>
 
-<div class="box">
-    <h1>Ultimate Quiz</h1>
-    <p>Think you can get every question correct?</p>
+<div class="circle"></div>
+<div class="circle"></div>
+<div class="circle"></div>
 
-    <button onclick="alert('Next we will build the quiz page!')">
-      Start Quiz
-    </button>
+<div class="card">
+
+<h1>Ultimate Quiz</h1>
+
+<p>
+Challenge yourself with exciting quizzes and see how many answers you can get right.
+</p>
+
+<button onclick="window.location.href='quiz.html'">
+Start Quiz
+</button>
+
 </div>
 
+<footer>
+
+© 2026 Ultimate Quiz
+
+</footer>
+
 </body>
+
 </html>
