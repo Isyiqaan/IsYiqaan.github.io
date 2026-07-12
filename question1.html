@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Question 1</title>
+
+<style>
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Arial, sans-serif;
+}
+
+body {
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+    background: linear-gradient(-45deg, #ff0080, #7928ca, #00c6ff, #00ff87);
+    background-size: 400% 400%;
+    animation: backgroundMove 10s infinite alternate;
+}
+
+@keyframes backgroundMove {
+    0% {
+        background-position: left;
+    }
+    100% {
+        background-position: right;
+    }
+}
+
+.quiz-box {
+    background: rgba(255,255,255,0.15);
+    backdrop-filter: blur(10px);
+    padding: 40px;
+    border-radius: 25px;
+    width: 90%;
+    max-width: 600px;
+    text-align: center;
+    color: white;
+    animation: appear 1s ease;
+}
+
+@keyframes appear {
+    from {
+        opacity: 0;
+        transform: translateY(50px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+h1 {
+    margin-bottom: 25px;
+}
+
+.answer {
+    display: block;
+    width: 100%;
+    margin: 15px 0;
+    padding: 15px;
+    border: none;
+    border-radius: 15px;
+    cursor: pointer;
+    font-size: 18px;
+    transition: 0.3s;
+}
+
+.answer:hover {
+    transform: scale(1.05);
+}
+
+.next {
+    margin-top: 20px;
+    padding: 15px 35px;
+    border-radius: 20px;
+    border: none;
+    cursor: pointer;
+    font-size: 18px;
+    background: white;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="quiz-box">
+
+<h1>Question 1</h1>
+
+<h2>PUT YOUR QUESTION HERE</h2>
+
+<br>
+
+<button class="answer">Answer 1</button>
+
+<button class="answer">Answer 2</button>
+
+<button class="answer">Answer 3</button>
+
+<button class="answer">Answer 4</button>
+
+<br>
+
+<a href="question2.html">
+<button class="next">Next Question ➜</button>
+</a>
+
+</div>
+
+</body>
+</html>
