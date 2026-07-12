@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
 
 <meta charset="UTF-8">
@@ -7,7 +8,10 @@
 
 <title>Ultimate Quiz</title>
 
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
 
 <style>
 
@@ -26,186 +30,160 @@ overflow:hidden;
 display:flex;
 justify-content:center;
 align-items:center;
+flex-direction:column;
 
 background:linear-gradient(
 -45deg,
-#2e1065,
-#581c87,
-#7e22ce,
-#a855f7,
-#4c1d95
+#fdf4ff,
+#f3e8ff,
+#ede9fe,
+#fce7f3,
+#f5d0fe,
+#e9d5ff
 );
 
-background-size:400% 400%;
-animation:bgMove 12s ease infinite;
+background-size:500% 500%;
+
+animation:gradient 15s ease infinite;
 
 }
 
+@keyframes gradient{
 
-@keyframes bgMove{
-
-0%{
-background-position:0% 50%;
-}
-
-50%{
-background-position:100% 50%;
-}
-
-100%{
-background-position:0% 50%;
-}
+0%{background-position:0% 50%;}
+50%{background-position:100% 50%;}
+100%{background-position:0% 50%;}
 
 }
 
-
-.circle{
+.blob{
 
 position:absolute;
 border-radius:50%;
+filter:blur(35px);
+opacity:.45;
 
-background:rgba(255,255,255,0.12);
-
-backdrop-filter:blur(10px);
-
-animation:float 12s infinite linear;
+animation:floatBlob 12s ease-in-out infinite;
 
 }
 
+.blob:nth-child(1){
 
-.circle:nth-child(1){
+width:250px;
+height:250px;
 
-width:260px;
-height:260px;
+background:#f5d0fe;
 
-left:-80px;
-top:-80px;
-
-}
-
-
-.circle:nth-child(2){
-
-width:200px;
-height:200px;
-
-right:-60px;
-bottom:-50px;
-
-animation-duration:15s;
+top:-70px;
+left:-60px;
 
 }
 
+.blob:nth-child(2){
 
-.circle:nth-child(3){
+width:180px;
+height:180px;
 
-width:140px;
-height:140px;
+background:#ddd6fe;
 
-left:20%;
-bottom:10%;
+bottom:-40px;
+right:-40px;
+
+animation-duration:16s;
+
+}
+
+.blob:nth-child(3){
+
+width:130px;
+height:130px;
+
+background:#fbcfe8;
+
+top:20%;
+right:15%;
 
 animation-duration:18s;
 
 }
 
-
-@keyframes float{
+@keyframes floatBlob{
 
 0%{
-transform:translateY(0) rotate(0);
+transform:translateY(0px);
 }
 
 50%{
-transform:translateY(-50px) rotate(180deg);
+transform:translateY(-45px);
 }
 
 100%{
-transform:translateY(0) rotate(360deg);
+transform:translateY(0px);
 }
 
 }
 
-
-.card{
-
-width:700px;
-max-width:90%;
-
-padding:60px;
-
-border-radius:30px;
-
-background:rgba(255,255,255,0.15);
-
-border:1px solid rgba(255,255,255,0.25);
-
-backdrop-filter:blur(20px);
-
-box-shadow:0 25px 60px rgba(0,0,0,.3);
+.content{
 
 text-align:center;
 
-animation:appear 1s ease;
+animation:floatContent 4s ease-in-out infinite;
+
+z-index:10;
 
 }
 
+@keyframes floatContent{
 
-@keyframes appear{
-
-from{
-
-opacity:0;
-transform:translateY(40px);
-
+0%{
+transform:translateY(0px);
 }
 
-to{
+50%{
+transform:translateY(-10px);
+}
 
-opacity:1;
-transform:translateY(0);
-
+100%{
+transform:translateY(0px);
 }
 
 }
-
 
 h1{
 
-font-size:65px;
-font-weight:800;
+font-size:72px;
 
-color:white;
+color:#7e22ce;
+
+font-weight:800;
 
 margin-bottom:20px;
 
-}
+text-shadow:0 4px 20px rgba(255,255,255,.6);
 
+}
 
 p{
 
-font-size:22px;
+font-size:24px;
 
-color:white;
-
-opacity:.9;
+color:#6b21a8;
 
 margin-bottom:45px;
 
 }
 
-
 button{
 
-padding:18px 50px;
+padding:18px 55px;
 
-font-size:22px;
+font-size:24px;
 
 font-weight:700;
 
 border:none;
 
-border-radius:15px;
+border-radius:999px;
 
 cursor:pointer;
 
@@ -215,17 +193,17 @@ color:#7e22ce;
 
 transition:.35s;
 
-}
+box-shadow:0 10px 25px rgba(126,34,206,.18);
 
+}
 
 button:hover{
 
-transform:scale(1.08) translateY(-5px);
+transform:translateY(-6px) scale(1.08);
 
-box-shadow:0 15px 40px rgba(255,255,255,.4);
+box-shadow:0 20px 40px rgba(126,34,206,.25);
 
 }
-
 
 footer{
 
@@ -233,7 +211,9 @@ position:absolute;
 
 bottom:25px;
 
-color:white;
+font-size:14px;
+
+color:#7e22ce;
 
 opacity:.7;
 
@@ -243,36 +223,31 @@ opacity:.7;
 
 </head>
 
-
 <body>
 
+<div class="blob"></div>
+<div class="blob"></div>
+<div class="blob"></div>
 
-<div class="circle"></div>
-<div class="circle"></div>
-<div class="circle"></div>
-
-
-<div class="card">
+<div class="content">
 
 <h1>Ultimate Quiz</h1>
 
 <p>
-Challenge yourself with exciting quizzes and see how many answers you can get right.
+Challenge yourself and see how many questions you can answer correctly!
 </p>
-
 
 <button onclick="window.location.href='question1.html'">
 Start Quiz
 </button>
 
-
 </div>
 
-
 <footer>
-© 2026 Ultimate Quiz
-</footer>
 
+© 2026 Ultimate Quiz
+
+</footer>
 
 </body>
 
