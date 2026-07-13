@@ -41,7 +41,7 @@
 
 <body data-progress="100">
 
-    <!-- ORIGINAL BACKGROUND BLOBS -->
+    <!-- FLOATING BACKGROUND BLOBS -->
 
     <div class="blob"></div>
     <div class="blob"></div>
@@ -50,7 +50,7 @@
 
     <!-- RESULTS CONTENT -->
 
-    <main class="content results-content">
+    <main class="content">
 
         <p class="player-name">
             Congratulations,
@@ -66,18 +66,18 @@
 
         <!-- PLAYER STREAK -->
 
-        <div class="result-streak">
+        <div class="answer streak-result">
             🔥 Streak Day
             <span id="streakDay">1</span>
             Complete
         </div>
 
-        <p class="come-back-message">
+        <p class="results-message">
             Come back tomorrow!
         </p>
 
 
-        <!-- RANDOM RESULTS CREATED BY SCRIPT.JS -->
+        <!-- RANDOM PERSONALITY RESULTS -->
 
         <div
             id="personalityResults"
@@ -85,10 +85,11 @@
         ></div>
 
 
-        <!-- WHATSAPP SHARE -->
+        <!-- WHATSAPP SHARE BUTTON -->
 
         <button
             class="answer shareButton"
+            type="button"
             onclick="shareResultsOnWhatsApp()"
         >
             📱 Share Results on WhatsApp
@@ -97,15 +98,12 @@
 
         <!-- LEADERBOARD -->
 
-        <section class="leaderboard-section">
+        <h2 class="leaderboard-title">
+            🏆 Streak Leaderboard
+        </h2>
 
-            <h2>
-                🏆 Streak Leaderboard
-            </h2>
+        <div id="leaderboard"></div>
 
-            <div id="leaderboard"></div>
-
-        </section>
 
         <p class="bottom-message">
             Come back tomorrow to continue your streak
@@ -115,12 +113,14 @@
     </main>
 
 
-    <!-- ORIGINAL PROGRESS BAR -->
+    <!-- PROGRESS BAR -->
 
     <div class="progress">
         <div class="progressFill"></div>
     </div>
 
+
+    <!-- SHARED JAVASCRIPT -->
 
     <script src="script.js"></script>
 
