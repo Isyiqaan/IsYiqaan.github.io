@@ -24,29 +24,43 @@
     <div class="blob"></div>
     <div class="blob"></div>
 
-<main class="content">
+    <main class="content">
 
-    <p class="player-name">
-        Welcome back,
-        <span data-player-name></span>!
-    </p>
+        <p class="player-name">
+            <span id="welcomeText">Salaan</span>,
+            <span data-player-name></span>!
+        </p>
 
-    <h1>Tartanka sare oo isku garashada!</h1>
+        <h1>Tartanka sare ee shakhsiyadeed</h1>
 
-    <h2>
-        Su'aalahan ka jawaa oo isku garo sida aad u heshid jaaisooyin!
-    </h2>
+        <h2>
+            Su'aalahan ka jawaab oo isku garo sida aad u heshid jaisooyin!
+        </h2>
 
-    <button
-        type="button"
-        onclick="goTo('question1.html')"
-    >
-        Bilow
-    </button>
+        <button
+            type="button"
+            onclick="goTo('question1.html')"
+        >
+            Bilow
+        </button>
 
-</main>
+    </main>
 
     <script src="script.js"></script>
+
+    <script>
+        const completedDay =
+            localStorage.getItem("completedDay");
+
+        const welcomeText =
+            document.getElementById("welcomeText");
+
+        if (completedDay === "1") {
+            welcomeText.textContent = "Welcome back";
+        } else {
+            welcomeText.textContent = "Welcome";
+        }
+    </script>
 
 </body>
 
