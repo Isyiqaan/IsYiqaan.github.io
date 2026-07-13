@@ -39,19 +39,9 @@ let audioContext = null;
 ========================= */
 
 document.addEventListener("DOMContentLoaded", () => {
-    /*
-    Anyone without a saved name must visit
-    welcome.html before accessing any other page.
-    */
-
-    const wasRedirected =
-        redirectUnnamedPlayer();
-
-    if (wasRedirected) {
-        return;
-    }
 
     handleResultsLock();
+    redirectUnnamedPlayer();
     redirectReturningPlayer();
 
     requestAnimationFrame(() => {
@@ -62,8 +52,11 @@ document.addEventListener("DOMContentLoaded", () => {
     fillPlayerNameElements();
     prepareNameInput();
     updateWelcomeMessage();
+
     displayLeaderboard();
     displayPersonalityResults();
+    displayStreakDay();
+
 });
 
 
@@ -1245,13 +1238,14 @@ function shareResultsOnWhatsApp() {
         );
 
     const message = [
-        `✨ ${playerName}'s Personality Results ✨`,
+        `✨ ${playerName}'s Shakhsiyadooda  ✨`,
         "",
         ...resultLines,
         "",
         `🔥 Streak Day ${streakDay} Complete`,
         "",
-        "Try the Ultimate Personality Test!"
+        "Kaalay Tartankan Streakga ka qaybgal!",
+       "https://isyiqaan.github.io/welcome.html"
     ].join("\n");
 
     const shareURL =
@@ -1264,6 +1258,30 @@ function shareResultsOnWhatsApp() {
         "_blank",
         "noopener,noreferrer"
     );
+}
+/* =========================
+   DISPLAY PLAYER STREAK DAY
+========================= */
+
+function displayStreakDay() {
+    const streakElement =
+        document.getElementById(
+            "streakDay"
+        );
+
+    if (!streakElement) {
+        return;
+    }
+
+    const completedDay =
+        Number(
+            localStorage.getItem(
+                "completedDay"
+            )
+        ) || 1;
+
+    streakElement.textContent =
+        completedDay;
 }
 /* =========================
    CURRENT PAGE FILE NAME
