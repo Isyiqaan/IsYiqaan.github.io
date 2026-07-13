@@ -6,10 +6,10 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9591229850045984"
-     crossorigin="anonymous"></script>
-  
-<title>Your Results</title>
+<script async src="https://pagead2.googlesyndication.com/pagead/js?client=ca-pub-9591229850045984"
+crossorigin="anonymous"></script>
+
+<title>Your Personality Results</title>
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -22,65 +22,89 @@
 
 <body data-progress="100">
 
-<div class="blob"></div>
-<div class="blob"></div>
-<div class="blob"></div>
+<div class="backgroundBlobs">
+    <span></span>
+    <span></span>
+    <span></span>
+</div>
 
-<main class="content">
+<div class="page">
 
-<p class="player-name">
+<div class="pageContent">
+
+<div class="progressBar">
+
+<div class="progressFill"></div>
+
+</div>
+
+<div class="resultsCard">
+
+<span class="resultEmoji">🎉</span>
+
+<h1>Your Personality Results</h1>
+
+<p class="subtitle">
+
 Congratulations,
-<span data-player-name></span>!
+<strong data-player-name></strong>!
+
 </p>
 
-<h1>Your Personality</h1>
+<p class="resultDescription">
+
+Based on today's answers, here's the personality the quiz discovered about you.
+
+</p>
+
+<div class="streakBox">
+
+🔥 Streak Day
+<strong id="streakDay">
+1
+</strong>
+Complete —
+Come back tomorrow!
+
+</div>
+
+<!-- RANDOM PERSONALITY RESULTS -->
+
+<div
+id="personalityResults"
+class="personalityResults">
+
+</div>
+
+<button
+class="shareButton"
+onclick="shareResultsOnWhatsApp()">
+
+📱 Share Results on WhatsApp
+
+</button>
+
+<div class="leaderboardSection">
 
 <h2>
-Based on today's answers...
+
+🏆 Streak Leaderboard
+
 </h2>
-
-<button class="answer">
-😂 Funny
-<span style="float:right;">89%</span>
-</button>
-
-<button class="answer">
-💖 Kind
-<span style="float:right;">96%</span>
-</button>
-
-<button class="answer">
-🧠 Smart
-<span style="float:right;">82%</span>
-</button>
-
-<button class="answer">
-🎨 Creative
-<span style="float:right;">74%</span>
-</button>
-
-<button class="answer">
-🌙 Calm
-<span style="float:right;">68%</span>
-</button>
-
-<br><br>
-
-<h2>🏆 Streak Leaderboard</h2>
 
 <div id="leaderboard"></div>
 
-<p style="font-size:22px;margin-top:20px;">
+</div>
 
-Come back tomorrow to continue your streak and climb the leaderboard!
+<p class="subtitle" style="margin-top:30px;">
+
+Barri noo soo noqo sida streakaaga horo u wadid soo jaaisooyinka qaadatid!
 
 </p>
 
-</main>
+</div>
 
-<div class="progress">
-
-<div class="progressFill"></div>
+</div>
 
 </div>
 
