@@ -14,11 +14,11 @@ to whatever you want.
 */
 
 const leaderboardPlayers = [
-    { name: "Emma", startingStreak: 150 },
-    { name: "Noah", startingStreak: 143 },
-    { name: "Sarah", startingStreak: 131 },
-    { name: "Ahmed", startingStreak: 120 },
-    { name: "Fatima", startingStreak: 108 }
+    { name: "S/l boy", startingStreak: 14 },
+    { name: "Dilaaga 💀 ", startingStreak: 10 },
+    { name: "Samsam 🌺", startingStreak: 9 },
+    { name: "Ahmed", startingStreak: 7 },
+    { name: "Ghost", startingStreak: 4 }
 ];
 
 /*
@@ -28,7 +28,7 @@ to begin increasing from.
 Format: YYYY-MM-DD
 */
 
-const LEADERBOARD_START_DATE = "2026-07-13";
+const LEADERBOARD_START_DATE = "2026-07-14";
 
 let isNavigating = false;
 let audioContext = null;
