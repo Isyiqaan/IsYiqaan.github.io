@@ -51,6 +51,7 @@ document.addEventListener("DOMContentLoaded", () => {
     prepareNameInput();
     updateWelcomeMessage();
     displayLeaderboard();
+    displayPersonalityResults();
 });
 
 
@@ -592,6 +593,7 @@ function answerAndContinue(
 }
 
 
+
 /* =========================
    FINISH QUIZ
 ========================= */
@@ -628,9 +630,10 @@ function finishQuiz() {
         newCompletedDay.toString()
     );
 
+    generatePersonalityResults();
+
     goTo("results.html");
 }
-
 
 /* =========================
    12-HOUR RESULTS LOCK
@@ -805,7 +808,411 @@ function displayLeaderboard() {
     );
 }
 
+/* =========================
+   RANDOM PERSONALITY RESULTS
+========================= */
 
+const personalityTraits = [
+    {
+        name: "Xaraabaad",
+        emoji: "😂",
+        minimum: 65,
+        maximum: 99
+    },
+    {
+        name: "Maskax",
+        emoji: "🧠",
+        minimum: 65,
+        maximum: 99
+    },
+    {
+        name: "Daryeel",
+        emoji: "❤️",
+        minimum: 65,
+        maximum: 99
+    },
+    {
+        name: "Hal abuur",
+        emoji: "🎨",
+        minimum: 55,
+        maximum: 97
+    },
+    {
+        name: "Kalsooni",
+        emoji: "💪",
+        minimum: 45,
+        maximum: 95
+    },
+    {
+        name: "Daacad",
+        emoji: "🤝",
+        minimum: 65,
+        maximum: 99
+    },
+    {
+        name: "Xiiso",
+        emoji: "🔍",
+        minimum: 50,
+        maximum: 96
+    },
+    {
+        name: "Safar doonid",
+        emoji: "🧭",
+        minimum: 40,
+        maximum: 94
+    },
+    {
+        name: "Daganaan",
+        emoji: "😌",
+        minimum: 40,
+        maximum: 92
+    },
+    {
+        name: "Hami",
+        emoji: "🚀",
+        minimum: 55,
+        maximum: 98
+    },
+    {
+        name: "Qurux",
+        emoji: "✨",
+        minimum: 80,
+        maximum: 97
+    },
+    {
+        name: "Madax-banaan",
+        emoji: "🦅",
+        minimum: 45,
+        maximum: 95
+    },
+    {
+        name: "rajo",
+        emoji: "🌈",
+        minimum: 50,
+        maximum: 96
+    },
+    {
+        name: "Dulqaad",
+        emoji: "🌿",
+        minimum: 35,
+        maximum: 90
+    },
+    {
+        name: "firfircooni",
+        emoji: "⚡",
+        minimum: 45,
+        maximum: 97
+    },
+    {
+        name: "Tartameeye",
+        emoji: "🏆",
+        minimum: 35,
+        maximum: 91
+    },
+    {
+        name: "Hurdoole",
+        emoji: "😴",
+        minimum: 5,
+        maximum: 60
+    },
+    {
+        name: "Fikir",
+        emoji: "💭",
+        minimum: 15,
+        maximum: 78
+    },
+    {
+        name: "ilow",
+        emoji: "📝",
+        minimum: 5,
+        maximum: 58
+    },
+    {
+        name: "Jees-jees",
+        emoji: "😏",
+        minimum: 20,
+        maximum: 85
+    },
+];
+
+
+/* =========================
+   RANDOM NUMBER
+========================= */
+
+function randomNumber(
+    minimum,
+    maximum
+) {
+    return Math.floor(
+        Math.random() *
+        (maximum - minimum + 1)
+    ) + minimum;
+}
+
+
+/* =========================
+   SHUFFLE ARRAY
+========================= */
+
+function shuffleArray(array) {
+    const shuffled = [...array];
+
+    for (
+        let index = shuffled.length - 1;
+        index > 0;
+        index--
+    ) {
+        const randomIndex =
+            Math.floor(
+                Math.random() *
+                (index + 1)
+            );
+
+        [
+            shuffled[index],
+            shuffled[randomIndex]
+        ] = [
+            shuffled[randomIndex],
+            shuffled[index]
+        ];
+    }
+
+    return shuffled;
+}
+
+
+/* =========================
+   CREATE NEW RESULTS
+========================= */
+
+function generatePersonalityResults() {
+    const selectedTraits =
+        shuffleArray(
+            personalityTraits
+        ).slice(0, 7);
+
+    const results =
+        selectedTraits.map(trait => ({
+            name: trait.name,
+            emoji: trait.emoji,
+            percentage:
+                randomNumber(
+                    trait.minimum,
+                    trait.maximum
+                )
+        }));
+
+    results.sort(
+        (resultA, resultB) =>
+            resultB.percentage -
+            resultA.percentage
+    );
+
+    localStorage.setItem(
+        "personalityResults",
+        JSON.stringify(results)
+    );
+}
+
+
+/* =========================
+   GET SAVED RESULTS
+========================= */
+
+function getPersonalityResults() {
+    const savedResults =
+        localStorage.getItem(
+            "personalityResults"
+        );
+
+    if (savedResults) {
+        try {
+            const parsedResults =
+                JSON.parse(savedResults);
+
+            if (
+                Array.isArray(parsedResults) &&
+                parsedResults.length > 0
+            ) {
+                return parsedResults;
+            }
+        } catch (error) {
+            console.warn(
+                "Saved results could not be read:",
+                error
+            );
+        }
+    }
+
+    generatePersonalityResults();
+
+    const newResults =
+        localStorage.getItem(
+            "personalityResults"
+        );
+
+    return newResults
+        ? JSON.parse(newResults)
+        : [];
+}
+
+
+/* =========================
+   DISPLAY RESULTS
+========================= */
+
+function displayPersonalityResults() {
+    const resultsContainer =
+        document.getElementById(
+            "personalityResults"
+        );
+
+    if (!resultsContainer) {
+        return;
+    }
+
+    const results =
+        getPersonalityResults();
+
+    resultsContainer.innerHTML = "";
+
+    results.forEach(
+        (result, index) => {
+            const trait =
+                document.createElement(
+                    "div"
+                );
+
+            trait.className = "trait";
+
+            const traitHeader =
+                document.createElement(
+                    "div"
+                );
+
+            traitHeader.className =
+                "traitHeader";
+
+            const traitName =
+                document.createElement(
+                    "span"
+                );
+
+            traitName.className =
+                "traitName";
+
+            traitName.textContent =
+                `${result.emoji} ${result.name}`;
+
+            const traitPercentage =
+                document.createElement(
+                    "span"
+                );
+
+            traitPercentage.className =
+                "traitPercent";
+
+            traitPercentage.textContent =
+                `${result.percentage}%`;
+
+            const traitBar =
+                document.createElement(
+                    "div"
+                );
+
+            traitBar.className =
+                "traitBar";
+
+            const traitFill =
+                document.createElement(
+                    "div"
+                );
+
+            traitFill.className =
+                "traitFill";
+
+            traitFill.style.width = "0%";
+
+            traitHeader.appendChild(
+                traitName
+            );
+
+            traitHeader.appendChild(
+                traitPercentage
+            );
+
+            traitBar.appendChild(
+                traitFill
+            );
+
+            trait.appendChild(
+                traitHeader
+            );
+
+            trait.appendChild(
+                traitBar
+            );
+
+            resultsContainer.appendChild(
+                trait
+            );
+
+            window.setTimeout(() => {
+                traitFill.style.width =
+                    `${result.percentage}%`;
+            }, 180 + index * 120);
+        }
+    );
+}
+
+
+/* =========================
+   SHARE RESULTS ON WHATSAPP
+========================= */
+
+function shareResultsOnWhatsApp() {
+    const playerName =
+        localStorage.getItem(
+            "playerName"
+        ) || "Player";
+
+    const streakDay =
+        Number(
+            localStorage.getItem(
+                "completedDay"
+            )
+        ) || 1;
+
+    const results =
+        getPersonalityResults();
+
+    const resultLines =
+        results.map(result =>
+            `${result.emoji} ${result.name}: ${result.percentage}%`
+        );
+
+    const message = [
+        `✨ ${playerName}'s Personality Results ✨`,
+        "",
+        ...resultLines,
+        "",
+        `🔥 Streak Day ${streakDay} Complete`,
+        "",
+        "Try the Ultimate Personality Test!"
+    ].join("\n");
+
+    const shareURL =
+        `https://wa.me/?text=${
+            encodeURIComponent(message)
+        }`;
+
+    window.open(
+        shareURL,
+        "_blank",
+        "noopener,noreferrer"
+    );
+}
 /* =========================
    CURRENT PAGE FILE NAME
 ========================= */
@@ -834,3 +1241,6 @@ window.answerAndContinue =
 
 window.finishQuiz =
     finishQuiz;
+
+window.shareResultsOnWhatsApp =
+    shareResultsOnWhatsApp;
