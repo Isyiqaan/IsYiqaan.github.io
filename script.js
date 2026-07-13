@@ -39,6 +39,18 @@ let audioContext = null;
 ========================= */
 
 document.addEventListener("DOMContentLoaded", () => {
+    /*
+    Anyone without a saved name must visit
+    welcome.html before accessing any other page.
+    */
+
+    const wasRedirected =
+        redirectUnnamedPlayer();
+
+    if (wasRedirected) {
+        return;
+    }
+
     handleResultsLock();
     redirectReturningPlayer();
 
@@ -473,6 +485,46 @@ function updateWelcomeMessage() {
     }
 }
 
+/* =========================
+   SEND NEW PLAYERS TO
+   THE WELCOME PAGE
+========================= */
+
+function redirectUnnamedPlayer() {
+    const currentPage =
+        getCurrentPageName();
+
+    const savedName =
+        localStorage.getItem(
+            "playerName"
+        );
+
+    /*
+    Stay on welcome.html so the new
+    player can enter their name.
+    */
+
+    if (
+        currentPage === "welcome.html"
+    ) {
+        return false;
+    }
+
+    /*
+    If there is no saved name, block
+    access to every other page.
+    */
+
+    if (!savedName) {
+        window.location.replace(
+            "welcome.html"
+        );
+
+        return true;
+    }
+
+    return false;
+}
 
 /* =========================
    SKIP WELCOME PAGE
