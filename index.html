@@ -2,252 +2,50 @@
 <html lang="en">
 
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ultimate Personality Test</title>
 
-<title>Ultimate Quiz</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&display=swap"
+        rel="stylesheet"
+    >
 
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
-
-<style>
-
-*{
-margin:0;
-padding:0;
-box-sizing:border-box;
-font-family:"Poppins",sans-serif;
-}
-
-body{
-
-height:100vh;
-overflow:hidden;
-
-display:flex;
-justify-content:center;
-align-items:center;
-flex-direction:column;
-
-background:linear-gradient(
--45deg,
-#fdf4ff,
-#f3e8ff,
-#ede9fe,
-#fce7f3,
-#f5d0fe,
-#e9d5ff
-);
-
-background-size:500% 500%;
-
-animation:gradient 15s ease infinite;
-
-}
-
-@keyframes gradient{
-
-0%{background-position:0% 50%;}
-50%{background-position:100% 50%;}
-100%{background-position:0% 50%;}
-
-}
-
-.blob{
-
-position:absolute;
-border-radius:50%;
-filter:blur(35px);
-opacity:.45;
-
-animation:floatBlob 12s ease-in-out infinite;
-
-}
-
-.blob:nth-child(1){
-
-width:250px;
-height:250px;
-
-background:#f5d0fe;
-
-top:-70px;
-left:-60px;
-
-}
-
-.blob:nth-child(2){
-
-width:180px;
-height:180px;
-
-background:#ddd6fe;
-
-bottom:-40px;
-right:-40px;
-
-animation-duration:16s;
-
-}
-
-.blob:nth-child(3){
-
-width:130px;
-height:130px;
-
-background:#fbcfe8;
-
-top:20%;
-right:15%;
-
-animation-duration:18s;
-
-}
-
-@keyframes floatBlob{
-
-0%{
-transform:translateY(0px);
-}
-
-50%{
-transform:translateY(-45px);
-}
-
-100%{
-transform:translateY(0px);
-}
-
-}
-
-.content{
-
-text-align:center;
-
-animation:floatContent 4s ease-in-out infinite;
-
-z-index:10;
-
-}
-
-@keyframes floatContent{
-
-0%{
-transform:translateY(0px);
-}
-
-50%{
-transform:translateY(-10px);
-}
-
-100%{
-transform:translateY(0px);
-}
-
-}
-
-h1{
-
-font-size:72px;
-
-color:#7e22ce;
-
-font-weight:800;
-
-margin-bottom:20px;
-
-text-shadow:0 4px 20px rgba(255,255,255,.6);
-
-}
-
-p{
-
-font-size:24px;
-
-color:#6b21a8;
-
-margin-bottom:45px;
-
-}
-
-button{
-
-padding:18px 55px;
-
-font-size:24px;
-
-font-weight:700;
-
-border:none;
-
-border-radius:999px;
-
-cursor:pointer;
-
-background:white;
-
-color:#7e22ce;
-
-transition:.35s;
-
-box-shadow:0 10px 25px rgba(126,34,206,.18);
-
-}
-
-button:hover{
-
-transform:translateY(-6px) scale(1.08);
-
-box-shadow:0 20px 40px rgba(126,34,206,.25);
-
-}
-
-footer{
-
-position:absolute;
-
-bottom:25px;
-
-font-size:14px;
-
-color:#7e22ce;
-
-opacity:.7;
-
-}
-
-</style>
-
+    <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
 
-<div class="blob"></div>
-<div class="blob"></div>
-<div class="blob"></div>
+    <div class="blob"></div>
+    <div class="blob"></div>
+    <div class="blob"></div>
 
-<div class="content">
+    <main class="content">
 
-<h1>Ultimate Quiz</h1>
+        <p class="player-name">
+            Welcome, <span data-player-name></span>!
+        </p>
 
-<p>
-Challenge yourself and see how many questions you can answer correctly!
-</p>
+        <h1>Ultimate Personality Test</h1>
 
-<button onclick="window.location.href='question1.html'">
-Start Quiz
-</button>
+        <h2>
+            Answer each question honestly and discover your personality.
+        </h2>
 
-</div>
+        <button
+            type="button"
+            onclick="goTo('question1.html')"
+        >
+            Start Test
+        </button>
 
-<footer>
+    </main>
 
-© 2026 Ultimate Quiz
-
-</footer>
+    <script src="script.js"></script>
 
 </body>
 
