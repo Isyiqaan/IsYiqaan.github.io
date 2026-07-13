@@ -6,6 +6,7 @@
 
 const TOTAL_QUESTIONS = 10;
 const PAGE_TRANSITION_TIME = 380;
+const RESULTS_LOCK_TIME = 12 * 60 * 60 * 1000;
 
 let isNavigating = false;
 let audioContext = null;
@@ -16,6 +17,8 @@ let audioContext = null;
 ========================= */
 
 document.addEventListener("DOMContentLoaded", () => {
+    handleResultsLock();
+
     requestAnimationFrame(() => {
         document.body.classList.add("loaded");
     });
@@ -27,8 +30,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
 /* =========================
-   CUTE GENERATED POP SOUND
-   No MP3 file is required.
+   GENERATED POP SOUND
+   No MP3 file is required
 ========================= */
 
 function playPopSound() {
@@ -156,7 +159,7 @@ function createParticles(button) {
 
 
 /* =========================
-   BUTTON CLICK EFFECT
+   BUTTON CLICK EFFECTS
 ========================= */
 
 document.addEventListener("click", event => {
@@ -195,14 +198,17 @@ function goTo(page) {
 
 
 /* =========================
-   WELCOME PAGE NAME SAVING
+   SAVE PLAYER NAME
 ========================= */
 
 function startQuiz() {
     const input = document.getElementById("name");
 
     if (!input) {
-        console.error('Name input with id="name" was not found.');
+        console.error(
+            'Name input with id="name" was not found.'
+        );
+
         return;
     }
 
@@ -221,7 +227,10 @@ function startQuiz() {
         return;
     }
 
-    localStorage.setItem("playerName", playerName);
+    localStorage.setItem(
+        "playerName",
+        playerName
+    );
 
     hideNameWarning();
 
@@ -230,7 +239,7 @@ function startQuiz() {
 
 
 /* =========================
-   NAME INPUT PREPARATION
+   PREPARE NAME INPUT
 ========================= */
 
 function prepareNameInput() {
@@ -242,13 +251,17 @@ function prepareNameInput() {
 
     createWarningMessage(input);
 
-    const savedName = localStorage.getItem("playerName");
+    const savedName =
+        localStorage.getItem("playerName");
 
     if (savedName) {
         input.value = savedName;
     }
 
-    input.addEventListener("input", hideNameWarning);
+    input.addEventListener(
+        "input",
+        hideNameWarning
+    );
 
     input.addEventListener("keydown", event => {
         if (event.key === "Enter") {
@@ -268,11 +281,13 @@ function createWarningMessage(input) {
         return;
     }
 
-    const warning = document.createElement("p");
+    const warning =
+        document.createElement("p");
 
     warning.id = "nameWarning";
     warning.className = "warning";
-    warning.textContent = "Please enter your name first.";
+    warning.textContent =
+        "Please enter your name first.";
 
     const parent = input.parentElement;
 
@@ -282,7 +297,8 @@ function createWarningMessage(input) {
 }
 
 function showNameWarning() {
-    const warning = document.getElementById("nameWarning");
+    const warning =
+        document.getElementById("nameWarning");
 
     if (warning) {
         warning.classList.add("show");
@@ -290,7 +306,8 @@ function showNameWarning() {
 }
 
 function hideNameWarning() {
-    const warning = document.getElementById("nameWarning");
+    const warning =
+        document.getElementById("nameWarning");
 
     if (warning) {
         warning.classList.remove("show");
@@ -299,18 +316,21 @@ function hideNameWarning() {
 
 
 /* =========================
-   DISPLAY SAVED PLAYER NAME
+   DISPLAY PLAYER NAME
 
-   Example:
+   Use:
    <span data-player-name></span>
 ========================= */
 
 function fillPlayerNameElements() {
     const playerName =
-        localStorage.getItem("playerName") || "Player";
+        localStorage.getItem("playerName") ||
+        "Player";
 
     const elements =
-        document.querySelectorAll("[data-player-name]");
+        document.querySelectorAll(
+            "[data-player-name]"
+        );
 
     elements.forEach(element => {
         element.textContent = playerName;
@@ -320,16 +340,13 @@ function fillPlayerNameElements() {
 
 /* =========================
    PROGRESS BAR
-
-   Question 1 begins at 0%.
-   After answering it, Question 2 shows 10%.
-   Question 10 shows 90%.
-   The results page can show 100%.
 ========================= */
 
 function updateProgressBar() {
     const progressFill =
-        document.querySelector(".progressFill");
+        document.querySelector(
+            ".progressFill"
+        );
 
     if (!progressFill) {
         return;
@@ -338,54 +355,64 @@ function updateProgressBar() {
     let progress = 0;
 
     const pageName =
-        window.location.pathname
-            .split("/")
-            .pop()
-            .toLowerCase();
+        getCurrentPageName();
 
     const questionMatch =
-        pageName.match(/^question(\d+)\.html$/);
+        pageName.match(
+            /^question(\d+)\.html$/
+        );
 
     if (questionMatch) {
         const questionNumber =
             Number(questionMatch[1]);
 
         const completedQuestions =
-            Math.max(0, questionNumber - 1);
+            Math.max(
+                0,
+                questionNumber - 1
+            );
 
         progress =
-            (completedQuestions / TOTAL_QUESTIONS) * 100;
+            (
+                completedQuestions /
+                TOTAL_QUESTIONS
+            ) * 100;
+    }
+
+    if (pageName === "results.html") {
+        progress = 100;
     }
 
     const customProgress =
         document.body.dataset.progress;
 
     if (customProgress !== undefined) {
-        const parsedProgress = Number(customProgress);
+        const parsedProgress =
+            Number(customProgress);
 
         if (Number.isFinite(parsedProgress)) {
             progress = parsedProgress;
         }
     }
 
-    progress = Math.max(0, Math.min(100, progress));
+    progress = Math.max(
+        0,
+        Math.min(100, progress)
+    );
 
     progressFill.style.width = "0%";
 
     requestAnimationFrame(() => {
         requestAnimationFrame(() => {
-            progressFill.style.width = `${progress}%`;
+            progressFill.style.width =
+                `${progress}%`;
         });
     });
 }
 
 
 /* =========================
-   OPTIONAL HELPER
-
-   Use this on answer buttons:
-
-   onclick="answerAndContinue('question2.html')"
+   ANSWER AND CONTINUE
 ========================= */
 
 function answerAndContinue(nextPage) {
@@ -394,10 +421,106 @@ function answerAndContinue(nextPage) {
 
 
 /* =========================
-   MAKE FUNCTIONS AVAILABLE
-   TO HTML onclick ATTRIBUTES
+   FINISH QUIZ
+
+   Saves a 12-hour lock and opens
+   the results page.
+========================= */
+
+function finishQuiz() {
+    if (isNavigating) {
+        return;
+    }
+
+    const returnTime =
+        Date.now() + RESULTS_LOCK_TIME;
+
+    localStorage.setItem(
+        "resultsReturnTime",
+        returnTime.toString()
+    );
+
+    localStorage.setItem(
+        "completedDay",
+        "1"
+    );
+
+    goTo("results.html");
+}
+
+
+/* =========================
+   12-HOUR RESULTS LOCK
+
+   During the 12 hours:
+   The player stays on results.html.
+
+   After 12 hours:
+   results.html sends them to index.html.
+   Their saved name remains.
+========================= */
+
+function handleResultsLock() {
+    const currentPage =
+        getCurrentPageName();
+
+    const savedReturnTime =
+        Number(
+            localStorage.getItem(
+                "resultsReturnTime"
+            )
+        );
+
+    if (!savedReturnTime) {
+        return;
+    }
+
+    const lockIsActive =
+        Date.now() < savedReturnTime;
+
+    if (lockIsActive) {
+        if (currentPage !== "results.html") {
+            window.location.replace(
+                "results.html"
+            );
+        }
+
+        return;
+    }
+
+    localStorage.removeItem(
+        "resultsReturnTime"
+    );
+
+    if (currentPage === "results.html") {
+        window.location.replace(
+            "index.html"
+        );
+    }
+}
+
+
+/* =========================
+   CURRENT FILE NAME
+========================= */
+
+function getCurrentPageName() {
+    const pageName =
+        window.location.pathname
+            .split("/")
+            .pop()
+            .toLowerCase();
+
+    return pageName || "index.html";
+}
+
+
+/* =========================
+   FUNCTIONS AVAILABLE TO HTML
 ========================= */
 
 window.goTo = goTo;
 window.startQuiz = startQuiz;
-window.answerAndContinue = answerAndContinue;
+window.answerAndContinue =
+    answerAndContinue;
+window.finishQuiz = finishQuiz;
