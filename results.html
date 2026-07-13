@@ -2,113 +2,127 @@
 <html lang="en">
 
 <head>
+    <meta charset="UTF-8">
 
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
 
-<script async src="https://pagead2.googlesyndication.com/pagead/js?client=ca-pub-9591229850045984"
-crossorigin="anonymous"></script>
+    <script
+        async
+        src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9591229850045984"
+        crossorigin="anonymous"
+    ></script>
 
-<title>Your Personality Results</title>
+    <title>Your Personality Results</title>
 
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        rel="preconnect"
+        href="https://fonts.googleapis.com"
+    >
 
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link
+        rel="preconnect"
+        href="https://fonts.gstatic.com"
+        crossorigin
+    >
 
-<link rel="stylesheet" href="style.css">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&display=swap"
+        rel="stylesheet"
+    >
 
+    <link
+        rel="stylesheet"
+        href="style.css"
+    >
 </head>
 
 <body data-progress="100">
 
-<div class="backgroundBlobs">
-    <span></span>
-    <span></span>
-    <span></span>
-</div>
+    <!-- ORIGINAL BACKGROUND BLOBS -->
 
-<div class="page">
+    <div class="blob"></div>
+    <div class="blob"></div>
+    <div class="blob"></div>
 
-<div class="pageContent">
 
-<div class="progressBar">
+    <!-- RESULTS CONTENT -->
 
-<div class="progressFill"></div>
+    <main class="content results-content">
 
-</div>
+        <p class="player-name">
+            Congratulations,
+            <span data-player-name></span>!
+        </p>
 
-<div class="resultsCard">
+        <h1>Your Personality</h1>
 
-<span class="resultEmoji">🎉</span>
+        <h2>
+            Based on today's answers...
+        </h2>
 
-<h1>Your Personality Results</h1>
 
-<p class="subtitle">
+        <!-- PLAYER STREAK -->
 
-Congratulations,
-<strong data-player-name></strong>!
+        <div class="result-streak">
+            🔥 Streak Day
+            <span id="streakDay">1</span>
+            Complete
+        </div>
 
-</p>
+        <p class="come-back-message">
+            Come back tomorrow!
+        </p>
 
-<p class="resultDescription">
 
-Based on today's answers, here's the personality the quiz discovered about you.
+        <!-- RANDOM RESULTS CREATED BY SCRIPT.JS -->
 
-</p>
+        <div
+            id="personalityResults"
+            class="personalityResults"
+        ></div>
 
-<div class="streakBox">
 
-🔥 Streak Day
-<strong id="streakDay">
-1
-</strong>
-Complete —
-Come back tomorrow!
+        <!-- WHATSAPP SHARE -->
 
-</div>
+        <button
+            class="answer shareButton"
+            onclick="shareResultsOnWhatsApp()"
+        >
+            📱 Share Results on WhatsApp
+        </button>
 
-<!-- RANDOM PERSONALITY RESULTS -->
 
-<div
-id="personalityResults"
-class="personalityResults">
+        <!-- LEADERBOARD -->
 
-</div>
+        <section class="leaderboard-section">
 
-<button
-class="shareButton"
-onclick="shareResultsOnWhatsApp()">
+            <h2>
+                🏆 Streak Leaderboard
+            </h2>
 
-📱 Share Results on WhatsApp
+            <div id="leaderboard"></div>
 
-</button>
+        </section>
 
-<div class="leaderboardSection">
+        <p class="bottom-message">
+            Come back tomorrow to continue your streak
+            and climb the leaderboard!
+        </p>
 
-<h2>
+    </main>
 
-🏆 Streak Leaderboard
 
-</h2>
+    <!-- ORIGINAL PROGRESS BAR -->
 
-<div id="leaderboard"></div>
+    <div class="progress">
+        <div class="progressFill"></div>
+    </div>
 
-</div>
 
-<p class="subtitle" style="margin-top:30px;">
-
-Barri noo soo noqo sida streakaaga horo u wadid soo jaaisooyinka qaadatid!
-
-</p>
-
-</div>
-
-</div>
-
-</div>
-
-<script src="script.js"></script>
+    <script src="script.js"></script>
 
 </body>
 
