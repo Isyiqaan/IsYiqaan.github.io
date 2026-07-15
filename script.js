@@ -1,5 +1,10 @@
 "use strict";
 
+/* =========================================================
+   ULTIMATE PERSONALITY TEST — CLEAN SCRIPT.JS
+========================================================= */
+
+
 /* =========================
    SETTINGS
 ========================= */
@@ -8,61 +13,1108 @@ const TOTAL_QUESTIONS = 10;
 const PAGE_TRANSITION_TIME = 380;
 const RESULTS_LOCK_TIME = 12 * 60 * 60 * 1000;
 
-/*
-Change these names and starting streaks
-to whatever you want.
-*/
+const LEADERBOARD_START_DATE = "2026-07-14";
+
+const SHARE_LINK =
+    "https://isyiqaan.github.io/welcome.html";
 
 const leaderboardPlayers = [
-    { name: "S/l boy", startingStreak: 14 },
-    { name: "Dilaaga 💀 ", startingStreak: 10 },
-    { name: "Samsam 🌺", startingStreak: 9 },
-    { name: "Ahmed", startingStreak: 7 },
-    { name: "Ghost", startingStreak: 4 }
+    {
+        name: "S/l boy",
+        startingStreak: 14
+    },
+    {
+        name: "Dilaaga 💀",
+        startingStreak: 10
+    },
+    {
+        name: "Samsam 🌺",
+        startingStreak: 9
+    },
+    {
+        name: "Ahmed",
+        startingStreak: 7
+    },
+    {
+        name: "Ghost",
+        startingStreak: 4
+    }
 ];
 
-/*
-Set this to the date you want all streaks
-to begin increasing from.
-
-Format: YYYY-MM-DD
-*/
-
-const LEADERBOARD_START_DATE = "2026-07-14";
+const personalityTraits = [
+    {
+        name: "Xaraabaad",
+        emoji: "😂",
+        min: 65,
+        max: 99
+    },
+    {
+        name: "Maskax",
+        emoji: "🧠",
+        min: 65,
+        max: 99
+    },
+    {
+        name: "Daryeel",
+        emoji: "❤️",
+        min: 65,
+        max: 99
+    },
+    {
+        name: "Hal abuur",
+        emoji: "🎨",
+        min: 55,
+        max: 97
+    },
+    {
+        name: "Kalsooni",
+        emoji: "💪",
+        min: 45,
+        max: 95
+    },
+    {
+        name: "Daacad",
+        emoji: "🤝",
+        min: 65,
+        max: 99
+    },
+    {
+        name: "Xiiso",
+        emoji: "🔍",
+        min: 50,
+        max: 96
+    },
+    {
+        name: "Safar doonid",
+        emoji: "🧭",
+        min: 40,
+        max: 94
+    },
+    {
+        name: "Degganaan",
+        emoji: "😌",
+        min: 40,
+        max: 92
+    },
+    {
+        name: "Hami",
+        emoji: "🚀",
+        min: 55,
+        max: 98
+    },
+    {
+        name: "Qurux",
+        emoji: "✨",
+        min: 80,
+        max: 97
+    },
+    {
+        name: "Madax-bannaan",
+        emoji: "🦅",
+        min: 45,
+        max: 95
+    },
+    {
+        name: "Rajo",
+        emoji: "🌈",
+        min: 50,
+        max: 96
+    },
+    {
+        name: "Dulqaad",
+        emoji: "🌿",
+        min: 35,
+        max: 90
+    },
+    {
+        name: "Firfircooni",
+        emoji: "⚡",
+        min: 45,
+        max: 97
+    },
+    {
+        name: "Tartame",
+        emoji: "🏆",
+        min: 35,
+        max: 91
+    },
+    {
+        name: "Hurdoole",
+        emoji: "😴",
+        min: 5,
+        max: 60
+    },
+    {
+        name: "Fikir badan",
+        emoji: "💭",
+        min: 15,
+        max: 78
+    },
+    {
+        name: "Ilow badan",
+        emoji: "📝",
+        min: 5,
+        max: 58
+    },
+    {
+        name: "Jees-jees",
+        emoji: "😏",
+        min: 20,
+        max: 85
+    }
+];
 
 let isNavigating = false;
 let audioContext = null;
 
 
 /* =========================
+   HELPER FUNCTIONS
+========================= */
+
+function byId(id) {
+    return document.getElementById(id);
+}
+
+function getCurrentPageName() {
+    const pageName =
+        window.location.pathname
+            .split("/")
+            .pop()
+            .toLowerCase();
+
+    return pageName || "index.html";
+}
+
+function randomNumber(minimum, maximum) {
+    return Math.floor(
+        Math.random() *
+        (maximum - minimum + 1)
+    ) + minimum;
+}
+
+function shuffleArray(array) {
+    const shuffled = [...array];
+
+    for (
+        let index = shuffled.length - 1;
+        index > 0;
+        index--
+    ) {
+        const randomIndex =
+            Math.floor(
+                Math.random() *
+                (index + 1)
+            );
+
+        [
+            shuffled[index],
+            shuffled[randomIndex]
+        ] = [
+            shuffled[randomIndex],
+            shuffled[index]
+        ];
+    }
+
+    return shuffled;
+}
+
+function getLocalDateKey(date = new Date()) {
+    const year = date.getFullYear();
+
+    const month =
+        String(
+            date.getMonth() + 1
+        ).padStart(2, "0");
+
+    const day =
+        String(
+            date.getDate()
+        ).padStart(2, "0");
+
+    return `${year}-${month}-${day}`;
+}
+
+function getDaysSince(dateText) {
+    const [
+        startYear,
+        startMonth,
+        startDay
+    ] = dateText
+        .split("-")
+        .map(Number);
+
+    const today = new Date();
+
+    const startTime =
+        Date.UTC(
+            startYear,
+            startMonth - 1,
+            startDay
+        );
+
+    const todayTime =
+        Date.UTC(
+            today.getFullYear(),
+            today.getMonth(),
+            today.getDate()
+        );
+
+    return Math.max(
+        0,
+        Math.floor(
+            (todayTime - startTime) /
+            86400000
+        )
+    );
+}
+
+
+/* =========================
    PAGE STARTUP
 ========================= */
 
-document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener(
+    "DOMContentLoaded",
+    () => {
+        if (redirectUnnamedPlayer()) {
+            return;
+        }
 
-    handleResultsLock();
-    redirectUnnamedPlayer();
-    redirectReturningPlayer();
+        if (redirectReturningPlayer()) {
+            return;
+        }
+
+        if (handleResultsLock()) {
+            return;
+        }
+
+        requestAnimationFrame(() => {
+            document.body.classList.add(
+                "loaded"
+            );
+        });
+
+        prepareNameInput();
+        fillPlayerNameElements();
+        updateWelcomeMessage();
+        updateProgressBar();
+        displayLeaderboard();
+        displayPersonalityResults();
+        displayStreakDay();
+    }
+);
+
+
+/* =========================
+   NEW PLAYER REDIRECT
+========================= */
+
+function redirectUnnamedPlayer() {
+    const currentPage =
+        getCurrentPageName();
+
+    const savedName =
+        localStorage.getItem(
+            "playerName"
+        );
+
+    if (
+        currentPage !== "welcome.html" &&
+        !savedName
+    ) {
+        window.location.replace(
+            "welcome.html"
+        );
+
+        return true;
+    }
+
+    return false;
+}
+
+
+/* =========================
+   RETURNING PLAYER REDIRECT
+========================= */
+
+function redirectReturningPlayer() {
+    const currentPage =
+        getCurrentPageName();
+
+    const savedName =
+        localStorage.getItem(
+            "playerName"
+        );
+
+    if (
+        currentPage === "welcome.html" &&
+        savedName
+    ) {
+        window.location.replace(
+            "index.html"
+        );
+
+        return true;
+    }
+
+    return false;
+}
+
+
+/* =========================
+   12-HOUR RESULTS LOCK
+========================= */
+
+function handleResultsLock() {
+    const returnTime =
+        Number(
+            localStorage.getItem(
+                "resultsReturnTime"
+            )
+        );
+
+    if (!returnTime) {
+        return false;
+    }
+
+    const currentPage =
+        getCurrentPageName();
+
+    const lockIsActive =
+        Date.now() < returnTime;
+
+    if (
+        lockIsActive &&
+        currentPage !== "results.html"
+    ) {
+        window.location.replace(
+            "results.html"
+        );
+
+        return true;
+    }
+
+    if (!lockIsActive) {
+        localStorage.removeItem(
+            "resultsReturnTime"
+        );
+
+        if (
+            currentPage === "results.html"
+        ) {
+            window.location.replace(
+                "index.html"
+            );
+
+            return true;
+        }
+    }
+
+    return false;
+}
+
+
+/* =========================
+   PAGE NAVIGATION
+========================= */
+
+function goTo(page) {
+    if (
+        isNavigating ||
+        typeof page !== "string" ||
+        page.trim() === ""
+    ) {
+        return;
+    }
+
+    isNavigating = true;
+
+    document.body.classList.add(
+        "fade-out"
+    );
+
+    window.setTimeout(() => {
+        window.location.href = page;
+    }, PAGE_TRANSITION_TIME);
+}
+
+function answerAndContinue(nextPage) {
+    goTo(nextPage);
+}
+
+
+/* =========================
+   SAVE PLAYER NAME
+========================= */
+
+function startQuiz() {
+    const input = byId("name");
+
+    if (!input) {
+        return;
+    }
+
+    const playerName =
+        input.value.trim();
+
+    if (!playerName) {
+        showNameWarning();
+
+        input.focus();
+
+        input.classList.remove(
+            "input-shake"
+        );
+
+        void input.offsetWidth;
+
+        input.classList.add(
+            "input-shake"
+        );
+
+        return;
+    }
+
+    localStorage.setItem(
+        "playerName",
+        playerName
+    );
+
+    hideNameWarning();
+
+    goTo("index.html");
+}
+
+
+/* =========================
+   PREPARE NAME INPUT
+========================= */
+
+function prepareNameInput() {
+    const input = byId("name");
+
+    if (!input) {
+        return;
+    }
+
+    createNameWarning(input);
+
+    const savedName =
+        localStorage.getItem(
+            "playerName"
+        );
+
+    if (savedName) {
+        input.value = savedName;
+    }
+
+    input.addEventListener(
+        "input",
+        hideNameWarning
+    );
+
+    input.addEventListener(
+        "keydown",
+        event => {
+            if (event.key === "Enter") {
+                event.preventDefault();
+                startQuiz();
+            }
+        }
+    );
+}
+
+
+/* =========================
+   NAME WARNING
+========================= */
+
+function createNameWarning(input) {
+    if (byId("nameWarning")) {
+        return;
+    }
+
+    const warning =
+        document.createElement("p");
+
+    warning.id = "nameWarning";
+    warning.className = "warning";
+
+    warning.textContent =
+        "Magacaaga geli marka hore.";
+
+    input.insertAdjacentElement(
+        "afterend",
+        warning
+    );
+}
+
+function showNameWarning() {
+    const warning =
+        byId("nameWarning");
+
+    if (warning) {
+        warning.classList.add("show");
+    }
+}
+
+function hideNameWarning() {
+    const warning =
+        byId("nameWarning");
+
+    if (warning) {
+        warning.classList.remove(
+            "show"
+        );
+    }
+}
+
+
+/* =========================
+   DISPLAY PLAYER NAME
+========================= */
+
+function fillPlayerNameElements() {
+    const playerName =
+        localStorage.getItem(
+            "playerName"
+        ) || "Player";
+
+    const elements =
+        document.querySelectorAll(
+            "[data-player-name]"
+        );
+
+    elements.forEach(element => {
+        element.textContent =
+            playerName;
+    });
+}
+
+
+/* =========================
+   WELCOME MESSAGE
+========================= */
+
+function updateWelcomeMessage() {
+    const welcomeText =
+        byId("welcomeText");
+
+    if (!welcomeText) {
+        return;
+    }
+
+    const completedDay =
+        Number(
+            localStorage.getItem(
+                "completedDay"
+            )
+        ) || 0;
+
+    if (completedDay > 0) {
+        welcomeText.textContent =
+            "Ku soo laabo";
+    } else {
+        welcomeText.textContent =
+            "Ku soo dhawoow";
+    }
+}
+
+
+/* =========================
+   PROGRESS BAR
+========================= */
+
+function updateProgressBar() {
+    const progressFill =
+        document.querySelector(
+            ".progressFill"
+        );
+
+    if (!progressFill) {
+        return;
+    }
+
+    let percentage = 0;
+
+    const currentPage =
+        getCurrentPageName();
+
+    const questionMatch =
+        currentPage.match(
+            /^question(\d+)\.html$/
+        );
+
+    if (questionMatch) {
+        const questionNumber =
+            Number(questionMatch[1]);
+
+        percentage =
+            (
+                questionNumber /
+                TOTAL_QUESTIONS
+            ) * 100;
+    }
+
+    if (
+        currentPage === "results.html"
+    ) {
+        percentage = 100;
+    }
+
+    const customProgress =
+        document.body.dataset.progress;
+
+    if (
+        customProgress !== undefined
+    ) {
+        const parsedProgress =
+            Number(customProgress);
+
+        if (
+            Number.isFinite(
+                parsedProgress
+            )
+        ) {
+            percentage =
+                parsedProgress;
+        }
+    }
+
+    percentage =
+        Math.max(
+            0,
+            Math.min(100, percentage)
+        );
+
+    progressFill.style.width =
+        "0%";
 
     requestAnimationFrame(() => {
-        document.body.classList.add("loaded");
+        requestAnimationFrame(() => {
+            progressFill.style.width =
+                `${percentage}%`;
+        });
     });
+}
 
-    updateProgressBar();
-    fillPlayerNameElements();
-    prepareNameInput();
-    updateWelcomeMessage();
 
-    displayLeaderboard();
-    displayPersonalityResults();
-    displayStreakDay();
+/* =========================
+   FINISH QUIZ
+========================= */
 
-});
+function finishQuiz() {
+    if (isNavigating) {
+        return;
+    }
+
+    const returnTime =
+        Date.now() +
+        RESULTS_LOCK_TIME;
+
+    localStorage.setItem(
+        "resultsReturnTime",
+        String(returnTime)
+    );
+
+    updatePlayerStreak();
+    generatePersonalityResults();
+
+    goTo("results.html");
+}
+
+
+/* =========================
+   PLAYER DAILY STREAK
+========================= */
+
+function updatePlayerStreak() {
+    const today =
+        getLocalDateKey();
+
+    const lastCompletedDate =
+        localStorage.getItem(
+            "lastCompletedDate"
+        );
+
+    const oldStreak =
+        Number(
+            localStorage.getItem(
+                "completedDay"
+            )
+        ) || 0;
+
+    if (
+        lastCompletedDate === today
+    ) {
+        return Math.max(
+            1,
+            oldStreak
+        );
+    }
+
+    const newStreak =
+        Math.max(
+            1,
+            oldStreak + 1
+        );
+
+    localStorage.setItem(
+        "completedDay",
+        String(newStreak)
+    );
+
+    localStorage.setItem(
+        "lastCompletedDate",
+        today
+    );
+
+    return newStreak;
+}
+
+function displayStreakDay() {
+    const streakElement =
+        byId("streakDay");
+
+    if (!streakElement) {
+        return;
+    }
+
+    streakElement.textContent =
+        localStorage.getItem(
+            "completedDay"
+        ) || "1";
+}
+
+
+/* =========================
+   DAILY LEADERBOARD
+========================= */
+
+function displayLeaderboard() {
+    const leaderboard =
+        byId("leaderboard");
+
+    if (!leaderboard) {
+        return;
+    }
+
+    const addedDays =
+        getDaysSince(
+            LEADERBOARD_START_DATE
+        );
+
+    const players =
+        leaderboardPlayers
+            .map(player => {
+                return {
+                    name: player.name,
+
+                    streak:
+                        player.startingStreak +
+                        addedDays
+                };
+            })
+            .sort(
+                (playerA, playerB) =>
+                    playerB.streak -
+                    playerA.streak
+            );
+
+    leaderboard.innerHTML = "";
+
+    players.forEach(
+        (player, index) => {
+            const row =
+                document.createElement(
+                    "div"
+                );
+
+            row.className =
+                "leaderboard-row";
+
+            const nameElement =
+                document.createElement(
+                    "span"
+                );
+
+            const streakElement =
+                document.createElement(
+                    "span"
+                );
+
+            let rank =
+                `${index + 1}.`;
+
+            if (index === 0) {
+                rank = "🥇";
+            } else if (index === 1) {
+                rank = "🥈";
+            } else if (index === 2) {
+                rank = "🥉";
+            }
+
+            nameElement.textContent =
+                `${rank} ${player.name}`;
+
+            streakElement.textContent =
+                `🔥 Day ${player.streak}`;
+
+            row.appendChild(
+                nameElement
+            );
+
+            row.appendChild(
+                streakElement
+            );
+
+            leaderboard.appendChild(
+                row
+            );
+        }
+    );
+}
+
+
+/* =========================
+   GENERATE RANDOM RESULTS
+========================= */
+
+function generatePersonalityResults() {
+    const selectedTraits =
+        shuffleArray(
+            personalityTraits
+        ).slice(0, 8);
+
+    const results =
+        selectedTraits
+            .map(trait => {
+                return {
+                    name: trait.name,
+
+                    emoji: trait.emoji,
+
+                    percentage:
+                        randomNumber(
+                            trait.min,
+                            trait.max
+                        )
+                };
+            })
+            .sort(
+                (resultA, resultB) =>
+                    resultB.percentage -
+                    resultA.percentage
+            );
+
+    localStorage.setItem(
+        "personalityResults",
+        JSON.stringify(results)
+    );
+
+    return results;
+}
+
+
+/* =========================
+   GET SAVED RESULTS
+========================= */
+
+function getPersonalityResults() {
+    const savedResults =
+        localStorage.getItem(
+            "personalityResults"
+        );
+
+    if (savedResults) {
+        try {
+            const parsedResults =
+                JSON.parse(savedResults);
+
+            if (
+                Array.isArray(
+                    parsedResults
+                ) &&
+                parsedResults.length > 0
+            ) {
+                return parsedResults;
+            }
+        } catch (error) {
+            console.warn(
+                "Results could not be read:",
+                error
+            );
+        }
+    }
+
+    return generatePersonalityResults();
+}
+
+
+/* =========================
+   DISPLAY RESULTS
+========================= */
+
+function displayPersonalityResults() {
+    const resultsContainer =
+        byId("personalityResults");
+
+    if (!resultsContainer) {
+        return;
+    }
+
+    const results =
+        getPersonalityResults();
+
+    resultsContainer.innerHTML = "";
+
+    results.forEach(
+        (result, index) => {
+            const trait =
+                document.createElement(
+                    "div"
+                );
+
+            trait.className =
+                "trait";
+
+            const traitHeader =
+                document.createElement(
+                    "div"
+                );
+
+            traitHeader.className =
+                "traitHeader";
+
+            const traitName =
+                document.createElement(
+                    "span"
+                );
+
+            traitName.className =
+                "traitName";
+
+            traitName.textContent =
+                `${result.emoji} ${result.name}`;
+
+            const traitPercent =
+                document.createElement(
+                    "span"
+                );
+
+            traitPercent.className =
+                "traitPercent";
+
+            traitPercent.textContent =
+                `${result.percentage}%`;
+
+            const traitBar =
+                document.createElement(
+                    "div"
+                );
+
+            traitBar.className =
+                "traitBar";
+
+            const traitFill =
+                document.createElement(
+                    "div"
+                );
+
+            traitFill.className =
+                "traitFill";
+
+            traitFill.style.width =
+                "0%";
+
+            traitHeader.appendChild(
+                traitName
+            );
+
+            traitHeader.appendChild(
+                traitPercent
+            );
+
+            traitBar.appendChild(
+                traitFill
+            );
+
+            trait.appendChild(
+                traitHeader
+            );
+
+            trait.appendChild(
+                traitBar
+            );
+
+            resultsContainer.appendChild(
+                trait
+            );
+
+            window.setTimeout(() => {
+                traitFill.style.width =
+                    `${result.percentage}%`;
+            }, 180 + index * 120);
+        }
+    );
+}
+
+
+/* =========================
+   SHARE ON WHATSAPP
+========================= */
+
+function shareResultsOnWhatsApp() {
+    const playerName =
+        localStorage.getItem(
+            "playerName"
+        ) || "Player";
+
+    const streakDay =
+        localStorage.getItem(
+            "completedDay"
+        ) || "1";
+
+    const results =
+        getPersonalityResults();
+
+    const resultLines =
+        results.map(result => {
+            return (
+                `${result.emoji} ` +
+                `${result.name}: ` +
+                `${result.percentage}%`
+            );
+        });
+
+    const message = [
+        "🔥 Waxaan dhammeeyay Tartanka Shakhsiyadda!",
+        "",
+        `✨ Natiijada ${playerName} ✨`,
+        "",
+        ...resultLines,
+        "",
+        `🔥 Streak Day ${streakDay} Complete`,
+        "",
+        "Kaalay tartankan streak-ga ka qaybgal!",
+        SHARE_LINK
+    ].join("\n");
+
+    const shareURL =
+        "https://wa.me/?text=" +
+        encodeURIComponent(message);
+
+    window.open(
+        shareURL,
+        "_blank",
+        "noopener,noreferrer"
+    );
+}
 
 
 /* =========================
    GENERATED POP SOUND
-   No MP3 file is required
 ========================= */
 
 function playPopSound() {
@@ -93,17 +1145,20 @@ function playPopSound() {
         const gain =
             audioContext.createGain();
 
-        oscillator.type = "sine";
+        oscillator.type =
+            "triangle";
 
-        oscillator.frequency.setValueAtTime(
-            520,
-            audioContext.currentTime
-        );
+        oscillator.frequency
+            .setValueAtTime(
+                520,
+                audioContext.currentTime
+            );
 
         oscillator.frequency
             .exponentialRampToValueAtTime(
                 760,
-                audioContext.currentTime + 0.07
+                audioContext.currentTime +
+                0.07
             );
 
         gain.gain.setValueAtTime(
@@ -114,10 +1169,12 @@ function playPopSound() {
         gain.gain
             .exponentialRampToValueAtTime(
                 0.001,
-                audioContext.currentTime + 0.11
+                audioContext.currentTime +
+                0.11
             );
 
         oscillator.connect(gain);
+
         gain.connect(
             audioContext.destination
         );
@@ -125,7 +1182,8 @@ function playPopSound() {
         oscillator.start();
 
         oscillator.stop(
-            audioContext.currentTime + 0.12
+            audioContext.currentTime +
+            0.12
         );
     } catch (error) {
         console.warn(
@@ -137,22 +1195,20 @@ function playPopSound() {
 
 
 /* =========================
-   CIRCLE PARTICLES
+   CLICK PARTICLES
 ========================= */
 
 function createParticles(button) {
-    if (!button) {
-        return;
-    }
-
     const rect =
         button.getBoundingClientRect();
 
     const centerX =
-        rect.left + rect.width / 2;
+        rect.left +
+        rect.width / 2;
 
     const centerY =
-        rect.top + rect.height / 2;
+        rect.top +
+        rect.height / 2;
 
     const colors = [
         "#ffffff",
@@ -163,35 +1219,48 @@ function createParticles(button) {
         "#f0abfc"
     ];
 
-    const particleCount = 10;
+    const particleCount = 16;
 
     for (
-        let i = 0;
-        i < particleCount;
-        i++
+        let index = 0;
+        index < particleCount;
+        index++
     ) {
         const particle =
-            document.createElement("span");
+            document.createElement(
+                "span"
+            );
+
+        const angle =
+            (
+                Math.PI *
+                2 *
+                index
+            ) /
+                particleCount +
+            Math.random() *
+                0.35;
+
+        const distance =
+            38 +
+            Math.random() *
+                45;
+
+        const moveX =
+            Math.cos(angle) *
+            distance;
+
+        const moveY =
+            Math.sin(angle) *
+            distance;
+
+        const size =
+            6 +
+            Math.random() *
+                7;
 
         particle.className =
             "particle";
-
-        const angle =
-            (Math.PI * 2 * i) /
-                particleCount +
-            Math.random() * 0.35;
-
-        const distance =
-            38 + Math.random() * 45;
-
-        const moveX =
-            Math.cos(angle) * distance;
-
-        const moveY =
-            Math.sin(angle) * distance;
-
-        const size =
-            6 + Math.random() * 7;
 
         particle.style.left =
             `${centerX}px`;
@@ -232,7 +1301,9 @@ function createParticles(button) {
             () => {
                 particle.remove();
             },
-            { once: true }
+            {
+                once: true
+            }
         );
     }
 }
@@ -246,7 +1317,9 @@ document.addEventListener(
     "click",
     event => {
         const button =
-            event.target.closest("button");
+            event.target.closest(
+                "button"
+            );
 
         if (!button) {
             return;
@@ -259,1052 +1332,13 @@ document.addEventListener(
 
 
 /* =========================
-   SMOOTH PAGE NAVIGATION
-========================= */
-
-function goTo(page) {
-    if (
-        isNavigating ||
-        typeof page !== "string" ||
-        page.trim() === ""
-    ) {
-        return;
-    }
-
-    isNavigating = true;
-
-    document.body.classList.add(
-        "fade-out"
-    );
-
-    window.setTimeout(() => {
-        window.location.href = page;
-    }, PAGE_TRANSITION_TIME);
-}
-
-
-/* =========================
-   SAVE PLAYER NAME
-========================= */
-
-function startQuiz() {
-    const input =
-        document.getElementById("name");
-
-    if (!input) {
-        console.error(
-            'Name input with id="name" was not found.'
-        );
-
-        return;
-    }
-
-    const playerName =
-        input.value.trim();
-
-    if (playerName === "") {
-        showNameWarning();
-        input.focus();
-
-        input.classList.remove(
-            "input-shake"
-        );
-
-        void input.offsetWidth;
-
-        input.classList.add(
-            "input-shake"
-        );
-
-        return;
-    }
-
-    localStorage.setItem(
-        "playerName",
-        playerName
-    );
-
-    hideNameWarning();
-
-    goTo("index.html");
-}
-
-
-/* =========================
-   PREPARE NAME INPUT
-========================= */
-
-function prepareNameInput() {
-    const input =
-        document.getElementById("name");
-
-    if (!input) {
-        return;
-    }
-
-    createWarningMessage(input);
-
-    const savedName =
-        localStorage.getItem(
-            "playerName"
-        );
-
-    if (savedName) {
-        input.value = savedName;
-    }
-
-    input.addEventListener(
-        "input",
-        hideNameWarning
-    );
-
-    input.addEventListener(
-        "keydown",
-        event => {
-            if (event.key === "Enter") {
-                event.preventDefault();
-                startQuiz();
-            }
-        }
-    );
-}
-
-
-/* =========================
-   NAME WARNING
-========================= */
-
-function createWarningMessage(input) {
-    if (
-        document.getElementById(
-            "nameWarning"
-        )
-    ) {
-        return;
-    }
-
-    const warning =
-        document.createElement("p");
-
-    warning.id = "nameWarning";
-    warning.className = "warning";
-
-    warning.textContent =
-        "Please enter your name first.";
-
-    const parent =
-        input.parentElement;
-
-    if (parent) {
-        parent.appendChild(warning);
-    }
-}
-
-function showNameWarning() {
-    const warning =
-        document.getElementById(
-            "nameWarning"
-        );
-
-    if (warning) {
-        warning.classList.add("show");
-    }
-}
-
-function hideNameWarning() {
-    const warning =
-        document.getElementById(
-            "nameWarning"
-        );
-
-    if (warning) {
-        warning.classList.remove(
-            "show"
-        );
-    }
-}
-
-
-/* =========================
-   DISPLAY PLAYER NAME
-
-   Use:
-   <span data-player-name></span>
-========================= */
-
-function fillPlayerNameElements() {
-    const playerName =
-        localStorage.getItem(
-            "playerName"
-        ) || "Player";
-
-    const elements =
-        document.querySelectorAll(
-            "[data-player-name]"
-        );
-
-    elements.forEach(element => {
-        element.textContent =
-            playerName;
-    });
-}
-
-
-/* =========================
-   FIRST VISIT / WELCOME BACK
-========================= */
-
-function updateWelcomeMessage() {
-    const welcomeText =
-        document.getElementById(
-            "welcomeText"
-        );
-
-    if (!welcomeText) {
-        return;
-    }
-
-    const completedDay =
-        localStorage.getItem(
-            "completedDay"
-        );
-
-    if (completedDay) {
-        welcomeText.textContent =
-            "Welcome back";
-    } else {
-        welcomeText.textContent =
-            "Welcome";
-    }
-}
-
-/* =========================
-   SEND NEW PLAYERS TO
-   THE WELCOME PAGE
-========================= */
-
-function redirectUnnamedPlayer() {
-    const currentPage =
-        getCurrentPageName();
-
-    const savedName =
-        localStorage.getItem(
-            "playerName"
-        );
-
-    /*
-    Stay on welcome.html so the new
-    player can enter their name.
-    */
-
-    if (
-        currentPage === "welcome.html"
-    ) {
-        return false;
-    }
-
-    /*
-    If there is no saved name, block
-    access to every other page.
-    */
-
-    if (!savedName) {
-        window.location.replace(
-            "welcome.html"
-        );
-
-        return true;
-    }
-
-    return false;
-}
-
-/* =========================
-   SKIP WELCOME PAGE
-   FOR RETURNING PLAYERS
-========================= */
-
-function redirectReturningPlayer() {
-    const currentPage =
-        getCurrentPageName();
-
-    const savedName =
-        localStorage.getItem(
-            "playerName"
-        );
-
-    if (
-        currentPage === "welcome.html" &&
-        savedName
-    ) {
-        window.location.replace(
-            "index.html"
-        );
-    }
-}
-
-
-/* =========================
-   PROGRESS BAR
-========================= */
-
-function updateProgressBar() {
-    const progressFill =
-        document.querySelector(
-            ".progressFill"
-        );
-
-    if (!progressFill) {
-        return;
-    }
-
-    let progress = 0;
-
-    const pageName =
-        getCurrentPageName();
-
-    const questionMatch =
-        pageName.match(
-            /^question(\d+)\.html$/
-        );
-
-    if (questionMatch) {
-        const questionNumber =
-            Number(questionMatch[1]);
-
-        const completedQuestions =
-            Math.max(
-                0,
-                questionNumber - 1
-            );
-
-        progress =
-            (
-                completedQuestions /
-                TOTAL_QUESTIONS
-            ) * 100;
-    }
-
-    if (
-        pageName === "results.html"
-    ) {
-        progress = 100;
-    }
-
-    const customProgress =
-        document.body.dataset.progress;
-
-    if (
-        customProgress !== undefined
-    ) {
-        const parsedProgress =
-            Number(customProgress);
-
-        if (
-            Number.isFinite(
-                parsedProgress
-            )
-        ) {
-            progress =
-                parsedProgress;
-        }
-    }
-
-    progress = Math.max(
-        0,
-        Math.min(100, progress)
-    );
-
-    progressFill.style.width =
-        "0%";
-
-    requestAnimationFrame(() => {
-        requestAnimationFrame(() => {
-            progressFill.style.width =
-                `${progress}%`;
-        });
-    });
-}
-
-
-/* =========================
-   ANSWER AND CONTINUE
-========================= */
-
-function answerAndContinue(
-    nextPage
-) {
-    goTo(nextPage);
-}
-
-
-
-/* =========================
-   FINISH QUIZ
-========================= */
-
-function finishQuiz() {
-    if (isNavigating) {
-        return;
-    }
-
-    const returnTime =
-        Date.now() +
-        RESULTS_LOCK_TIME;
-
-    localStorage.setItem(
-        "resultsReturnTime",
-        returnTime.toString()
-    );
-
-    const oldCompletedDay =
-        Number(
-            localStorage.getItem(
-                "completedDay"
-            )
-        ) || 0;
-
-    const newCompletedDay =
-        Math.max(
-            1,
-            oldCompletedDay + 1
-        );
-
-    localStorage.setItem(
-        "completedDay",
-        newCompletedDay.toString()
-    );
-
-    generatePersonalityResults();
-
-    goTo("results.html");
-}
-
-/* =========================
-   12-HOUR RESULTS LOCK
-========================= */
-
-function handleResultsLock() {
-    const currentPage =
-        getCurrentPageName();
-
-    const savedReturnTime =
-        Number(
-            localStorage.getItem(
-                "resultsReturnTime"
-            )
-        );
-
-    if (!savedReturnTime) {
-        return;
-    }
-
-    const lockIsActive =
-        Date.now() <
-        savedReturnTime;
-
-    if (lockIsActive) {
-        if (
-            currentPage !==
-            "results.html"
-        ) {
-            window.location.replace(
-                "results.html"
-            );
-        }
-
-        return;
-    }
-
-    localStorage.removeItem(
-        "resultsReturnTime"
-    );
-
-    if (
-        currentPage ===
-        "results.html"
-    ) {
-        window.location.replace(
-            "index.html"
-        );
-    }
-}
-
-
-/* =========================
-   AUTOMATIC DAILY LEADERBOARD
-========================= */
-
-function getDaysPassed() {
-    const startDate =
-        new Date(
-            `${LEADERBOARD_START_DATE}T00:00:00`
-        );
-
-    const today =
-        new Date();
-
-    startDate.setHours(
-        0,
-        0,
-        0,
-        0
-    );
-
-    today.setHours(
-        0,
-        0,
-        0,
-        0
-    );
-
-    const millisecondsPerDay =
-        1000 * 60 * 60 * 24;
-
-    return Math.max(
-        0,
-        Math.floor(
-            (today - startDate) /
-            millisecondsPerDay
-        )
-    );
-}
-
-function displayLeaderboard() {
-    const leaderboard =
-        document.getElementById(
-            "leaderboard"
-        );
-
-    if (!leaderboard) {
-        return;
-    }
-
-    const extraDays =
-        getDaysPassed();
-
-    const updatedPlayers =
-        leaderboardPlayers
-            .map(player => ({
-                name: player.name,
-                streak:
-                    player.startingStreak +
-                    extraDays
-            }))
-            .sort(
-                (playerA, playerB) =>
-                    playerB.streak -
-                    playerA.streak
-            );
-
-    leaderboard.innerHTML = "";
-
-    updatedPlayers.forEach(
-        (player, index) => {
-            const row =
-                document.createElement(
-                    "div"
-                );
-
-            row.className =
-                "leaderboard-row";
-
-            let position =
-                `${index + 1}.`;
-
-            if (index === 0) {
-                position = "🥇";
-            } else if (
-                index === 1
-            ) {
-                position = "🥈";
-            } else if (
-                index === 2
-            ) {
-                position = "🥉";
-            }
-
-            const positionAndName =
-                document.createElement(
-                    "span"
-                );
-
-            positionAndName.textContent =
-                `${position} ${player.name}`;
-
-            const streak =
-                document.createElement(
-                    "span"
-                );
-
-            streak.textContent =
-                `🔥 Day ${player.streak}`;
-
-            row.appendChild(
-                positionAndName
-            );
-
-            row.appendChild(streak);
-
-            leaderboard.appendChild(
-                row
-            );
-        }
-    );
-}
-
-/* =========================
-   RANDOM PERSONALITY RESULTS
-========================= */
-
-const personalityTraits = [
-    {
-        name: "Xaraabaad",
-        emoji: "😂",
-        minimum: 65,
-        maximum: 99
-    },
-    {
-        name: "Maskax",
-        emoji: "🧠",
-        minimum: 65,
-        maximum: 99
-    },
-    {
-        name: "Daryeel",
-        emoji: "❤️",
-        minimum: 65,
-        maximum: 99
-    },
-    {
-        name: "Hal abuur",
-        emoji: "🎨",
-        minimum: 55,
-        maximum: 97
-    },
-    {
-        name: "Kalsooni",
-        emoji: "💪",
-        minimum: 45,
-        maximum: 95
-    },
-    {
-        name: "Daacad",
-        emoji: "🤝",
-        minimum: 65,
-        maximum: 99
-    },
-    {
-        name: "Xiiso",
-        emoji: "🔍",
-        minimum: 50,
-        maximum: 96
-    },
-    {
-        name: "Safar doonid",
-        emoji: "🧭",
-        minimum: 40,
-        maximum: 94
-    },
-    {
-        name: "Daganaan",
-        emoji: "😌",
-        minimum: 40,
-        maximum: 92
-    },
-    {
-        name: "Hami",
-        emoji: "🚀",
-        minimum: 55,
-        maximum: 98
-    },
-    {
-        name: "Qurux",
-        emoji: "✨",
-        minimum: 80,
-        maximum: 97
-    },
-    {
-        name: "Madax-banaan",
-        emoji: "🦅",
-        minimum: 45,
-        maximum: 95
-    },
-    {
-        name: "rajo",
-        emoji: "🌈",
-        minimum: 50,
-        maximum: 96
-    },
-    {
-        name: "Dulqaad",
-        emoji: "🌿",
-        minimum: 35,
-        maximum: 90
-    },
-    {
-        name: "firfircooni",
-        emoji: "⚡",
-        minimum: 45,
-        maximum: 97
-    },
-    {
-        name: "Tartameeye",
-        emoji: "🏆",
-        minimum: 35,
-        maximum: 91
-    },
-    {
-        name: "Hurdoole",
-        emoji: "😴",
-        minimum: 5,
-        maximum: 60
-    },
-    {
-        name: "Fikir",
-        emoji: "💭",
-        minimum: 15,
-        maximum: 78
-    },
-    {
-        name: "ilow",
-        emoji: "📝",
-        minimum: 5,
-        maximum: 58
-    },
-    {
-        name: "Jees-jees",
-        emoji: "😏",
-        minimum: 20,
-        maximum: 85
-    },
-];
-
-
-/* =========================
-   RANDOM NUMBER
-========================= */
-
-function randomNumber(
-    minimum,
-    maximum
-) {
-    return Math.floor(
-        Math.random() *
-        (maximum - minimum + 1)
-    ) + minimum;
-}
-
-
-/* =========================
-   SHUFFLE ARRAY
-========================= */
-
-function shuffleArray(array) {
-    const shuffled = [...array];
-
-    for (
-        let index = shuffled.length - 1;
-        index > 0;
-        index--
-    ) {
-        const randomIndex =
-            Math.floor(
-                Math.random() *
-                (index + 1)
-            );
-
-        [
-            shuffled[index],
-            shuffled[randomIndex]
-        ] = [
-            shuffled[randomIndex],
-            shuffled[index]
-        ];
-    }
-
-    return shuffled;
-}
-
-
-/* =========================
-   CREATE NEW RESULTS
-========================= */
-
-function generatePersonalityResults() {
-    const selectedTraits =
-        shuffleArray(
-            personalityTraits
-        ).slice(0, 7);
-
-    const results =
-        selectedTraits.map(trait => ({
-            name: trait.name,
-            emoji: trait.emoji,
-            percentage:
-                randomNumber(
-                    trait.minimum,
-                    trait.maximum
-                )
-        }));
-
-    results.sort(
-        (resultA, resultB) =>
-            resultB.percentage -
-            resultA.percentage
-    );
-
-    localStorage.setItem(
-        "personalityResults",
-        JSON.stringify(results)
-    );
-}
-
-
-/* =========================
-   GET SAVED RESULTS
-========================= */
-
-function getPersonalityResults() {
-    const savedResults =
-        localStorage.getItem(
-            "personalityResults"
-        );
-
-    if (savedResults) {
-        try {
-            const parsedResults =
-                JSON.parse(savedResults);
-
-            if (
-                Array.isArray(parsedResults) &&
-                parsedResults.length > 0
-            ) {
-                return parsedResults;
-            }
-        } catch (error) {
-            console.warn(
-                "Saved results could not be read:",
-                error
-            );
-        }
-    }
-
-    generatePersonalityResults();
-
-    const newResults =
-        localStorage.getItem(
-            "personalityResults"
-        );
-
-    return newResults
-        ? JSON.parse(newResults)
-        : [];
-}
-
-
-/* =========================
-   DISPLAY RESULTS
-========================= */
-
-function displayPersonalityResults() {
-    const resultsContainer =
-        document.getElementById(
-            "personalityResults"
-        );
-
-    if (!resultsContainer) {
-        return;
-    }
-
-    const results =
-        getPersonalityResults();
-
-    resultsContainer.innerHTML = "";
-
-    results.forEach(
-        (result, index) => {
-            const trait =
-                document.createElement(
-                    "div"
-                );
-
-            trait.className = "trait";
-
-            const traitHeader =
-                document.createElement(
-                    "div"
-                );
-
-            traitHeader.className =
-                "traitHeader";
-
-            const traitName =
-                document.createElement(
-                    "span"
-                );
-
-            traitName.className =
-                "traitName";
-
-            traitName.textContent =
-                `${result.emoji} ${result.name}`;
-
-            const traitPercentage =
-                document.createElement(
-                    "span"
-                );
-
-            traitPercentage.className =
-                "traitPercent";
-
-            traitPercentage.textContent =
-                `${result.percentage}%`;
-
-            const traitBar =
-                document.createElement(
-                    "div"
-                );
-
-            traitBar.className =
-                "traitBar";
-
-            const traitFill =
-                document.createElement(
-                    "div"
-                );
-
-            traitFill.className =
-                "traitFill";
-
-            traitFill.style.width = "0%";
-
-            traitHeader.appendChild(
-                traitName
-            );
-
-            traitHeader.appendChild(
-                traitPercentage
-            );
-
-            traitBar.appendChild(
-                traitFill
-            );
-
-            trait.appendChild(
-                traitHeader
-            );
-
-            trait.appendChild(
-                traitBar
-            );
-
-            resultsContainer.appendChild(
-                trait
-            );
-
-            window.setTimeout(() => {
-                traitFill.style.width =
-                    `${result.percentage}%`;
-            }, 180 + index * 120);
-        }
-    );
-}
-
-
-/* =========================
-   SHARE RESULTS ON WHATSAPP
-========================= */
-
-function shareResultsOnWhatsApp() {
-    const playerName =
-        localStorage.getItem(
-            "playerName"
-        ) || "Player";
-
-    const streakDay =
-        Number(
-            localStorage.getItem(
-                "completedDay"
-            )
-        ) || 1;
-
-    const results =
-        getPersonalityResults();
-
-    const resultLines =
-        results.map(result =>
-            `${result.emoji} ${result.name}: ${result.percentage}%`
-        );
-
-    const message = [
-        `✨ ${playerName}'s Shakhsiyadooda  ✨`,
-        "",
-        ...resultLines,
-        "",
-        `🔥 Streak Day ${streakDay} Complete`,
-        "",
-        "Kaalay Tartankan Streakga ka qaybgal!",
-       "https://isyiqaan.github.io/welcome.html"
-    ].join("\n");
-
-    const shareURL =
-        `https://wa.me/?text=${
-            encodeURIComponent(message)
-        }`;
-
-    window.open(
-        shareURL,
-        "_blank",
-        "noopener,noreferrer"
-    );
-}
-/* =========================
-   DISPLAY PLAYER STREAK DAY
-========================= */
-
-function displayStreakDay() {
-    const streakElement =
-        document.getElementById(
-            "streakDay"
-        );
-
-    if (!streakElement) {
-        return;
-    }
-
-    const completedDay =
-        Number(
-            localStorage.getItem(
-                "completedDay"
-            )
-        ) || 1;
-
-    streakElement.textContent =
-        completedDay;
-}
-/* =========================
-   CURRENT PAGE FILE NAME
-========================= */
-
-function getCurrentPageName() {
-    const pageName =
-        window.location.pathname
-            .split("/")
-            .pop()
-            .toLowerCase();
-
-    return pageName ||
-        "index.html";
-}
-
-
-/* =========================
-   FUNCTIONS AVAILABLE TO HTML
+   FUNCTIONS USED BY HTML
 ========================= */
 
 window.goTo = goTo;
-window.startQuiz = startQuiz;
+
+window.startQuiz =
+    startQuiz;
 
 window.answerAndContinue =
     answerAndContinue;
