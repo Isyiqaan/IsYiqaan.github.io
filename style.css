@@ -1375,3 +1375,51 @@ button:disabled {
             0.01ms !important;
     }
 }
+.page-link {
+    width: 100%;
+    max-width: 440px;
+    min-height: 58px;
+
+    margin: 20px auto 0;
+    padding: 15px 19px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border: 2px solid rgba(255, 255, 255, 0.78);
+    border-radius: 18px;
+
+    color: #ffffff;
+
+    background:
+        linear-gradient(
+            135deg,
+            #b96fd2,
+            #e483ad
+        );
+
+    box-shadow:
+        0 11px 27px rgba(178, 96, 190, 0.26),
+        inset 0 1px 0 rgba(255, 255, 255, 0.36);
+
+    font-size: 1rem;
+    font-weight: 800;
+    text-align: center;
+    text-decoration: none;
+
+    transition:
+        transform 180ms ease,
+        box-shadow 180ms ease;
+}
+
+.page-link:hover {
+    transform: translateY(-3px) scale(1.012);
+
+    box-shadow:
+        0 14px 31px rgba(155, 90, 174, 0.2);
+}
+
+.page-link:active {
+    transform: translateY(1px) scale(0.98);
+}
