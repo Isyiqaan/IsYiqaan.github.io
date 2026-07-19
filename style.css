@@ -1184,3 +1184,117 @@ button:disabled {
             0.01ms !important;
     }
 }
+
+/* =========================
+   INFO BUTTON
+========================= */
+
+.infoButton{
+
+    position:fixed;
+
+    bottom:20px;
+
+    right:20px;
+
+    width:42px;
+
+    height:42px;
+
+    border-radius:50%;
+
+    background:rgba(255,255,255,.15);
+
+    backdrop-filter:blur(12px);
+
+    display:flex;
+
+    justify-content:center;
+
+    align-items:center;
+
+    color:white;
+
+    font-size:22px;
+
+    cursor:pointer;
+
+    transition:.3s;
+
+    z-index:9999;
+
+    border:1px solid rgba(255,255,255,.25);
+
+}
+
+.infoButton:hover{
+
+    transform:scale(1.1);
+
+    background:rgba(255,255,255,.25);
+
+}
+
+.infoMenu{
+
+    position:fixed;
+
+    bottom:72px;
+
+    right:20px;
+
+    display:flex;
+
+    flex-direction:column;
+
+    gap:10px;
+
+    opacity:0;
+
+    pointer-events:none;
+
+    transform:translateY(20px);
+
+    transition:.3s;
+
+    z-index:9999;
+
+}
+
+.infoMenu.show{
+
+    opacity:1;
+
+    pointer-events:auto;
+
+    transform:translateY(0);
+
+}
+
+.infoMenu a{
+
+    background:rgba(255,255,255,.12);
+
+    backdrop-filter:blur(15px);
+
+    color:white;
+
+    text-decoration:none;
+
+    padding:10px 18px;
+
+    border-radius:12px;
+
+    transition:.25s;
+
+    white-space:nowrap;
+
+}
+
+.infoMenu a:hover{
+
+    transform:translateX(-5px);
+
+    background:rgba(255,255,255,.22);
+
+}
