@@ -13,7 +13,7 @@ const TOTAL_QUESTIONS = 10;
 const PAGE_TRANSITION_TIME = 380;
 const RESULTS_LOCK_TIME = 12 * 60 * 60 * 1000;
 
-const LEADERBOARD_START_DATE = "2026-07-14";
+const LEADERBOARD_START_DATE = "2026-07-21";
 
 const SHARE_LINK =
     "https://isyiqaan.github.io/welcome.html";
@@ -25,7 +25,7 @@ const leaderboardPlayers = [
     },
     {
         name: "Dilaaga 💀",
-        startingStreak: 10
+        startingStreak: 12
     },
     {
         name: "Samsam 🌺",
