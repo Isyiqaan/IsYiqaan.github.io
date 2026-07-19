@@ -55,7 +55,7 @@ const personalityTraits = [
         max: 99
     },
     {
-        name: "Daryeel",
+        name: "Jacayl",
         emoji: "❤️",
         min: 65,
         max: 99
