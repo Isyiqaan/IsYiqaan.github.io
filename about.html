@@ -1,48 +1,106 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>About | Ultimate Personality Test</title>
+    <meta charset="UTF-8">
 
-<link rel="stylesheet" href="style.css">
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <meta
+        name="description"
+        content="Learn more about the Ultimate Personality Test."
+    >
+
+    <title>About | Ultimate Personality Test</title>
+
+    <link
+        rel="preconnect"
+        href="https://fonts.googleapis.com"
+    >
+
+    <link
+        rel="preconnect"
+        href="https://fonts.gstatic.com"
+        crossorigin
+    >
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&display=swap"
+        rel="stylesheet"
+    >
+
+    <link rel="stylesheet" href="style.css">
+
 </head>
 
 <body>
 
-<div class="container infoPage">
-    <h1>🧠 About Ultimate Personality Test</h1>
+    <div class="blob"></div>
+    <div class="blob"></div>
+    <div class="blob"></div>
 
-    <p>
-        Welcome to <strong>Ultimate Personality Test</strong>!
-    </p>
+    <main class="container">
 
-    <p>
-        This website was created to give people a fun and interactive way to discover different personality traits through a series of simple questions.
-    </p>
+        <p class="question-label">
+            About
+        </p>
 
-    <p>
-        Every quiz contains 10 carefully designed questions. Once you finish, you'll receive a unique personality result with different traits and percentages that make every experience interesting.
-    </p>
+        <h1>About Ultimate Personality Test</h1>
 
-    <p>
-        Our goal is to create an enjoyable quiz that anyone can take in just a few minutes while learning more about themselves.
-    </p>
+        <p>
+            Ultimate Personality Test is a fun online quiz designed
+            to give you an entertaining personality result based on
+            your answers. Every quiz generates a unique set of
+            personality traits with different percentages.
+        </p>
 
-    <p>
-        The personality results are generated for entertainment purposes and are not intended to be professional psychological assessments.
-    </p>
+        <h2>How It Works</h2>
 
-    <p>
-        We are continuously improving the website by adding new features, improving the design, and making the quiz more enjoyable for everyone.
-    </p>
+        <p>
+            Answer all 10 questions honestly. When you finish,
+            you'll receive your personality profile, a daily streak,
+            and your place on the leaderboard.
+        </p>
 
-    <button onclick="location.href='results.html'">
-        ⬅ Back to Results
-    </button>
+        <h2>Daily Challenge</h2>
 
-</div>
+        <p>
+            You can complete the quiz once every 12 hours.
+            Returning every day increases your streak and lets you
+            compare yourself with other players.
+        </p>
+
+        <h2>Just for Fun</h2>
+
+        <p>
+            The results are made for entertainment purposes only.
+            They are not scientific or professional personality
+            assessments.
+        </p>
+
+        <h2>Our Goal</h2>
+
+        <p>
+            We built this website to create a fun experience that
+            people can enjoy and share with friends. New questions
+            and features may be added in future updates.
+        </p>
+
+        <button
+            class="startButton"
+            onclick="goToPage('results.html')"
+        >
+            Back to Results
+        </button>
+
+    </main>
+
+    <script src="script.js"></script>
 
 </body>
+
 </html>
