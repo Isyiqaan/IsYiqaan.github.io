@@ -1348,3 +1348,31 @@ window.finishQuiz =
 
 window.shareResultsOnWhatsApp =
     shareResultsOnWhatsApp;
+
+/* =========================
+   INFO MENU
+========================= */
+
+function toggleInfoMenu() {
+    const menu = document.getElementById("infoMenu");
+
+    if (!menu) return;
+
+    menu.classList.toggle("show");
+}
+
+document.addEventListener("click", function (event) {
+
+    const menu = document.getElementById("infoMenu");
+    const button = document.querySelector(".infoButton");
+
+    if (!menu || !button) return;
+
+    if (
+        !menu.contains(event.target) &&
+        !button.contains(event.target)
+    ) {
+        menu.classList.remove("show");
+    }
+
+});
