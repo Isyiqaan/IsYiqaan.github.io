@@ -1,22 +1,22 @@
 "use strict";
 
 /* =========================================================
-   ULTIMATE PERSONALITY TEST — CLEAN SCRIPT.JS
+   ULTIMATE PERSONALITY TEST
+   COMPLETE SCRIPT.JS
 ========================================================= */
 
 
-/* =========================
+/* =========================================================
    SETTINGS
-========================= */
+========================================================= */
 
 const TOTAL_QUESTIONS = 10;
 const PAGE_TRANSITION_TIME = 380;
-const RESULTS_LOCK_TIME = 12 * 60 * 60 * 1000;
 
 const LEADERBOARD_START_DATE = "2026-07-21";
 
-const SHARE_LINK =
-    "https://isyiqaan.github.io/welcome.html";
+const WEBSITE_LINK =
+    "https://isyiqaan.github.io/";
 
 const leaderboardPlayers = [
     {
@@ -164,26 +164,63 @@ const personalityTraits = [
     }
 ];
 
+
+/* =========================================================
+   GLOBAL STATE
+========================================================= */
+
 let isNavigating = false;
 let audioContext = null;
 
 
-/* =========================
-   HELPER FUNCTIONS
-========================= */
+/* =========================================================
+   STORAGE KEYS
+========================================================= */
+
+const STORAGE_KEYS = {
+    playerName: "playerName",
+    personalityResults: "personalityResults",
+
+    streak: "completedDay",
+    alternateStreak: "streakDays",
+    oldStreak: "streak",
+
+    lastCompletedDate: "lastCompletedDate",
+    oldLastCompletedDate: "lastStreakDate",
+
+    completedToday: "streakCompletedToday",
+
+    resultsMode: "resultsMode",
+    alternateResultsMode: "resultMode"
+};
+
+
+/* =========================================================
+   BASIC HELPERS
+========================================================= */
 
 function byId(id) {
     return document.getElementById(id);
 }
 
+function query(selector) {
+    return document.querySelector(selector);
+}
+
+function queryAll(selector) {
+    return Array.from(
+        document.querySelectorAll(selector)
+    );
+}
+
 function getCurrentPageName() {
-    const pageName =
+    const pathname =
         window.location.pathname
             .split("/")
             .pop()
             .toLowerCase();
 
-    return pageName || "index.html";
+    return pathname || "index.html";
 }
 
 function randomNumber(minimum, maximum) {
@@ -219,8 +256,40 @@ function shuffleArray(array) {
     return shuffled;
 }
 
-function getLocalDateKey(date = new Date()) {
-    const year = date.getFullYear();
+function findFirstElement(selectors) {
+    for (const selector of selectors) {
+        const element =
+            document.querySelector(selector);
+
+        if (element) {
+            return element;
+        }
+    }
+
+    return null;
+}
+
+function setElementVisibility(
+    element,
+    shouldShow
+) {
+    if (!element) {
+        return;
+    }
+
+    element.hidden = !shouldShow;
+
+    element.classList.toggle(
+        "hidden",
+        !shouldShow
+    );
+}
+
+function getLocalDateKey(
+    date = new Date()
+) {
+    const year =
+        date.getFullYear();
 
     const month =
         String(
@@ -235,16 +304,29 @@ function getLocalDateKey(date = new Date()) {
     return `${year}-${month}-${day}`;
 }
 
+function getYesterdayDateKey() {
+    const yesterday =
+        new Date();
+
+    yesterday.setDate(
+        yesterday.getDate() - 1
+    );
+
+    return getLocalDateKey(yesterday);
+}
+
 function getDaysSince(dateText) {
     const [
         startYear,
         startMonth,
         startDay
-    ] = dateText
-        .split("-")
-        .map(Number);
+    ] =
+        dateText
+            .split("-")
+            .map(Number);
 
-    const today = new Date();
+    const today =
+        new Date();
 
     const startTime =
         Date.UTC(
@@ -263,161 +345,19 @@ function getDaysSince(dateText) {
     return Math.max(
         0,
         Math.floor(
-            (todayTime - startTime) /
+            (
+                todayTime -
+                startTime
+            ) /
             86400000
         )
     );
 }
 
 
-/* =========================
-   PAGE STARTUP
-========================= */
-
-document.addEventListener(
-    "DOMContentLoaded",
-    () => {
-        if (redirectUnnamedPlayer()) {
-            return;
-        }
-
-        if (redirectReturningPlayer()) {
-            return;
-        }
-
-        if (handleResultsLock()) {
-            return;
-        }
-
-        requestAnimationFrame(() => {
-            document.body.classList.add(
-                "loaded"
-            );
-        });
-
-        prepareNameInput();
-        fillPlayerNameElements();
-        updateWelcomeMessage();
-        updateProgressBar();
-        displayLeaderboard();
-        displayPersonalityResults();
-        displayStreakDay();
-    }
-);
-
-
-/* =========================
-   NEW PLAYER REDIRECT
-========================= */
-
-function redirectUnnamedPlayer() {
-    const currentPage =
-        getCurrentPageName();
-
-    const savedName =
-        localStorage.getItem(
-            "playerName"
-        );
-
-    if (
-        currentPage !== "welcome.html" &&
-        !savedName
-    ) {
-        window.location.replace(
-            "welcome.html"
-        );
-
-        return true;
-    }
-
-    return false;
-}
-
-
-/* =========================
-   RETURNING PLAYER REDIRECT
-========================= */
-
-function redirectReturningPlayer() {
-    const currentPage =
-        getCurrentPageName();
-
-    const savedName =
-        localStorage.getItem(
-            "playerName"
-        );
-
-    if (
-        currentPage === "welcome.html" &&
-        savedName
-    ) {
-        window.location.replace(
-            "index.html"
-        );
-
-        return true;
-    }
-
-    return false;
-}
-
-
-/* =========================
-   12-HOUR RESULTS LOCK
-========================= */
-
-function handleResultsLock() {
-    const returnTime =
-        Number(
-            localStorage.getItem(
-                "resultsReturnTime"
-            )
-        );
-
-    if (!returnTime) {
-        return false;
-    }
-
-    const currentPage =
-        getCurrentPageName();
-
-    const lockIsActive =
-        Date.now() < returnTime;
-
-    if (
-        lockIsActive &&
-        currentPage !== "results.html"
-    ) {
-        window.location.replace(
-            "results.html"
-        );
-
-        return true;
-    }
-
-    if (!lockIsActive) {
-        localStorage.removeItem(
-            "resultsReturnTime"
-        );
-
-        if (
-            currentPage === "results.html"
-        ) {
-            window.location.replace(
-                "index.html"
-            );
-
-            return true;
-        }
-    }
-
-    return false;
-}
-
-
-/* =========================
+/* =========================================================
    PAGE NAVIGATION
-========================= */
+========================================================= */
 
 function goTo(page) {
     if (
@@ -444,91 +384,69 @@ function answerAndContinue(nextPage) {
 }
 
 
-/* =========================
-   SAVE PLAYER NAME
-========================= */
+/* =========================================================
+   NEW AND RETURNING PLAYER REDIRECTS
+========================================================= */
 
-function startQuiz() {
-    const input = byId("name");
-
-    if (!input) {
-        return;
-    }
+function redirectUnnamedPlayer() {
+    const currentPage =
+        getCurrentPageName();
 
     const playerName =
-        input.value.trim();
-
-    if (!playerName) {
-        showNameWarning();
-
-        input.focus();
-
-        input.classList.remove(
-            "input-shake"
-        );
-
-        void input.offsetWidth;
-
-        input.classList.add(
-            "input-shake"
-        );
-
-        return;
-    }
-
-    localStorage.setItem(
-        "playerName",
-        playerName
-    );
-
-    hideNameWarning();
-
-    goTo("index.html");
-}
-
-
-/* =========================
-   PREPARE NAME INPUT
-========================= */
-
-function prepareNameInput() {
-    const input = byId("name");
-
-    if (!input) {
-        return;
-    }
-
-    createNameWarning(input);
-
-    const savedName =
         localStorage.getItem(
-            "playerName"
+            STORAGE_KEYS.playerName
         );
 
-    if (savedName) {
-        input.value = savedName;
+    const publicPages = [
+        "welcome.html",
+        "about.html",
+        "contact.html",
+        "privacy.html",
+        "terms.html",
+        "faq.html"
+    ];
+
+    if (
+        !playerName &&
+        !publicPages.includes(currentPage)
+    ) {
+        window.location.replace(
+            "welcome.html"
+        );
+
+        return true;
     }
 
-    input.addEventListener(
-        "input",
-        hideNameWarning
-    );
+    return false;
+}
 
-    input.addEventListener(
-        "keydown",
-        event => {
-            if (event.key === "Enter") {
-                event.preventDefault();
-                startQuiz();
-            }
-        }
-    );
+function redirectReturningPlayer() {
+    const currentPage =
+        getCurrentPageName();
+
+    const playerName =
+        localStorage.getItem(
+            STORAGE_KEYS.playerName
+        );
+
+    if (
+        currentPage === "welcome.html" &&
+        playerName
+    ) {
+        window.location.replace(
+            "index.html"
+        );
+
+        return true;
+    }
+
+    return false;
 }
 
 
-/* =========================
-   NAME WARNING
-========================= */
+/* =========================================================
+   NAME INPUT
+========================================================= */
 
 function createNameWarning(input) {
     if (byId("nameWarning")) {
@@ -564,38 +482,108 @@ function hideNameWarning() {
         byId("nameWarning");
 
     if (warning) {
-        warning.classList.remove(
-            "show"
-        );
+        warning.classList.remove("show");
     }
 }
 
+function prepareNameInput() {
+    const input =
+        byId("name");
 
-/* =========================
-   DISPLAY PLAYER NAME
-========================= */
+    if (!input) {
+        return;
+    }
+
+    createNameWarning(input);
+
+    const savedName =
+        localStorage.getItem(
+            STORAGE_KEYS.playerName
+        );
+
+    if (savedName) {
+        input.value = savedName;
+    }
+
+    input.addEventListener(
+        "input",
+        hideNameWarning
+    );
+
+    input.addEventListener(
+        "keydown",
+        event => {
+            if (event.key === "Enter") {
+                event.preventDefault();
+                startQuiz();
+            }
+        }
+    );
+}
+
+function startQuiz() {
+    const input =
+        byId("name");
+
+    if (!input) {
+        return;
+    }
+
+    const playerName =
+        input.value.trim();
+
+    if (!playerName) {
+        showNameWarning();
+
+        input.focus();
+
+        input.classList.remove(
+            "input-shake"
+        );
+
+        void input.offsetWidth;
+
+        input.classList.add(
+            "input-shake"
+        );
+
+        return;
+    }
+
+    localStorage.setItem(
+        STORAGE_KEYS.playerName,
+        playerName
+    );
+
+    hideNameWarning();
+
+    setResultsMode("personality");
+
+    goTo("index.html");
+}
+
+
+/* =========================================================
+   PLAYER NAME DISPLAY
+========================================================= */
 
 function fillPlayerNameElements() {
     const playerName =
         localStorage.getItem(
-            "playerName"
+            STORAGE_KEYS.playerName
         ) || "Player";
 
-    const elements =
-        document.querySelectorAll(
-            "[data-player-name]"
-        );
-
-    elements.forEach(element => {
-        element.textContent =
-            playerName;
-    });
+    queryAll("[data-player-name]")
+        .forEach(element => {
+            element.textContent =
+                playerName;
+        });
 }
 
 
-/* =========================
+/* =========================================================
    WELCOME MESSAGE
-========================= */
+========================================================= */
 
 function updateWelcomeMessage() {
     const welcomeText =
@@ -605,41 +593,36 @@ function updateWelcomeMessage() {
         return;
     }
 
-    const completedDay =
-        Number(
+    const hasResults =
+        Boolean(
             localStorage.getItem(
-                "completedDay"
+                STORAGE_KEYS.personalityResults
             )
-        ) || 0;
+        );
 
-    if (completedDay > 0) {
-        welcomeText.textContent =
-            "Ku soo laabo";
-    } else {
-        welcomeText.textContent =
-            "Ku soo dhawoow";
-    }
+    welcomeText.textContent =
+        hasResults
+            ? "Ku soo laabo"
+            : "Ku soo dhawoow";
 }
 
 
-/* =========================
+/* =========================================================
    PROGRESS BAR
-========================= */
+========================================================= */
 
 function updateProgressBar() {
     const progressFill =
-        document.querySelector(
-            ".progressFill"
-        );
+        query(".progressFill");
 
     if (!progressFill) {
         return;
     }
 
-    let percentage = 0;
-
     const currentPage =
         getCurrentPageName();
+
+    let percentage = 0;
 
     const questionMatch =
         currentPage.match(
@@ -654,12 +637,11 @@ function updateProgressBar() {
             (
                 questionNumber /
                 TOTAL_QUESTIONS
-            ) * 100;
+            ) *
+            100;
     }
 
-    if (
-        currentPage === "results.html"
-    ) {
+    if (currentPage === "results.html") {
         percentage = 100;
     }
 
@@ -667,15 +649,14 @@ function updateProgressBar() {
         document.body.dataset.progress;
 
     if (
-        customProgress !== undefined
+        customProgress !== undefined &&
+        customProgress !== ""
     ) {
         const parsedProgress =
             Number(customProgress);
 
         if (
-            Number.isFinite(
-                parsedProgress
-            )
+            Number.isFinite(parsedProgress)
         ) {
             percentage =
                 parsedProgress;
@@ -685,7 +666,10 @@ function updateProgressBar() {
     percentage =
         Math.max(
             0,
-            Math.min(100, percentage)
+            Math.min(
+                100,
+                percentage
+            )
         );
 
     progressFill.style.width =
@@ -700,97 +684,810 @@ function updateProgressBar() {
 }
 
 
-/* =========================
-   FINISH QUIZ
-========================= */
+/* =========================================================
+   PERSONALITY RESULTS
+========================================================= */
+
+function generatePersonalityResults() {
+    const selectedTraits =
+        shuffleArray(
+            personalityTraits
+        ).slice(0, 8);
+
+    const results =
+        selectedTraits
+            .map(trait => {
+                return {
+                    name: trait.name,
+                    emoji: trait.emoji,
+                    percentage:
+                        randomNumber(
+                            trait.min,
+                            trait.max
+                        )
+                };
+            })
+            .sort(
+                (resultA, resultB) =>
+                    resultB.percentage -
+                    resultA.percentage
+            );
+
+    localStorage.setItem(
+        STORAGE_KEYS.personalityResults,
+        JSON.stringify(results)
+    );
+
+    return results;
+}
+
+function getPersonalityResults() {
+    const savedResults =
+        localStorage.getItem(
+            STORAGE_KEYS.personalityResults
+        );
+
+    if (savedResults) {
+        try {
+            const parsedResults =
+                JSON.parse(savedResults);
+
+            if (
+                Array.isArray(parsedResults) &&
+                parsedResults.length > 0
+            ) {
+                return parsedResults;
+            }
+        } catch (error) {
+            console.warn(
+                "Personality results could not be read:",
+                error
+            );
+        }
+    }
+
+    return generatePersonalityResults();
+}
+
+function displayPersonalityResults() {
+    const resultsContainers =
+        queryAll(
+            "#personalityResults, " +
+            "#previousPersonalityResults, " +
+            "[data-personality-results]"
+        );
+
+    if (resultsContainers.length === 0) {
+        return;
+    }
+
+    const results =
+        getPersonalityResults();
+
+    resultsContainers.forEach(
+        resultsContainer => {
+            resultsContainer.innerHTML = "";
+
+            results.forEach(
+                (result, index) => {
+                    const trait =
+                        document.createElement(
+                            "div"
+                        );
+
+                    trait.className =
+                        "trait";
+
+                    const traitHeader =
+                        document.createElement(
+                            "div"
+                        );
+
+                    traitHeader.className =
+                        "traitHeader";
+
+                    const traitName =
+                        document.createElement(
+                            "span"
+                        );
+
+                    traitName.className =
+                        "traitName";
+
+                    traitName.textContent =
+                        `${result.emoji} ${result.name}`;
+
+                    const traitPercent =
+                        document.createElement(
+                            "span"
+                        );
+
+                    traitPercent.className =
+                        "traitPercent";
+
+                    traitPercent.textContent =
+                        `${result.percentage}%`;
+
+                    const traitBar =
+                        document.createElement(
+                            "div"
+                        );
+
+                    traitBar.className =
+                        "traitBar";
+
+                    const traitFill =
+                        document.createElement(
+                            "div"
+                        );
+
+                    traitFill.className =
+                        "traitFill";
+
+                    traitFill.style.width =
+                        "0%";
+
+                    traitHeader.appendChild(
+                        traitName
+                    );
+
+                    traitHeader.appendChild(
+                        traitPercent
+                    );
+
+                    traitBar.appendChild(
+                        traitFill
+                    );
+
+                    trait.appendChild(
+                        traitHeader
+                    );
+
+                    trait.appendChild(
+                        traitBar
+                    );
+
+                    resultsContainer.appendChild(
+                        trait
+                    );
+
+                    window.setTimeout(() => {
+                        traitFill.style.width =
+                            `${result.percentage}%`;
+                    }, 180 + index * 120);
+                }
+            );
+        }
+    );
+}
+
+
+/* =========================================================
+   FINISH AND RETAKE QUIZ
+========================================================= */
 
 function finishQuiz() {
     if (isNavigating) {
         return;
     }
 
-    const returnTime =
-        Date.now() +
-        RESULTS_LOCK_TIME;
-
-    localStorage.setItem(
-        "resultsReturnTime",
-        String(returnTime)
-    );
-
-    updatePlayerStreak();
     generatePersonalityResults();
+
+    setResultsMode("personality");
 
     goTo("results.html");
 }
 
+function retakePersonalityTest() {
+    setResultsMode("personality");
 
-/* =========================
-   PLAYER DAILY STREAK
-========================= */
+    goTo("question1.html");
+}
 
-function updatePlayerStreak() {
+
+/* =========================================================
+   RESULTS MODE
+========================================================= */
+
+function setResultsMode(mode) {
+    const safeMode =
+        mode === "streak"
+            ? "streak"
+            : "personality";
+
+    localStorage.setItem(
+        STORAGE_KEYS.resultsMode,
+        safeMode
+    );
+
+    localStorage.setItem(
+        STORAGE_KEYS.alternateResultsMode,
+        safeMode
+    );
+
+    sessionStorage.setItem(
+        STORAGE_KEYS.resultsMode,
+        safeMode
+    );
+
+    sessionStorage.setItem(
+        STORAGE_KEYS.alternateResultsMode,
+        safeMode
+    );
+}
+
+function getResultsMode() {
+    const savedMode =
+        sessionStorage.getItem(
+            STORAGE_KEYS.resultsMode
+        ) ||
+        sessionStorage.getItem(
+            STORAGE_KEYS.alternateResultsMode
+        ) ||
+        localStorage.getItem(
+            STORAGE_KEYS.resultsMode
+        ) ||
+        localStorage.getItem(
+            STORAGE_KEYS.alternateResultsMode
+        );
+
+    return savedMode === "streak"
+        ? "streak"
+        : "personality";
+}
+
+
+/* =========================================================
+   UNIFIED STREAK STORAGE
+========================================================= */
+
+function getSavedStreakDay() {
+    const possibleValues = [
+        localStorage.getItem(
+            STORAGE_KEYS.streak
+        ),
+        localStorage.getItem(
+            STORAGE_KEYS.alternateStreak
+        ),
+        localStorage.getItem(
+            STORAGE_KEYS.oldStreak
+        )
+    ];
+
+    for (const value of possibleValues) {
+        const parsedValue =
+            Number.parseInt(
+                value,
+                10
+            );
+
+        if (
+            Number.isFinite(parsedValue) &&
+            parsedValue >= 0
+        ) {
+            return parsedValue;
+        }
+    }
+
+    return 0;
+}
+
+function saveUnifiedStreakDay(streakDay) {
+    const safeStreak =
+        Math.max(
+            0,
+            Number.parseInt(
+                streakDay,
+                10
+            ) || 0
+        );
+
+    localStorage.setItem(
+        STORAGE_KEYS.streak,
+        String(safeStreak)
+    );
+
+    localStorage.setItem(
+        STORAGE_KEYS.alternateStreak,
+        String(safeStreak)
+    );
+
+    localStorage.setItem(
+        STORAGE_KEYS.oldStreak,
+        String(safeStreak)
+    );
+}
+
+function getLastCompletedDate() {
+    return (
+        localStorage.getItem(
+            STORAGE_KEYS.lastCompletedDate
+        ) ||
+        localStorage.getItem(
+            STORAGE_KEYS.oldLastCompletedDate
+        ) ||
+        ""
+    );
+}
+
+function saveLastCompletedDate(dateKey) {
+    localStorage.setItem(
+        STORAGE_KEYS.lastCompletedDate,
+        dateKey
+    );
+
+    localStorage.setItem(
+        STORAGE_KEYS.oldLastCompletedDate,
+        dateKey
+    );
+}
+
+function synchronizeStreakStorage() {
+    const currentStreak =
+        getSavedStreakDay();
+
+    saveUnifiedStreakDay(
+        currentStreak
+    );
+
+    const lastDate =
+        getLastCompletedDate();
+
+    if (lastDate) {
+        saveLastCompletedDate(
+            lastDate
+        );
+    }
+
+    if (
+        lastDate ===
+        getLocalDateKey()
+    ) {
+        localStorage.setItem(
+            STORAGE_KEYS.completedToday,
+            "true"
+        );
+    } else {
+        localStorage.removeItem(
+            STORAGE_KEYS.completedToday
+        );
+    }
+}
+
+function hasCompletedStreakToday() {
+    return (
+        getLastCompletedDate() ===
+        getLocalDateKey()
+    );
+}
+
+function completeDailyStreak() {
     const today =
         getLocalDateKey();
 
-    const lastCompletedDate =
-        localStorage.getItem(
-            "lastCompletedDate"
+    const yesterday =
+        getYesterdayDateKey();
+
+    const previousDate =
+        getLastCompletedDate();
+
+    let currentStreak =
+        getSavedStreakDay();
+
+    if (previousDate === today) {
+        localStorage.setItem(
+            STORAGE_KEYS.completedToday,
+            "true"
         );
 
-    const oldStreak =
-        Number(
-            localStorage.getItem(
-                "completedDay"
-            )
-        ) || 0;
-
-    if (
-        lastCompletedDate === today
-    ) {
         return Math.max(
             1,
-            oldStreak
+            currentStreak
         );
     }
 
-    const newStreak =
-        Math.max(
-            1,
-            oldStreak + 1
-        );
+    if (previousDate === yesterday) {
+        currentStreak += 1;
+    } else {
+        currentStreak = 1;
+    }
 
-    localStorage.setItem(
-        "completedDay",
-        String(newStreak)
+    saveUnifiedStreakDay(
+        currentStreak
     );
 
+    saveLastCompletedDate(today);
+
     localStorage.setItem(
-        "lastCompletedDate",
-        today
+        STORAGE_KEYS.completedToday,
+        "true"
     );
 
-    return newStreak;
+    return currentStreak;
 }
 
 function displayStreakDay() {
-    const streakElement =
-        byId("streakDay");
+    const displayedStreak =
+        Math.max(
+            1,
+            getSavedStreakDay()
+        );
 
-    if (!streakElement) {
-        return;
-    }
-
-    streakElement.textContent =
-        localStorage.getItem(
-            "completedDay"
-        ) || "1";
+    queryAll(
+        "#streakDay, " +
+        "[data-streak-day]"
+    ).forEach(element => {
+        element.textContent =
+            String(displayedStreak);
+    });
 }
 
 
-/* =========================
+/* =========================================================
+   HOMEPAGE STREAK ACTIONS
+========================================================= */
+
+function showAlreadyCompletedMessage() {
+    const message =
+        "You've already continued your streak today! Come back tomorrow to keep your streak alive. 🔥";
+
+    const messageElement =
+        byId(
+            "streakAlreadyCompletedMessage"
+        ) ||
+        byId("streakMessage") ||
+        query("[data-streak-message]");
+
+    if (messageElement) {
+        messageElement.textContent =
+            message;
+
+        messageElement.hidden =
+            false;
+
+        messageElement.classList.add(
+            "show"
+        );
+
+        messageElement.setAttribute(
+            "aria-live",
+            "polite"
+        );
+
+        return;
+    }
+
+    window.alert(message);
+}
+
+function continueDailyStreak() {
+    if (hasCompletedStreakToday()) {
+        showAlreadyCompletedMessage();
+        return;
+    }
+
+    setResultsMode("streak");
+
+    goTo("streak-game.html");
+}
+
+function prepareHomepageActions() {
+    if (
+        getCurrentPageName() !==
+        "index.html"
+    ) {
+        return;
+    }
+
+    const continueButton =
+        findFirstElement([
+            "#continueStreakButton",
+            "#continueStreak",
+            "#streakButton",
+            "[data-action='continue-streak']",
+            "[data-continue-streak]"
+        ]);
+
+    const retakeButton =
+        findFirstElement([
+            "#retakeTestButton",
+            "#retakeButton",
+            "#retakeTest",
+            "[data-action='retake-test']",
+            "[data-retake-test]"
+        ]);
+
+    if (continueButton) {
+        const completedToday =
+            hasCompletedStreakToday();
+
+        continueButton.textContent =
+            completedToday
+                ? "🌙 Come Back Tomorrow"
+                : "Continue Streak 🔥";
+
+        continueButton.dataset.completedToday =
+            completedToday
+                ? "true"
+                : "false";
+
+        continueButton.onclick =
+            event => {
+                event.preventDefault();
+
+                continueDailyStreak();
+            };
+    }
+
+    if (retakeButton) {
+        retakeButton.onclick =
+            event => {
+                event.preventDefault();
+
+                retakePersonalityTest();
+            };
+    }
+}
+
+
+/* =========================================================
+   RESULTS PAGE
+========================================================= */
+
+function updateResultsPageHeadings(mode) {
+    const title =
+        byId("resultsTitle") ||
+        byId("resultTitle") ||
+        query("[data-results-title]");
+
+    const subtitle =
+        byId("resultsSubtitle") ||
+        byId("resultSubtitle") ||
+        query("[data-results-subtitle]");
+
+    if (title) {
+        title.textContent =
+            mode === "streak"
+                ? "Streak Complete 🔥"
+                : "Your Personality";
+    }
+
+    if (subtitle) {
+        subtitle.textContent =
+            mode === "streak"
+                ? "You continued your streak today."
+                : "Here are your new personality results.";
+    }
+}
+
+function ensureGeneratedStreakResultCard() {
+    let card =
+        byId(
+            "generatedStreakResultCard"
+        );
+
+    if (card) {
+        return card;
+    }
+
+    const personalityResults =
+        byId("personalityResults");
+
+    if (!personalityResults) {
+        return null;
+    }
+
+    card =
+        document.createElement(
+            "section"
+        );
+
+    card.id =
+        "generatedStreakResultCard";
+
+    card.className =
+        "result-card streak-result-card";
+
+    const label =
+        document.createElement("p");
+
+    label.className =
+        "result-label";
+
+    label.textContent =
+        "Streak";
+
+    const icon =
+        document.createElement("h1");
+
+    icon.textContent =
+        "🔥";
+
+    const value =
+        document.createElement(
+            "strong"
+        );
+
+    value.id =
+        "generatedMainStreakValue";
+
+    value.className =
+        "main-streak-value";
+
+    const description =
+        document.createElement("p");
+
+    description.textContent =
+        "Your streak has been continued for today.";
+
+    card.append(
+        label,
+        icon,
+        value,
+        description
+    );
+
+    const personalityCard =
+        personalityResults.closest(
+            ".result-card, " +
+            ".results-card, " +
+            "section"
+        );
+
+    if (
+        personalityCard &&
+        personalityCard.parentElement
+    ) {
+        personalityCard.parentElement
+            .insertBefore(
+                card,
+                personalityCard
+            );
+    } else if (
+        personalityResults.parentElement
+    ) {
+        personalityResults.parentElement
+            .insertBefore(
+                card,
+                personalityResults
+            );
+    }
+
+    return card;
+}
+
+function prepareResultsPageMode() {
+    if (
+        getCurrentPageName() !==
+        "results.html"
+    ) {
+        return;
+    }
+
+    const mode =
+        getResultsMode();
+
+    const streakDay =
+        Math.max(
+            1,
+            getSavedStreakDay()
+        );
+
+    document.body.dataset.resultsMode =
+        mode;
+
+    updateResultsPageHeadings(mode);
+
+    const streakMainCard =
+        byId("streakMainCard") ||
+        query(
+            "[data-result-card='streak']"
+        );
+
+    const personalityMainCard =
+        byId("personalityMainCard") ||
+        query(
+            "[data-result-card='personality-main']"
+        );
+
+    const previousPersonalityCard =
+        byId("previousPersonalityCard") ||
+        query(
+            "[data-result-card='previous-personality']"
+        );
+
+    const customCardsExist =
+        streakMainCard ||
+        personalityMainCard ||
+        previousPersonalityCard;
+
+    if (customCardsExist) {
+        setElementVisibility(
+            streakMainCard,
+            mode === "streak"
+        );
+
+        setElementVisibility(
+            personalityMainCard,
+            mode === "personality"
+        );
+
+        setElementVisibility(
+            previousPersonalityCard,
+            mode === "streak"
+        );
+    } else {
+        const generatedStreakCard =
+            ensureGeneratedStreakResultCard();
+
+        setElementVisibility(
+            generatedStreakCard,
+            mode === "streak"
+        );
+
+        const personalityResults =
+            byId("personalityResults");
+
+        if (personalityResults) {
+            const personalityContainer =
+                personalityResults.closest(
+                    ".result-card, " +
+                    ".results-card, " +
+                    "section"
+                ) ||
+                personalityResults;
+
+            personalityContainer.classList
+                .toggle(
+                    "previous-personality-result",
+                    mode === "streak"
+                );
+        }
+    }
+
+    queryAll(
+        "#mainStreakDay, " +
+        "#generatedMainStreakValue, " +
+        "[data-main-streak]"
+    ).forEach(element => {
+        element.textContent =
+            `${streakDay}-day streak`;
+    });
+
+    queryAll(
+        "#continueStreakResultButton, " +
+        "[data-action='continue-streak']"
+    ).forEach(button => {
+        button.textContent =
+            hasCompletedStreakToday()
+                ? "🌙 Come Back Tomorrow"
+                : "Continue Your Streak";
+
+        button.onclick =
+            event => {
+                event.preventDefault();
+
+                continueDailyStreak();
+            };
+    });
+
+    queryAll(
+        "#retakeResultButton, " +
+        "[data-action='retake-test']"
+    ).forEach(button => {
+        button.onclick =
+            event => {
+                event.preventDefault();
+
+                retakePersonalityTest();
+            };
+    });
+}
+
+
+/* =========================================================
    DAILY LEADERBOARD
-========================= */
+========================================================= */
 
 function displayLeaderboard() {
     const leaderboard =
@@ -809,7 +1506,8 @@ function displayLeaderboard() {
         leaderboardPlayers
             .map(player => {
                 return {
-                    name: player.name,
+                    name:
+                        player.name,
 
                     streak:
                         player.startingStreak +
@@ -877,228 +1575,38 @@ function displayLeaderboard() {
 }
 
 
-/* =========================
-   GENERATE RANDOM RESULTS
-========================= */
-
-function generatePersonalityResults() {
-    const selectedTraits =
-        shuffleArray(
-            personalityTraits
-        ).slice(0, 8);
-
-    const results =
-        selectedTraits
-            .map(trait => {
-                return {
-                    name: trait.name,
-
-                    emoji: trait.emoji,
-
-                    percentage:
-                        randomNumber(
-                            trait.min,
-                            trait.max
-                        )
-                };
-            })
-            .sort(
-                (resultA, resultB) =>
-                    resultB.percentage -
-                    resultA.percentage
-            );
-
-    localStorage.setItem(
-        "personalityResults",
-        JSON.stringify(results)
-    );
-
-    return results;
-}
-
-
-/* =========================
-   GET SAVED RESULTS
-========================= */
-
-function getPersonalityResults() {
-    const savedResults =
-        localStorage.getItem(
-            "personalityResults"
-        );
-
-    if (savedResults) {
-        try {
-            const parsedResults =
-                JSON.parse(savedResults);
-
-            if (
-                Array.isArray(
-                    parsedResults
-                ) &&
-                parsedResults.length > 0
-            ) {
-                return parsedResults;
-            }
-        } catch (error) {
-            console.warn(
-                "Results could not be read:",
-                error
-            );
-        }
-    }
-
-    return generatePersonalityResults();
-}
-
-
-/* =========================
-   DISPLAY RESULTS
-========================= */
-
-function displayPersonalityResults() {
-    const resultsContainer =
-        byId("personalityResults");
-
-    if (!resultsContainer) {
-        return;
-    }
-
-    const results =
-        getPersonalityResults();
-
-    resultsContainer.innerHTML = "";
-
-    results.forEach(
-        (result, index) => {
-            const trait =
-                document.createElement(
-                    "div"
-                );
-
-            trait.className =
-                "trait";
-
-            const traitHeader =
-                document.createElement(
-                    "div"
-                );
-
-            traitHeader.className =
-                "traitHeader";
-
-            const traitName =
-                document.createElement(
-                    "span"
-                );
-
-            traitName.className =
-                "traitName";
-
-            traitName.textContent =
-                `${result.emoji} ${result.name}`;
-
-            const traitPercent =
-                document.createElement(
-                    "span"
-                );
-
-            traitPercent.className =
-                "traitPercent";
-
-            traitPercent.textContent =
-                `${result.percentage}%`;
-
-            const traitBar =
-                document.createElement(
-                    "div"
-                );
-
-            traitBar.className =
-                "traitBar";
-
-            const traitFill =
-                document.createElement(
-                    "div"
-                );
-
-            traitFill.className =
-                "traitFill";
-
-            traitFill.style.width =
-                "0%";
-
-            traitHeader.appendChild(
-                traitName
-            );
-
-            traitHeader.appendChild(
-                traitPercent
-            );
-
-            traitBar.appendChild(
-                traitFill
-            );
-
-            trait.appendChild(
-                traitHeader
-            );
-
-            trait.appendChild(
-                traitBar
-            );
-
-            resultsContainer.appendChild(
-                trait
-            );
-
-            window.setTimeout(() => {
-                traitFill.style.width =
-                    `${result.percentage}%`;
-            }, 180 + index * 120);
-        }
-    );
-}
-
-
-/* =========================
-   SHARE ON WHATSAPP
-========================= */
+/* =========================================================
+   WHATSAPP SHARING
+========================================================= */
 
 function shareResultsOnWhatsApp() {
     const playerName =
         localStorage.getItem(
-            "playerName"
+            STORAGE_KEYS.playerName
         ) || "Player";
 
     const streakDay =
-        localStorage.getItem(
-            "completedDay"
-        ) || "1";
+        Math.max(
+            1,
+            getSavedStreakDay()
+        );
 
-    const results =
-        getPersonalityResults();
-
-    const resultLines =
-        results.map(result => {
-            return (
-                `${result.emoji} ` +
-                `${result.name}: ` +
-                `${result.percentage}%`
-            );
-        });
+    const topTraits =
+        getPersonalityResults()
+            .slice(0, 3)
+            .map(result => {
+                return result.name;
+            });
 
     const message = [
-        "🔥 Waxaan dhammeeyay Tartanka Shakhsiyadda!",
+        `🔥 ${playerName} has a ${streakDay}-day streak! Join in!`,
         "",
-        `✨ Natiijada ${playerName} ✨`,
+        "✨ Their Personality ✨",
         "",
-        ...resultLines,
+        ...topTraits,
         "",
-        `🔥 Streak Day ${streakDay} Complete`,
-        "",
-        "Kaalay tartankan streak-ga ka qaybgal!",
-        SHARE_LINK
+        "Test yourself!",
+        WEBSITE_LINK
     ].join("\n");
 
     const shareURL =
@@ -1113,9 +1621,9 @@ function shareResultsOnWhatsApp() {
 }
 
 
-/* =========================
-   GENERATED POP SOUND
-========================= */
+/* =========================================================
+   GENERATED BUTTON SOUND
+========================================================= */
 
 function playPopSound() {
     try {
@@ -1161,10 +1669,11 @@ function playPopSound() {
                 0.07
             );
 
-        gain.gain.setValueAtTime(
-            0.09,
-            audioContext.currentTime
-        );
+        gain.gain
+            .setValueAtTime(
+                0.09,
+                audioContext.currentTime
+            );
 
         gain.gain
             .exponentialRampToValueAtTime(
@@ -1194,9 +1703,9 @@ function playPopSound() {
 }
 
 
-/* =========================
+/* =========================================================
    CLICK PARTICLES
-========================= */
+========================================================= */
 
 function createParticles(button) {
     const rect =
@@ -1308,11 +1817,6 @@ function createParticles(button) {
     }
 }
 
-
-/* =========================
-   BUTTON CLICK EFFECTS
-========================= */
-
 document.addEventListener(
     "click",
     event => {
@@ -1331,11 +1835,1060 @@ document.addEventListener(
 );
 
 
-/* =========================
-   FUNCTIONS USED BY HTML
-========================= */
+/* =========================================================
+   INFORMATION MENU
+========================================================= */
 
-window.goTo = goTo;
+function toggleInfoMenu() {
+    const menu =
+        byId("infoMenu");
+
+    if (!menu) {
+        return;
+    }
+
+    menu.classList.toggle(
+        "show"
+    );
+}
+
+document.addEventListener(
+    "click",
+    event => {
+        const menu =
+            byId("infoMenu");
+
+        const button =
+            query(".infoButton");
+
+        if (!menu || !button) {
+            return;
+        }
+
+        if (
+            !menu.contains(event.target) &&
+            !button.contains(event.target)
+        ) {
+            menu.classList.remove(
+                "show"
+            );
+        }
+    }
+);
+
+
+/* =========================================================
+   STREAK CHALLENGE GAME
+========================================================= */
+
+function initializeStreakGame() {
+    if (
+        !document.body.classList.contains(
+            "streak-game-page"
+        )
+    ) {
+        return;
+    }
+
+    const introScreen =
+        byId("streakIntro");
+
+    const beginButton =
+        byId("beginStreakButton");
+
+    const tutorialStatus =
+        byId("tutorialStatus");
+
+    const gameScreen =
+        byId("streakGame");
+
+    const gameArea =
+        byId("gameArea");
+
+    const gameMessage =
+        byId("gameMessage");
+
+    const targetButton =
+        byId("targetButton");
+
+    const targetRing =
+        byId("targetRing");
+
+    const missAnimation =
+        byId("missAnimation");
+
+    const currentStageDisplay =
+        byId("currentStage");
+
+    const currentCircleDisplay =
+        byId("currentCircle");
+
+    const stageTimerDisplay =
+        byId("stageTimerValue");
+
+    const stageProgressFill =
+        byId("stageProgressFill");
+
+    const stageCompleteOverlay =
+        byId("stageCompleteOverlay");
+
+    const completedStageNumber =
+        byId("completedStageNumber");
+
+    const remainingStagesText =
+        byId("remainingStagesText");
+
+    const missedOverlay =
+        byId("missedOverlay");
+
+    const successScreen =
+        byId("streakSuccessScreen");
+
+    const finalStreakNumber =
+        byId("finalStreakNumber");
+
+    const viewResultsButton =
+        byId("viewResultsButton");
+
+    const gameAnnouncement =
+        byId("gameAnnouncement");
+
+    const stageBoxes =
+        queryAll(".stage-box");
+
+    const requiredElements = [
+        introScreen,
+        beginButton,
+        tutorialStatus,
+        gameScreen,
+        gameArea,
+        gameMessage,
+        targetButton,
+        targetRing,
+        missAnimation,
+        currentStageDisplay,
+        currentCircleDisplay,
+        stageTimerDisplay,
+        stageProgressFill,
+        stageCompleteOverlay,
+        completedStageNumber,
+        remainingStagesText,
+        missedOverlay,
+        successScreen,
+        finalStreakNumber,
+        viewResultsButton
+    ];
+
+    if (
+        requiredElements.some(
+            element => !element
+        )
+    ) {
+        console.error(
+            "The streak game could not start because one or more HTML elements are missing."
+        );
+
+        return;
+    }
+
+
+    /* =====================================================
+       GAME SETTINGS
+    ===================================================== */
+
+    const TOTAL_STAGES = 10;
+    const CIRCLES_PER_STAGE = 3;
+
+    const TUTORIAL_DURATION = 5000;
+    const CIRCLE_PAUSE_DURATION = 500;
+    const STAGE_READY_DURATION = 700;
+    const STAGE_COMPLETE_DURATION = 2400;
+    const MISS_ANIMATION_DURATION = 700;
+    const MISSED_OVERLAY_DURATION = 1700;
+
+    const STAGE_TIMES = [
+        2.0,
+        1.85,
+        1.7,
+        1.55,
+        1.4,
+        1.25,
+        1.1,
+        0.9,
+        0.7,
+        0.5
+    ];
+
+
+    /* =====================================================
+       GAME STATE
+    ===================================================== */
+
+    let currentStage = 1;
+    let currentCircle = 1;
+
+    let targetTimeout = null;
+    let actionTimeout = null;
+    let overlayTimeout = null;
+
+    let targetIsActive = false;
+    let gameIsRunning = false;
+    let inputIsLocked = true;
+    let gameHasFinished = false;
+
+
+    /* =====================================================
+       TIMER HELPERS
+    ===================================================== */
+
+    function clearTimer(timer) {
+        if (timer !== null) {
+            window.clearTimeout(timer);
+        }
+    }
+
+    function clearAllGameTimers() {
+        clearTimer(targetTimeout);
+        clearTimer(actionTimeout);
+        clearTimer(overlayTimeout);
+
+        targetTimeout = null;
+        actionTimeout = null;
+        overlayTimeout = null;
+    }
+
+
+    /* =====================================================
+       SCREEN READER ANNOUNCEMENTS
+    ===================================================== */
+
+    function announce(message) {
+        if (!gameAnnouncement) {
+            return;
+        }
+
+        gameAnnouncement.textContent = "";
+
+        window.setTimeout(() => {
+            gameAnnouncement.textContent =
+                message;
+        }, 20);
+    }
+
+
+    /* =====================================================
+       GAME DISPLAY
+    ===================================================== */
+
+    function getCurrentStageTime() {
+        return STAGE_TIMES[
+            currentStage - 1
+        ];
+    }
+
+    function getCurrentStageTimeMilliseconds() {
+        return (
+            getCurrentStageTime() *
+            1000
+        );
+    }
+
+    function updateGameDisplay() {
+        currentStageDisplay.textContent =
+            String(currentStage);
+
+        currentCircleDisplay.textContent =
+            String(currentCircle);
+
+        stageTimerDisplay.textContent =
+            getCurrentStageTime()
+                .toFixed(2)
+                .replace(/0$/, "");
+
+        const completedStages =
+            currentStage - 1;
+
+        const progressPercentage =
+            (
+                completedStages /
+                TOTAL_STAGES
+            ) *
+            100;
+
+        stageProgressFill.style.width =
+            `${progressPercentage}%`;
+    }
+
+    function updateStageBoxes(
+        completedStages
+    ) {
+        stageBoxes.forEach(
+            (box, index) => {
+                const stageNumber =
+                    index + 1;
+
+                box.classList.remove(
+                    "completed",
+                    "next-stage"
+                );
+
+                if (
+                    stageNumber <=
+                    completedStages
+                ) {
+                    box.classList.add(
+                        "completed"
+                    );
+                } else if (
+                    stageNumber ===
+                        completedStages + 1 &&
+                    completedStages <
+                        TOTAL_STAGES
+                ) {
+                    box.classList.add(
+                        "next-stage"
+                    );
+                }
+            }
+        );
+    }
+
+    function updateRemainingStagesMessage(
+        completedStage
+    ) {
+        const remainingStages =
+            TOTAL_STAGES -
+            completedStage;
+
+        if (remainingStages === 1) {
+            remainingStagesText.textContent =
+                "Waxa kuu hadhay hal stage.";
+
+            return;
+        }
+
+        if (remainingStages === 0) {
+            remainingStagesText.textContent =
+                "Dhammaan stage-yada waad dhammeeysay.";
+
+            return;
+        }
+
+        remainingStagesText.textContent =
+            `Waxa kuu hadhay ${remainingStages} stage.`;
+    }
+
+
+    /* =====================================================
+       TARGET POSITION
+    ===================================================== */
+
+    function placeTargetRandomly() {
+        const gameAreaWidth =
+            gameArea.clientWidth;
+
+        const gameAreaHeight =
+            gameArea.clientHeight;
+
+        const targetWidth =
+            targetButton.offsetWidth ||
+            150;
+
+        const targetHeight =
+            targetButton.offsetHeight ||
+            150;
+
+        const horizontalPadding = 18;
+        const topPadding = 75;
+        const bottomPadding = 18;
+
+        const minimumX =
+            horizontalPadding;
+
+        const maximumX =
+            Math.max(
+                minimumX,
+                gameAreaWidth -
+                    targetWidth -
+                    horizontalPadding
+            );
+
+        const minimumY =
+            topPadding;
+
+        const maximumY =
+            Math.max(
+                minimumY,
+                gameAreaHeight -
+                    targetHeight -
+                    bottomPadding
+            );
+
+        const randomX =
+            minimumX +
+            Math.random() *
+            (
+                maximumX -
+                minimumX
+            );
+
+        const randomY =
+            minimumY +
+            Math.random() *
+            (
+                maximumY -
+                minimumY
+            );
+
+        targetButton.style.left =
+            `${Math.round(randomX)}px`;
+
+        targetButton.style.top =
+            `${Math.round(randomY)}px`;
+    }
+
+
+    /* =====================================================
+       TARGET VISIBILITY
+    ===================================================== */
+
+    function hideTarget() {
+        targetIsActive = false;
+
+        clearTimer(targetTimeout);
+
+        targetTimeout = null;
+
+        targetButton.classList.add(
+            "hidden"
+        );
+
+        targetButton.classList.remove(
+            "target-hit"
+        );
+
+        targetRing.classList.remove(
+            "ring-shrinking"
+        );
+
+        targetRing.style.animationDuration =
+            "";
+    }
+
+    function restartRingAnimation(
+        durationSeconds
+    ) {
+        targetRing.classList.remove(
+            "ring-shrinking"
+        );
+
+        void targetRing.offsetWidth;
+
+        targetRing.style.animationDuration =
+            `${durationSeconds}s`;
+
+        targetRing.classList.add(
+            "ring-shrinking"
+        );
+    }
+
+    function showTarget() {
+        if (
+            !gameIsRunning ||
+            inputIsLocked ||
+            gameHasFinished
+        ) {
+            return;
+        }
+
+        hideTarget();
+
+        targetButton.classList.remove(
+            "hidden"
+        );
+
+        placeTargetRandomly();
+
+        const stageTime =
+            getCurrentStageTime();
+
+        restartRingAnimation(
+            stageTime
+        );
+
+        targetIsActive = true;
+
+        gameMessage.textContent =
+            "Riix hadda!";
+
+        announce(
+            `Stage ${currentStage}, kubbadda ${currentCircle}.`
+        );
+
+        targetTimeout =
+            window.setTimeout(
+                handleMiss,
+                getCurrentStageTimeMilliseconds()
+            );
+    }
+
+
+    /* =====================================================
+       STAGE START
+    ===================================================== */
+
+    function startCurrentStage() {
+        if (
+            !gameIsRunning ||
+            gameHasFinished
+        ) {
+            return;
+        }
+
+        clearAllGameTimers();
+        hideTarget();
+
+        inputIsLocked = true;
+        currentCircle = 1;
+
+        updateGameDisplay();
+
+        gameMessage.textContent =
+            `Stage ${currentStage} — Is diyaari...`;
+
+        announce(
+            `Stage ${currentStage} ayaa bilaabanaya.`
+        );
+
+        actionTimeout =
+            window.setTimeout(() => {
+                inputIsLocked = false;
+
+                showTarget();
+            }, STAGE_READY_DURATION);
+    }
+
+
+    /* =====================================================
+       SUCCESSFUL TARGET CLICK
+    ===================================================== */
+
+    function handleTargetHit() {
+        if (
+            !targetIsActive ||
+            inputIsLocked ||
+            !gameIsRunning ||
+            gameHasFinished
+        ) {
+            return;
+        }
+
+        targetIsActive = false;
+        inputIsLocked = true;
+
+        clearTimer(targetTimeout);
+
+        targetTimeout = null;
+
+        targetRing.classList.remove(
+            "ring-shrinking"
+        );
+
+        targetButton.classList.add(
+            "target-hit"
+        );
+
+        gameMessage.textContent =
+            "Waa sax!";
+
+        announce("Waa sax.");
+
+        actionTimeout =
+            window.setTimeout(() => {
+                hideTarget();
+
+                if (
+                    currentCircle <
+                    CIRCLES_PER_STAGE
+                ) {
+                    currentCircle += 1;
+
+                    currentCircleDisplay.textContent =
+                        String(
+                            currentCircle
+                        );
+
+                    gameMessage.textContent =
+                        "Midka xiga...";
+
+                    actionTimeout =
+                        window.setTimeout(
+                            () => {
+                                inputIsLocked =
+                                    false;
+
+                                showTarget();
+                            },
+                            CIRCLE_PAUSE_DURATION
+                        );
+
+                    return;
+                }
+
+                completeCurrentStage();
+            }, 320);
+    }
+
+
+    /* =====================================================
+       MISS ANIMATION
+    ===================================================== */
+
+    function showMissAnimation() {
+        missAnimation.classList.remove(
+            "hidden"
+        );
+
+        const cross =
+            missAnimation.querySelector(
+                "span"
+            );
+
+        if (cross) {
+            cross.style.animation =
+                "none";
+
+            void cross.offsetWidth;
+
+            cross.style.animation =
+                "";
+        }
+    }
+
+    function hideMissAnimation() {
+        missAnimation.classList.add(
+            "hidden"
+        );
+    }
+
+    function handleMiss() {
+        if (
+            !targetIsActive ||
+            !gameIsRunning ||
+            gameHasFinished
+        ) {
+            return;
+        }
+
+        targetIsActive = false;
+        inputIsLocked = true;
+
+        clearTimer(targetTimeout);
+
+        targetTimeout = null;
+
+        targetRing.classList.remove(
+            "ring-shrinking"
+        );
+
+        targetButton.classList.add(
+            "hidden"
+        );
+
+        gameMessage.textContent =
+            "Waad seegtay.";
+
+        showMissAnimation();
+
+        announce("Waad seegtay.");
+
+        actionTimeout =
+            window.setTimeout(() => {
+                hideMissAnimation();
+
+                missedOverlay.classList
+                    .remove("hidden");
+
+                announce(
+                    `Stage ${currentStage} wuxuu dib uga bilaabanayaa kubbadda koowaad.`
+                );
+
+                overlayTimeout =
+                    window.setTimeout(
+                        () => {
+                            missedOverlay.classList
+                                .add(
+                                    "hidden"
+                                );
+
+                            startCurrentStage();
+                        },
+                        MISSED_OVERLAY_DURATION
+                    );
+            }, MISS_ANIMATION_DURATION);
+    }
+
+
+    /* =====================================================
+       STAGE COMPLETION
+    ===================================================== */
+
+    function completeCurrentStage() {
+        inputIsLocked = true;
+
+        hideTarget();
+
+        const completedStage =
+            currentStage;
+
+        completedStageNumber.textContent =
+            String(completedStage);
+
+        updateStageBoxes(
+            completedStage
+        );
+
+        updateRemainingStagesMessage(
+            completedStage
+        );
+
+        stageProgressFill.style.width =
+            `${
+                (
+                    completedStage /
+                    TOTAL_STAGES
+                ) *
+                100
+            }%`;
+
+        stageCompleteOverlay.classList
+            .remove("hidden");
+
+        announce(
+            `Stage ${completedStage} waa la dhammeeyay.`
+        );
+
+        overlayTimeout =
+            window.setTimeout(() => {
+                stageCompleteOverlay.classList
+                    .add("hidden");
+
+                if (
+                    completedStage >=
+                    TOTAL_STAGES
+                ) {
+                    finishEntireGame();
+
+                    return;
+                }
+
+                currentStage += 1;
+                currentCircle = 1;
+
+                updateGameDisplay();
+                startCurrentStage();
+            }, STAGE_COMPLETE_DURATION);
+    }
+
+
+    /* =====================================================
+       FINAL SUCCESS
+    ===================================================== */
+
+    function finishEntireGame() {
+        if (gameHasFinished) {
+            return;
+        }
+
+        gameHasFinished = true;
+        gameIsRunning = false;
+        inputIsLocked = true;
+
+        clearAllGameTimers();
+        hideTarget();
+
+        const updatedStreak =
+            completeDailyStreak();
+
+        finalStreakNumber.textContent =
+            String(updatedStreak);
+
+        gameScreen.classList.add(
+            "hidden"
+        );
+
+        successScreen.classList.remove(
+            "hidden"
+        );
+
+        setResultsMode("streak");
+
+        announce(
+            `Hambalyo. Streak-gaagu hadda waa ${updatedStreak} maalmood.`
+        );
+    }
+
+
+    /* =====================================================
+       BEGIN GAME
+    ===================================================== */
+
+    function beginGame() {
+        if (
+            beginButton.disabled ||
+            gameIsRunning ||
+            gameHasFinished
+        ) {
+            return;
+        }
+
+        beginButton.disabled = true;
+
+        clearAllGameTimers();
+
+        currentStage = 1;
+        currentCircle = 1;
+
+        targetIsActive = false;
+        inputIsLocked = true;
+        gameIsRunning = true;
+        gameHasFinished = false;
+
+        introScreen.classList.add(
+            "hidden"
+        );
+
+        successScreen.classList.add(
+            "hidden"
+        );
+
+        gameScreen.classList.remove(
+            "hidden"
+        );
+
+        missedOverlay.classList.add(
+            "hidden"
+        );
+
+        stageCompleteOverlay.classList.add(
+            "hidden"
+        );
+
+        hideMissAnimation();
+
+        updateStageBoxes(0);
+        updateGameDisplay();
+
+        requestAnimationFrame(() => {
+            startCurrentStage();
+        });
+    }
+
+
+    /* =====================================================
+       TUTORIAL BUTTON
+    ===================================================== */
+
+    function unlockBeginButton() {
+        beginButton.disabled = false;
+
+        beginButton.removeAttribute(
+            "aria-hidden"
+        );
+
+        beginButton.classList.remove(
+            "hidden"
+        );
+
+        tutorialStatus.classList.add(
+            "finished"
+        );
+
+        requestAnimationFrame(() => {
+            requestAnimationFrame(() => {
+                beginButton.classList.add(
+                    "show"
+                );
+            });
+        });
+
+        window.setTimeout(() => {
+            tutorialStatus.textContent =
+                "Diyaar ma tahay?";
+
+            tutorialStatus.classList.remove(
+                "finished"
+            );
+        }, 380);
+
+        announce(
+            "Badhanka Bilow hadda waa diyaar."
+        );
+    }
+
+
+    /* =====================================================
+       GAME EVENTS
+    ===================================================== */
+
+    targetButton.addEventListener(
+        "click",
+        handleTargetHit
+    );
+
+    targetButton.addEventListener(
+        "touchstart",
+        event => {
+            if (targetIsActive) {
+                event.preventDefault();
+            }
+        },
+        {
+            passive: false
+        }
+    );
+
+    beginButton.addEventListener(
+        "click",
+        beginGame
+    );
+
+    viewResultsButton.addEventListener(
+        "click",
+        () => {
+            setResultsMode("streak");
+
+            goTo("results.html");
+        }
+    );
+
+    window.addEventListener(
+        "resize",
+        () => {
+            if (
+                targetIsActive &&
+                !targetButton.classList
+                    .contains("hidden")
+            ) {
+                placeTargetRandomly();
+            }
+        }
+    );
+
+    document.addEventListener(
+        "visibilitychange",
+        () => {
+            if (
+                document.hidden &&
+                targetIsActive &&
+                gameIsRunning &&
+                !gameHasFinished
+            ) {
+                handleMiss();
+            }
+        }
+    );
+
+
+    /* =====================================================
+       INITIAL GAME STATE
+    ===================================================== */
+
+    gameScreen.classList.add(
+        "hidden"
+    );
+
+    successScreen.classList.add(
+        "hidden"
+    );
+
+    stageCompleteOverlay.classList.add(
+        "hidden"
+    );
+
+    missedOverlay.classList.add(
+        "hidden"
+    );
+
+    targetButton.classList.add(
+        "hidden"
+    );
+
+    missAnimation.classList.add(
+        "hidden"
+    );
+
+    beginButton.disabled = true;
+
+    beginButton.setAttribute(
+        "aria-hidden",
+        "true"
+    );
+
+    beginButton.classList.add(
+        "hidden"
+    );
+
+    beginButton.classList.remove(
+        "show"
+    );
+
+    updateStageBoxes(0);
+    updateGameDisplay();
+
+    window.setTimeout(
+        unlockBeginButton,
+        TUTORIAL_DURATION
+    );
+}
+
+
+/* =========================================================
+   PAGE STARTUP
+========================================================= */
+
+document.addEventListener(
+    "DOMContentLoaded",
+    () => {
+        if (redirectUnnamedPlayer()) {
+            return;
+        }
+
+        if (redirectReturningPlayer()) {
+            return;
+        }
+
+        synchronizeStreakStorage();
+
+        requestAnimationFrame(() => {
+            document.body.classList.add(
+                "loaded"
+            );
+        });
+
+        prepareNameInput();
+        fillPlayerNameElements();
+        updateWelcomeMessage();
+        updateProgressBar();
+
+        prepareHomepageActions();
+        prepareResultsPageMode();
+
+        displayLeaderboard();
+        displayPersonalityResults();
+        displayStreakDay();
+
+        initializeStreakGame();
+    }
+);
+
+
+/* =========================================================
+   FUNCTIONS USED DIRECTLY BY HTML
+========================================================= */
+
+window.goTo =
+    goTo;
 
 window.startQuiz =
     startQuiz;
@@ -1349,891 +2902,11 @@ window.finishQuiz =
 window.shareResultsOnWhatsApp =
     shareResultsOnWhatsApp;
 
-/* =========================
-   INFO MENU
-========================= */
+window.continueDailyStreak =
+    continueDailyStreak;
 
-function toggleInfoMenu() {
-    const menu = document.getElementById("infoMenu");
+window.retakePersonalityTest =
+    retakePersonalityTest;
 
-    if (!menu) return;
-
-    menu.classList.toggle("show");
-}
-
-document.addEventListener("click", function (event) {
-
-    const menu = document.getElementById("infoMenu");
-    const button = document.querySelector(".infoButton");
-
-    if (!menu || !button) return;
-
-    if (
-        !menu.contains(event.target) &&
-        !button.contains(event.target)
-    ) {
-        menu.classList.remove("show");
-    }
-
-});
-
-/* =========================================================
-   STREAK CHALLENGE GAME
-   Runs only on streak-game.html
-========================================================= */
-
-document.addEventListener("DOMContentLoaded", () => {
-  "use strict";
-
-  // Stop immediately when this is not the streak game page.
-  if (!document.body.classList.contains("streak-game-page")) {
-    return;
-  }
-
-  /* =======================================================
-     PAGE ELEMENTS
-  ======================================================= */
-
-  const introScreen = document.getElementById("streakIntro");
-  const beginButton = document.getElementById("beginStreakButton");
-  const tutorialStatus = document.getElementById("tutorialStatus");
-
-  const gameScreen = document.getElementById("streakGame");
-  const gameArea = document.getElementById("gameArea");
-  const gameMessage = document.getElementById("gameMessage");
-
-  const targetButton = document.getElementById("targetButton");
-  const targetRing = document.getElementById("targetRing");
-  const missAnimation = document.getElementById("missAnimation");
-
-  const currentStageDisplay = document.getElementById("currentStage");
-  const currentCircleDisplay = document.getElementById("currentCircle");
-  const stageTimerDisplay = document.getElementById("stageTimerValue");
-  const stageProgressFill = document.getElementById(
-    "stageProgressFill"
-  );
-
-  const stageCompleteOverlay = document.getElementById(
-    "stageCompleteOverlay"
-  );
-
-  const completedStageNumber = document.getElementById(
-    "completedStageNumber"
-  );
-
-  const remainingStagesText = document.getElementById(
-    "remainingStagesText"
-  );
-
-  const stageBoxes = Array.from(
-    document.querySelectorAll(".stage-box")
-  );
-
-  const missedOverlay = document.getElementById("missedOverlay");
-
-  const successScreen = document.getElementById(
-    "streakSuccessScreen"
-  );
-
-  const finalStreakNumber = document.getElementById(
-    "finalStreakNumber"
-  );
-
-  const viewResultsButton = document.getElementById(
-    "viewResultsButton"
-  );
-
-  const gameAnnouncement = document.getElementById(
-    "gameAnnouncement"
-  );
-
-  /* =======================================================
-     REQUIRED ELEMENT CHECK
-  ======================================================= */
-
-  const requiredElements = [
-    introScreen,
-    beginButton,
-    tutorialStatus,
-    gameScreen,
-    gameArea,
-    gameMessage,
-    targetButton,
-    targetRing,
-    missAnimation,
-    currentStageDisplay,
-    currentCircleDisplay,
-    stageTimerDisplay,
-    stageProgressFill,
-    stageCompleteOverlay,
-    completedStageNumber,
-    remainingStagesText,
-    missedOverlay,
-    successScreen,
-    finalStreakNumber,
-    viewResultsButton
-  ];
-
-  if (requiredElements.some((element) => !element)) {
-    console.error(
-      "The streak game could not start because one or more HTML elements are missing."
-    );
-
-    return;
-  }
-
-  /* =======================================================
-     GAME SETTINGS
-  ======================================================= */
-
-  const TOTAL_STAGES = 10;
-  const CIRCLES_PER_STAGE = 3;
-
-  // The tutorial lasts five seconds before the button appears.
-  const TUTORIAL_DURATION = 5000;
-
-  // Pause between each circle.
-  const CIRCLE_PAUSE_DURATION = 500;
-
-  // Time shown before the first circle of a stage.
-  const STAGE_READY_DURATION = 700;
-
-  // Time shown after completing a stage.
-  const STAGE_COMPLETE_DURATION = 2400;
-
-  // Time the red X remains visible.
-  const MISS_ANIMATION_DURATION = 700;
-
-  // Time the miss overlay remains visible.
-  const MISSED_OVERLAY_DURATION = 1700;
-
-  // Time allowed for each circle in every stage.
-  // Stage 10 lasts exactly 0.5 seconds.
-  const STAGE_TIMES = [
-    2.0,
-    1.85,
-    1.7,
-    1.55,
-    1.4,
-    1.25,
-    1.1,
-    0.9,
-    0.7,
-    0.5
-  ];
-
-  /* =======================================================
-     STORAGE KEYS
-  ======================================================= */
-
-  /*
-    The game saves both "streakDays" and "streak" so it can
-    work with either name if your older website code used one
-    of them.
-  */
-
-  const STORAGE_KEYS = {
-    streakDays: "streakDays",
-    olderStreakKey: "streak",
-    lastCompletedDate: "lastStreakDate",
-    completedToday: "streakCompletedToday",
-    resultsMode: "resultsMode",
-    alternateResultsMode: "resultMode"
-  };
-
-  /* =======================================================
-     GAME STATE
-  ======================================================= */
-
-  let currentStage = 1;
-  let currentCircle = 1;
-
-  let targetTimeout = null;
-  let actionTimeout = null;
-  let overlayTimeout = null;
-
-  let targetIsActive = false;
-  let gameIsRunning = false;
-  let inputIsLocked = true;
-  let gameHasFinished = false;
-
-  /* =======================================================
-     GENERAL HELPERS
-  ======================================================= */
-
-  function clearTimer(timer) {
-    if (timer !== null) {
-      window.clearTimeout(timer);
-    }
-  }
-
-  function clearAllGameTimers() {
-    clearTimer(targetTimeout);
-    clearTimer(actionTimeout);
-    clearTimer(overlayTimeout);
-
-    targetTimeout = null;
-    actionTimeout = null;
-    overlayTimeout = null;
-  }
-
-  function announce(message) {
-    if (!gameAnnouncement) {
-      return;
-    }
-
-    gameAnnouncement.textContent = "";
-
-    window.setTimeout(() => {
-      gameAnnouncement.textContent = message;
-    }, 20);
-  }
-
-  function getTodayDateKey() {
-    const today = new Date();
-
-    const year = today.getFullYear();
-    const month = String(today.getMonth() + 1).padStart(2, "0");
-    const day = String(today.getDate()).padStart(2, "0");
-
-    return `${year}-${month}-${day}`;
-  }
-
-  function getYesterdayDateKey() {
-    const yesterday = new Date();
-
-    yesterday.setDate(yesterday.getDate() - 1);
-
-    const year = yesterday.getFullYear();
-    const month = String(yesterday.getMonth() + 1).padStart(
-      2,
-      "0"
-    );
-    const day = String(yesterday.getDate()).padStart(2, "0");
-
-    return `${year}-${month}-${day}`;
-  }
-
-  function getStoredStreak() {
-    const mainValue = Number.parseInt(
-      localStorage.getItem(STORAGE_KEYS.streakDays),
-      10
-    );
-
-    const olderValue = Number.parseInt(
-      localStorage.getItem(STORAGE_KEYS.olderStreakKey),
-      10
-    );
-
-    if (Number.isFinite(mainValue) && mainValue >= 0) {
-      return mainValue;
-    }
-
-    if (Number.isFinite(olderValue) && olderValue >= 0) {
-      return olderValue;
-    }
-
-    return 0;
-  }
-
-  function saveStreak(streakValue) {
-    const safeValue = Math.max(
-      0,
-      Number.parseInt(streakValue, 10) || 0
-    );
-
-    localStorage.setItem(
-      STORAGE_KEYS.streakDays,
-      String(safeValue)
-    );
-
-    localStorage.setItem(
-      STORAGE_KEYS.olderStreakKey,
-      String(safeValue)
-    );
-  }
-
-  function getCurrentStageTime() {
-    return STAGE_TIMES[currentStage - 1];
-  }
-
-  function getCurrentStageTimeMilliseconds() {
-    return getCurrentStageTime() * 1000;
-  }
-
-  /* =======================================================
-     TUTORIAL BUTTON REVEAL
-  ======================================================= */
-
-  function unlockBeginButton() {
-    beginButton.disabled = false;
-    beginButton.removeAttribute("aria-hidden");
-    beginButton.classList.remove("hidden");
-
-    tutorialStatus.classList.add("finished");
-
-    window.requestAnimationFrame(() => {
-      window.requestAnimationFrame(() => {
-        beginButton.classList.add("show");
-      });
-    });
-
-    window.setTimeout(() => {
-      tutorialStatus.textContent = "Diyaar ma tahay?";
-      tutorialStatus.classList.remove("finished");
-    }, 380);
-
-    announce("Badhanka Bilow hadda waa diyaar.");
-  }
-
-  beginButton.disabled = true;
-  beginButton.setAttribute("aria-hidden", "true");
-  beginButton.classList.add("hidden");
-  beginButton.classList.remove("show");
-
-  window.setTimeout(unlockBeginButton, TUTORIAL_DURATION);
-
-  /* =======================================================
-     DISPLAY UPDATES
-  ======================================================= */
-
-  function updateGameDisplay() {
-    currentStageDisplay.textContent = String(currentStage);
-    currentCircleDisplay.textContent = String(currentCircle);
-
-    stageTimerDisplay.textContent =
-      getCurrentStageTime().toFixed(2).replace(/0$/, "");
-
-    const completedStages = currentStage - 1;
-    const progressPercentage =
-      (completedStages / TOTAL_STAGES) * 100;
-
-    stageProgressFill.style.width = `${progressPercentage}%`;
-  }
-
-  function updateStageBoxes(completedStages) {
-    stageBoxes.forEach((box, index) => {
-      const stageNumber = index + 1;
-
-      box.classList.remove("completed", "next-stage");
-
-      if (stageNumber <= completedStages) {
-        box.classList.add("completed");
-      } else if (
-        stageNumber === completedStages + 1 &&
-        completedStages < TOTAL_STAGES
-      ) {
-        box.classList.add("next-stage");
-      }
-    });
-  }
-
-  function updateRemainingStagesMessage(completedStage) {
-    const remainingStages = TOTAL_STAGES - completedStage;
-
-    if (remainingStages === 1) {
-      remainingStagesText.textContent =
-        "Waxa kuu hadhay hal stage.";
-      return;
-    }
-
-    if (remainingStages === 0) {
-      remainingStagesText.textContent =
-        "Dhammaan stage-yada waad dhammeeysay.";
-      return;
-    }
-
-    remainingStagesText.textContent =
-      `Waxa kuu hadhay ${remainingStages} stage.`;
-  }
-
-  /* =======================================================
-     TARGET POSITION
-  ======================================================= */
-
-  function placeTargetRandomly() {
-    const gameAreaWidth = gameArea.clientWidth;
-    const gameAreaHeight = gameArea.clientHeight;
-
-    const targetWidth = targetButton.offsetWidth || 150;
-    const targetHeight = targetButton.offsetHeight || 150;
-
-    const horizontalPadding = 18;
-    const topPadding = 75;
-    const bottomPadding = 18;
-
-    const minimumX = horizontalPadding;
-    const maximumX = Math.max(
-      minimumX,
-      gameAreaWidth - targetWidth - horizontalPadding
-    );
-
-    const minimumY = topPadding;
-    const maximumY = Math.max(
-      minimumY,
-      gameAreaHeight - targetHeight - bottomPadding
-    );
-
-    const randomX =
-      minimumX + Math.random() * (maximumX - minimumX);
-
-    const randomY =
-      minimumY + Math.random() * (maximumY - minimumY);
-
-    targetButton.style.left = `${Math.round(randomX)}px`;
-    targetButton.style.top = `${Math.round(randomY)}px`;
-  }
-
-  /* =======================================================
-     TARGET VISIBILITY AND ANIMATION
-  ======================================================= */
-
-  function hideTarget() {
-    targetIsActive = false;
-
-    clearTimer(targetTimeout);
-    targetTimeout = null;
-
-    targetButton.classList.add("hidden");
-    targetButton.classList.remove("target-hit");
-
-    targetRing.classList.remove("ring-shrinking");
-    targetRing.style.animationDuration = "";
-  }
-
-  function restartRingAnimation(durationSeconds) {
-    targetRing.classList.remove("ring-shrinking");
-
-    // Reading offsetWidth forces the browser to restart the animation.
-    void targetRing.offsetWidth;
-
-    targetRing.style.animationDuration = `${durationSeconds}s`;
-    targetRing.classList.add("ring-shrinking");
-  }
-
-  function showTarget() {
-    if (
-      !gameIsRunning ||
-      inputIsLocked ||
-      gameHasFinished
-    ) {
-      return;
-    }
-
-    hideTarget();
-
-    targetButton.classList.remove("hidden");
-    placeTargetRandomly();
-
-    const stageTime = getCurrentStageTime();
-
-    restartRingAnimation(stageTime);
-
-    targetIsActive = true;
-
-    gameMessage.textContent = "Riix hadda!";
-
-    announce(
-      `Stage ${currentStage}, kubbadda ${currentCircle}.`
-    );
-
-    targetTimeout = window.setTimeout(() => {
-      handleMiss();
-    }, getCurrentStageTimeMilliseconds());
-  }
-
-  /* =======================================================
-     STAGE START
-  ======================================================= */
-
-  function startCurrentStage() {
-    if (!gameIsRunning || gameHasFinished) {
-      return;
-    }
-
-    clearAllGameTimers();
-    hideTarget();
-
-    inputIsLocked = true;
-    currentCircle = 1;
-
-    updateGameDisplay();
-
-    gameMessage.textContent =
-      `Stage ${currentStage} — Is diyaari...`;
-
-    announce(`Stage ${currentStage} ayaa bilaabanaya.`);
-
-    actionTimeout = window.setTimeout(() => {
-      inputIsLocked = false;
-      showTarget();
-    }, STAGE_READY_DURATION);
-  }
-
-  /* =======================================================
-     SUCCESSFUL TARGET CLICK
-  ======================================================= */
-
-  function handleTargetHit() {
-    if (
-      !targetIsActive ||
-      inputIsLocked ||
-      !gameIsRunning ||
-      gameHasFinished
-    ) {
-      return;
-    }
-
-    targetIsActive = false;
-    inputIsLocked = true;
-
-    clearTimer(targetTimeout);
-    targetTimeout = null;
-
-    targetRing.classList.remove("ring-shrinking");
-    targetButton.classList.add("target-hit");
-
-    gameMessage.textContent = "Waa sax!";
-
-    announce("Waa sax.");
-
-    actionTimeout = window.setTimeout(() => {
-      hideTarget();
-
-      if (currentCircle < CIRCLES_PER_STAGE) {
-        currentCircle += 1;
-        currentCircleDisplay.textContent = String(currentCircle);
-
-        gameMessage.textContent = "Midka xiga...";
-
-        actionTimeout = window.setTimeout(() => {
-          inputIsLocked = false;
-          showTarget();
-        }, CIRCLE_PAUSE_DURATION);
-
-        return;
-      }
-
-      completeCurrentStage();
-    }, 320);
-  }
-
-  targetButton.addEventListener("click", handleTargetHit);
-
-  targetButton.addEventListener(
-    "touchstart",
-    (event) => {
-      if (targetIsActive) {
-        event.preventDefault();
-      }
-    },
-    { passive: false }
-  );
-
-  /* =======================================================
-     MISSED TARGET
-  ======================================================= */
-
-  function showMissAnimation() {
-    missAnimation.classList.remove("hidden");
-
-    const cross = missAnimation.querySelector("span");
-
-    if (cross) {
-      cross.style.animation = "none";
-      void cross.offsetWidth;
-      cross.style.animation = "";
-    }
-  }
-
-  function hideMissAnimation() {
-    missAnimation.classList.add("hidden");
-  }
-
-  function handleMiss() {
-    if (
-      !targetIsActive ||
-      !gameIsRunning ||
-      gameHasFinished
-    ) {
-      return;
-    }
-
-    targetIsActive = false;
-    inputIsLocked = true;
-
-    clearTimer(targetTimeout);
-    targetTimeout = null;
-
-    targetRing.classList.remove("ring-shrinking");
-    targetButton.classList.add("hidden");
-
-    gameMessage.textContent = "Waad seegtay.";
-
-    showMissAnimation();
-    announce("Waad seegtay.");
-
-    actionTimeout = window.setTimeout(() => {
-      hideMissAnimation();
-      missedOverlay.classList.remove("hidden");
-
-      announce(
-        `Stage ${currentStage} wuxuu dib uga bilaabanayaa kubbadda koowaad.`
-      );
-
-      overlayTimeout = window.setTimeout(() => {
-        missedOverlay.classList.add("hidden");
-        startCurrentStage();
-      }, MISSED_OVERLAY_DURATION);
-    }, MISS_ANIMATION_DURATION);
-  }
-
-  /* =======================================================
-     STAGE COMPLETION
-  ======================================================= */
-
-  function completeCurrentStage() {
-    inputIsLocked = true;
-    hideTarget();
-
-    const completedStage = currentStage;
-
-    completedStageNumber.textContent = String(completedStage);
-
-    updateStageBoxes(completedStage);
-    updateRemainingStagesMessage(completedStage);
-
-    stageProgressFill.style.width =
-      `${(completedStage / TOTAL_STAGES) * 100}%`;
-
-    stageCompleteOverlay.classList.remove("hidden");
-
-    announce(`Stage ${completedStage} waa la dhammeeyay.`);
-
-    overlayTimeout = window.setTimeout(() => {
-      stageCompleteOverlay.classList.add("hidden");
-
-      if (completedStage >= TOTAL_STAGES) {
-        finishEntireGame();
-        return;
-      }
-
-      currentStage += 1;
-      currentCircle = 1;
-
-      updateGameDisplay();
-      startCurrentStage();
-    }, STAGE_COMPLETE_DURATION);
-  }
-
-  /* =======================================================
-     STREAK SAVING
-  ======================================================= */
-
-  function completeDailyStreak() {
-    const today = getTodayDateKey();
-    const yesterday = getYesterdayDateKey();
-
-    const previousCompletionDate = localStorage.getItem(
-      STORAGE_KEYS.lastCompletedDate
-    );
-
-    let currentStreak = getStoredStreak();
-
-    // Do not increase the streak twice on the same day.
-    if (previousCompletionDate === today) {
-      localStorage.setItem(
-        STORAGE_KEYS.completedToday,
-        "true"
-      );
-
-      return currentStreak;
-    }
-
-    // Continue the streak when the previous completion was yesterday.
-    if (previousCompletionDate === yesterday) {
-      currentStreak += 1;
-    } else {
-      // Start a new streak when at least one full day was missed.
-      currentStreak = 1;
-    }
-
-    saveStreak(currentStreak);
-
-    localStorage.setItem(
-      STORAGE_KEYS.lastCompletedDate,
-      today
-    );
-
-    localStorage.setItem(
-      STORAGE_KEYS.completedToday,
-      "true"
-    );
-
-    return currentStreak;
-  }
-
-  /* =======================================================
-     FINAL SUCCESS SCREEN
-  ======================================================= */
-
-  function finishEntireGame() {
-    if (gameHasFinished) {
-      return;
-    }
-
-    gameHasFinished = true;
-    gameIsRunning = false;
-    inputIsLocked = true;
-
-    clearAllGameTimers();
-    hideTarget();
-
-    const updatedStreak = completeDailyStreak();
-
-    finalStreakNumber.textContent = String(updatedStreak);
-
-    gameScreen.classList.add("hidden");
-    successScreen.classList.remove("hidden");
-
-    localStorage.setItem(
-      STORAGE_KEYS.resultsMode,
-      "streak"
-    );
-
-    localStorage.setItem(
-      STORAGE_KEYS.alternateResultsMode,
-      "streak"
-    );
-
-    sessionStorage.setItem(
-      STORAGE_KEYS.resultsMode,
-      "streak"
-    );
-
-    sessionStorage.setItem(
-      STORAGE_KEYS.alternateResultsMode,
-      "streak"
-    );
-
-    announce(
-      `Hambalyo. Streak-gaagu hadda waa ${updatedStreak} maalmood.`
-    );
-  }
-
-  /* =======================================================
-     BEGIN GAME
-  ======================================================= */
-
-  function beginGame() {
-    if (
-      beginButton.disabled ||
-      gameIsRunning ||
-      gameHasFinished
-    ) {
-      return;
-    }
-
-    beginButton.disabled = true;
-
-    clearAllGameTimers();
-
-    currentStage = 1;
-    currentCircle = 1;
-
-    targetIsActive = false;
-    inputIsLocked = true;
-    gameIsRunning = true;
-    gameHasFinished = false;
-
-    introScreen.classList.add("hidden");
-    successScreen.classList.add("hidden");
-    gameScreen.classList.remove("hidden");
-
-    missedOverlay.classList.add("hidden");
-    stageCompleteOverlay.classList.add("hidden");
-    hideMissAnimation();
-
-    updateStageBoxes(0);
-    updateGameDisplay();
-
-    window.requestAnimationFrame(() => {
-      startCurrentStage();
-    });
-  }
-
-  beginButton.addEventListener("click", beginGame);
-
-  /* =======================================================
-     RESULTS BUTTON
-  ======================================================= */
-
-  viewResultsButton.addEventListener("click", () => {
-    localStorage.setItem(
-      STORAGE_KEYS.resultsMode,
-      "streak"
-    );
-
-    localStorage.setItem(
-      STORAGE_KEYS.alternateResultsMode,
-      "streak"
-    );
-
-    sessionStorage.setItem(
-      STORAGE_KEYS.resultsMode,
-      "streak"
-    );
-
-    sessionStorage.setItem(
-      STORAGE_KEYS.alternateResultsMode,
-      "streak"
-    );
-
-    window.location.href = "results.html";
-  });
-
-  /* =======================================================
-     WINDOW RESIZING
-  ======================================================= */
-
-  window.addEventListener("resize", () => {
-    if (targetIsActive && !targetButton.classList.contains("hidden")) {
-      placeTargetRandomly();
-    }
-  });
-
-  /* =======================================================
-     PAGE VISIBILITY PROTECTION
-  ======================================================= */
-
-  /*
-    Leaving the tab while a target is active counts as a miss.
-    This prevents the ring timer and target from becoming
-    unsynchronized when the browser pauses background tabs.
-  */
-
-  document.addEventListener("visibilitychange", () => {
-    if (
-      document.hidden &&
-      targetIsActive &&
-      gameIsRunning &&
-      !gameHasFinished
-    ) {
-      handleMiss();
-    }
-  });
-
-  /* =======================================================
-     INITIAL PAGE STATE
-  ======================================================= */
-
-  gameScreen.classList.add("hidden");
-  successScreen.classList.add("hidden");
-  stageCompleteOverlay.classList.add("hidden");
-  missedOverlay.classList.add("hidden");
-  targetButton.classList.add("hidden");
-  missAnimation.classList.add("hidden");
-
-  updateStageBoxes(0);
-  updateGameDisplay();
-});
+window.toggleInfoMenu =
+    toggleInfoMenu;
