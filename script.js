@@ -2550,16 +2550,16 @@ function initializeStreakGame() {
     const MISSED_OVERLAY_DURATION = 1700;
 
     const STAGE_TIMES = [
-        2.0,
-        1.85,
-        1.7,
-        1.55,
-        1.4,
-        1.25,
-        1.1,
+        1.0,
         0.9,
-        0.7,
-        0.5
+        0.85,
+        0.84,
+        0.81,
+        0.8,
+        0.79,
+        0.75,
+        0.73,
+        0.69
     ];
 
 
