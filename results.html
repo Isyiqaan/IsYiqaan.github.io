@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="so">
 
 <head>
     <meta charset="UTF-8">
@@ -11,11 +11,11 @@
 
     <script
         async
-        src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9591229850045984"
+        src="https://pagead2.googlesyndication.com/pagead/js?client=ca-pub-9591229850045984"
         crossorigin="anonymous"
     ></script>
 
-    <title>Your Personality Results</title>
+    <title>Natiijooyinka</title>
 
     <link
         rel="preconnect"
@@ -48,49 +48,116 @@
     <main class="content">
 
         <p class="player-name">
-            Hambaliyo,
+            Hambalyo,
             <span data-player-name></span>!
         </p>
 
-        <h1>
-            Shakhsiiyada
+        <h1 id="resultsTitle">
+            Natiijooyinkaaga
         </h1>
 
-        <h2>
-            Jawaabaha maanta bixisay...
+        <h2 id="resultsSubtitle">
+            Waa kan waxa aad heshay maanta.
         </h2>
 
-        <div class="answer streak-result">
-            🔥 Streak Day
-            <span id="streakDay">1</span>
-            Complete
-        </div>
+        <!-- =========================
+             STREAK MAIN CARD
+        ========================== -->
 
-        <p class="results-message">
-            Barri noo soo noqo!
-        </p>
+        <section
+            id="streakMainCard"
+            class="result-card"
+            hidden
+        >
 
-        <div
-            id="personalityResults"
-            class="personalityResults"
-        ></div>
+            <h2>🔥 Streak</h2>
+
+            <div
+                id="mainStreakDay"
+                class="big-streak-number"
+            >
+                1-day streak
+            </div>
+
+            <p>
+                Waxaad sii wadatay streak-gaaga maanta.
+            </p>
+
+        </section>
+
+        <!-- =========================
+             PERSONALITY MAIN CARD
+        ========================== -->
+
+        <section
+            id="personalityMainCard"
+            class="result-card"
+        >
+
+            <div
+                id="personalityResults"
+                class="personalityResults"
+            ></div>
+
+        </section>
+
+        <!-- =========================
+             PREVIOUS PERSONALITY
+        ========================== -->
+
+        <section
+            id="previousPersonalityCard"
+            class="result-card"
+            hidden
+        >
+
+            <h2>
+                ✨ Personality-gaagii
+            </h2>
+
+            <div
+                id="previousPersonalityResults"
+                class="personalityResults"
+            ></div>
+
+        </section>
+
+        <!-- =========================
+             BUTTONS
+        ========================== -->
+
+        <button
+            id="continueStreakResultButton"
+            class="answer"
+            type="button"
+        >
+            Sii Wad Streak-ga 🔥
+        </button>
+
+        <button
+            id="retakeResultButton"
+            class="answer"
+            type="button"
+        >
+            Dib U Samee Tartanka
+        </button>
 
         <button
             class="answer shareButton"
             type="button"
             onclick="shareResultsOnWhatsApp()"
         >
-            📱 Whats appka share  
+            📱 WhatsApp ku Share Garee
         </button>
 
         <h2 class="leaderboard-title">
-            🏆 Streak Kala-sarynta
+            🏆 Kala Sarreynta Streak-ga
         </h2>
 
         <div id="leaderboard"></div>
 
         <p class="bottom-message">
-            Barri soo noqo sida streakga kor u dalacdid oo meelaha sare soo gashid!
+            Soo noqo berri si aad streak-gaaga u sii wadato oo aad ugu sii kacdo kala sarreynta.
         </p>
 
     </main>
@@ -101,17 +168,24 @@
 
     <script src="script.js"></script>
 
-    <!-- INFO BUTTON -->
-<div class="infoButton" onclick="toggleInfoMenu()">ℹ</div>
+    <div
+        class="infoButton"
+        onclick="toggleInfoMenu()"
+    >
+        ℹ
+    </div>
 
-<div id="infoMenu" class="infoMenu">
-    <a href="about.html">🧠 About</a>
-    <a href="faq.html">❓ FAQ</a>
-    <a href="contact.html">📧 Contact</a>
-    <a href="privacy.html">🔒 Privacy Policy</a>
-    <a href="terms.html">📜 Terms of Service</a>
-</div>
-    
+    <div
+        id="infoMenu"
+        class="infoMenu"
+    >
+        <a href="about.html">🧠 About</a>
+        <a href="faq.html">❓ FAQ</a>
+        <a href="contact.html">📧 Contact</a>
+        <a href="privacy.html">🔒 Privacy Policy</a>
+        <a href="terms.html">📜 Terms of Service</a>
+    </div>
+
 </body>
 
 </html>
