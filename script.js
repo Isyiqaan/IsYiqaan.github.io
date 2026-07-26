@@ -1425,7 +1425,7 @@ function prepareHomepageActions() {
 
     if (retakeButton) {
         retakeButton.textContent =
-            "Mar Kale Qaado";
+            "Mar Kale Istijaabi";
 
         retakeButton.onclick =
             event => {
@@ -1455,8 +1455,8 @@ function updateResultsPageHeadings(mode) {
     if (title) {
         title.textContent =
             mode === "streak"
-                ? "Streak-ga Waa La Dhammaystiray 🔥"
-                : "Personality-gaaga";
+                ? "Streak-ga Waa Dhammaystirtay 🔥"
+                : "Shakhsiyadaada";
     }
 
     if (subtitle) {
