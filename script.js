@@ -2136,287 +2136,147 @@ function injectStreakFlameStyles() {
         return;
     }
 
-    const style =
-        document.createElement(
-            "style"
-        );
+    const style = document.createElement("style");
 
-    style.id =
-        "generatedStreakFlameStyles";
+    style.id = "generatedStreakFlameStyles";
 
     style.textContent = `
         .streak-flame {
-            --flame-main: #ff8a00;
-            --flame-light: #ffd166;
-            --flame-dark: #ff4500;
-
             position: relative;
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            width: 1.35em;
-            height: 1.65em;
-            margin: 0 0.22em;
+            min-width: 1.5em;
+            min-height: 1.5em;
+            margin: 0 0.2em;
             vertical-align: middle;
-            filter:
-                drop-shadow(
-                    0 0 5px
-                    var(--flame-main)
-                );
-        }
-
-        .streak-flame-main {
-            position: relative;
-            display: block;
-            width: 0.9em;
-            height: 1.25em;
-            border-radius:
-                70% 30% 65% 35% /
-                70% 35% 65% 30%;
-            background:
-                radial-gradient(
-                    circle at 50% 72%,
-                    var(--flame-light) 0 18%,
-                    transparent 19%
-                ),
-                linear-gradient(
-                    145deg,
-                    var(--flame-light) 0%,
-                    var(--flame-main) 48%,
-                    var(--flame-dark) 100%
-                );
-            transform:
-                rotate(45deg);
-            animation:
-                streakFlameMove
-                0.85s
-                ease-in-out
-                infinite alternate;
+            font-size: 1.3em;
+            line-height: 1;
+            animation: flameBounce 0.8s ease-in-out infinite alternate;
         }
 
         .streak-flame-main::before {
-            content: "";
-            position: absolute;
-            left: 20%;
-            top: 16%;
-            width: 55%;
-            height: 62%;
-            border-radius:
-                70% 30% 65% 35%;
-            background:
-                linear-gradient(
-                    145deg,
-                    rgba(
-                        255,
-                        255,
-                        255,
-                        0.85
-                    ),
-                    var(--flame-light)
-                );
-            opacity: 0.72;
+            content: "🔥";
+            display: block;
+        }
+
+        .flame-orange {
+            filter:
+                hue-rotate(0deg)
+                saturate(1.2)
+                drop-shadow(0 0 5px #ff7b00);
+        }
+
+        .flame-pink {
+            filter:
+                hue-rotate(285deg)
+                saturate(1.8)
+                brightness(1.2)
+                drop-shadow(0 0 6px #ff4fa3);
+        }
+
+        .flame-red {
+            filter:
+                hue-rotate(335deg)
+                saturate(2)
+                drop-shadow(0 0 7px #ff1f32);
+        }
+
+        .flame-purple {
+            filter:
+                hue-rotate(235deg)
+                saturate(1.7)
+                drop-shadow(0 0 7px #a855f7);
+        }
+
+        .flame-gold {
+            filter:
+                hue-rotate(15deg)
+                saturate(1.6)
+                brightness(1.25)
+                drop-shadow(0 0 8px #ffd700);
+        }
+
+        .flame-blue-crown {
+            filter:
+                hue-rotate(175deg)
+                saturate(2)
+                drop-shadow(0 0 8px #1e90ff);
         }
 
         .streak-flame-side {
             position: absolute;
-            bottom: 0.17em;
-            width: 0.43em;
-            height: 0.72em;
-            border-radius:
-                65% 35% 60% 40%;
-            background:
-                linear-gradient(
-                    145deg,
-                    var(--flame-light),
-                    var(--flame-main),
-                    var(--flame-dark)
-                );
-            animation:
-                streakSideFlameMove
-                0.72s
-                ease-in-out
-                infinite alternate;
+            bottom: 0;
+            font-size: 0.6em;
+        }
+
+        .streak-flame-side::before {
+            content: "🔥";
         }
 
         .streak-flame-left {
-            left: -0.04em;
-            transform:
-                rotate(-24deg);
+            left: -0.35em;
+            transform: rotate(-18deg);
         }
 
         .streak-flame-right {
-            right: -0.04em;
-            transform:
-                rotate(24deg);
-            animation-delay:
-                0.17s;
+            right: -0.35em;
+            transform: rotate(18deg);
         }
 
         .streak-flame-crown {
             position: absolute;
-            top: -0.72em;
+            top: -0.75em;
             left: 50%;
-            z-index: 4;
-            color: #ffd700;
-            font-size: 0.86em;
-            line-height: 1;
-            transform:
-                translateX(-50%);
-            filter:
-                drop-shadow(
-                    0 0 4px
-                    rgba(
-                        255,
-                        215,
-                        0,
-                        0.9
-                    )
-                );
-            animation:
-                streakCrownFloat
-                1.2s
-                ease-in-out
-                infinite alternate;
+            transform: translateX(-50%);
+            font-size: 0.75em;
+            filter: none;
+            z-index: 3;
         }
 
-        .flame-orange {
-            --flame-main: #ff8a00;
-            --flame-light: #ffe066;
-            --flame-dark: #ff3d00;
-        }
-
-        .flame-pink {
-            --flame-main: #ff4fa3;
-            --flame-light: #ffd1e8;
-            --flame-dark: #d90070;
-        }
-
-        .flame-red {
-            --flame-main: #ff1f32;
-            --flame-light: #ffb199;
-            --flame-dark: #a90000;
-        }
-
-        .flame-purple {
-            --flame-main: #a855f7;
-            --flame-light: #e9d5ff;
-            --flame-dark: #5b21b6;
-        }
-
-        .flame-gold {
-            --flame-main: #ffc400;
-            --flame-light: #fff4a3;
-            --flame-dark: #d97706;
-        }
-
-        .flame-blue-crown {
-            --flame-main: #1e90ff;
-            --flame-light: #b9ecff;
-            --flame-dark: #003cff;
+        .leaderboard-flame {
+            font-size: 1rem;
         }
 
         .generated-streak-flame {
             display: flex;
-            align-items: center;
             justify-content: center;
-            min-height: 84px;
-            margin: 10px 0;
+            align-items: center;
+            min-height: 80px;
             font-size: 3rem;
-        }
-
-        .generated-streak-flame
-        .streak-flame {
-            font-size: 1em;
-        }
-
-        #streakFlame,
-        #mainStreakFlame,
-        #finalStreakFlame,
-        [data-streak-flame] {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
         }
 
         .leaderboard-streak {
             display: inline-flex;
             align-items: center;
-            justify-content: flex-end;
-            gap: 6px;
-            white-space: nowrap;
-        }
-
-        .leaderboard-flame {
-            font-size: 1.05rem;
-            flex-shrink: 0;
-        }
-
-        .leaderboard-streak-text {
-            font-weight: 700;
+            gap: 7px;
         }
 
         .leaderboard-row {
             display: flex;
-            align-items: center;
             justify-content: space-between;
-            gap: 16px;
+            align-items: center;
+            gap: 14px;
         }
 
-        @keyframes streakFlameMove {
-            0% {
-                transform:
-                    rotate(40deg)
-                    scale(0.96, 1.02);
+        @keyframes flameBounce {
+            from {
+                transform: translateY(1px) scale(0.96);
             }
 
-            100% {
-                transform:
-                    rotate(49deg)
-                    scale(1.05, 0.96);
+            to {
+                transform: translateY(-2px) scale(1.05);
             }
         }
 
-        @keyframes streakSideFlameMove {
-            0% {
-                opacity: 0.76;
-                scale: 0.9;
-            }
-
-            100% {
-                opacity: 1;
-                scale: 1.08;
-            }
-        }
-
-        @keyframes streakCrownFloat {
-            0% {
-                transform:
-                    translateX(-50%)
-                    translateY(0);
-            }
-
-            100% {
-                transform:
-                    translateX(-50%)
-                    translateY(-0.1em);
-            }
-        }
-
-        @media (
-            prefers-reduced-motion:
-            reduce
-        ) {
-            .streak-flame-main,
-            .streak-flame-side,
-            .streak-flame-crown {
+        @media (prefers-reduced-motion: reduce) {
+            .streak-flame {
                 animation: none;
             }
         }
     `;
 
-    document.head.appendChild(
-        style
-    );
+    document.head.appendChild(style);
 }
 
 
