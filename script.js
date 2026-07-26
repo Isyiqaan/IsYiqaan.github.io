@@ -13,7 +13,7 @@
 const TOTAL_QUESTIONS = 10;
 const PAGE_TRANSITION_TIME = 380;
 
-const LEADERBOARD_START_DATE = "2026-07-21";
+const LEADERBOARD_START_DATE = "2026-07-26";
 
 const WEBSITE_LINK =
     "https://isyiqaan.github.io/";
@@ -21,23 +21,23 @@ const WEBSITE_LINK =
 const leaderboardPlayers = [
     {
         name: "S/l boy",
-        startingStreak: 14
+        startingStreak: 10
     },
     {
         name: "Dilaaga 💀",
-        startingStreak: 12
+        startingStreak: 8
     },
     {
         name: "Samsam 🌺",
-        startingStreak: 9
+        startingStreak: 6
     },
     {
         name: "Ahmed",
-        startingStreak: 7
+        startingStreak: 4
     },
     {
         name: "Ghost",
-        startingStreak: 4
+        startingStreak: 2
     }
 ];
 
@@ -61,7 +61,7 @@ const personalityTraits = [
         max: 99
     },
     {
-        name: "Hal abuur",
+        name: "Hal-abuur",
         emoji: "🎨",
         min: 55,
         max: 97
@@ -73,7 +73,7 @@ const personalityTraits = [
         max: 95
     },
     {
-        name: "Daacad",
+        name: "Daacadnimo",
         emoji: "🤝",
         min: 65,
         max: 99
@@ -85,7 +85,7 @@ const personalityTraits = [
         max: 96
     },
     {
-        name: "Safar doonid",
+        name: "Safar-jacayl",
         emoji: "🧭",
         min: 40,
         max: 94
@@ -109,7 +109,7 @@ const personalityTraits = [
         max: 97
     },
     {
-        name: "Madax-bannaan",
+        name: "Madax-bannaani",
         emoji: "🦅",
         min: 45,
         max: 95
@@ -145,13 +145,13 @@ const personalityTraits = [
         max: 60
     },
     {
-        name: "Fikir badan",
+        name: "Fikir-badan",
         emoji: "💭",
         min: 15,
         max: 78
     },
     {
-        name: "Ilow badan",
+        name: "Ilow-badan",
         emoji: "📝",
         min: 5,
         max: 58
@@ -356,6 +356,208 @@ function getDaysSince(dateText) {
 
 
 /* =========================================================
+   COLORED STREAK FLAMES
+========================================================= */
+
+function getStreakFlameTier(streakDay) {
+    const streak =
+        Math.max(
+            1,
+            Number.parseInt(
+                streakDay,
+                10
+            ) || 1
+        );
+
+    if (streak >= 100) {
+        return {
+            className: "flame-blue-crown",
+            label: "Olol buluug ah oo taaj leh",
+            shareEmoji: "👑💙🔥",
+            sideFlames: true,
+            crown: true
+        };
+    }
+
+    if (streak >= 75) {
+        return {
+            className: "flame-gold",
+            label: "Olol dahabi ah",
+            shareEmoji: "🟡🔥🔥🔥",
+            sideFlames: true,
+            crown: false
+        };
+    }
+
+    if (streak >= 50) {
+        return {
+            className: "flame-purple",
+            label: "Olol guduud-buluug ah",
+            shareEmoji: "💜🔥🔥🔥",
+            sideFlames: true,
+            crown: false
+        };
+    }
+
+    if (streak >= 20) {
+        return {
+            className: "flame-red",
+            label: "Olol cas",
+            shareEmoji: "🔴🔥🔥🔥",
+            sideFlames: true,
+            crown: false
+        };
+    }
+
+    if (streak >= 10) {
+        return {
+            className: "flame-pink",
+            label: "Olol basali ah",
+            shareEmoji: "🩷🔥",
+            sideFlames: false,
+            crown: false
+        };
+    }
+
+    return {
+        className: "flame-orange",
+        label: "Olol oranji ah",
+        shareEmoji: "🔥",
+        sideFlames: false,
+        crown: false
+    };
+}
+
+function createStreakFlameElement(
+    streakDay,
+    extraClassName = ""
+) {
+    const tier =
+        getStreakFlameTier(
+            streakDay
+        );
+
+    const flame =
+        document.createElement(
+            "span"
+        );
+
+    flame.className =
+        `streak-flame ${tier.className} ${extraClassName}`
+            .trim();
+
+    flame.setAttribute(
+        "role",
+        "img"
+    );
+
+    flame.setAttribute(
+        "aria-label",
+        tier.label
+    );
+
+    if (tier.crown) {
+        const crown =
+            document.createElement(
+                "span"
+            );
+
+        crown.className =
+            "streak-flame-crown";
+
+        crown.textContent =
+            "♛";
+
+        flame.appendChild(
+            crown
+        );
+    }
+
+    if (tier.sideFlames) {
+        const leftFlame =
+            document.createElement(
+                "span"
+            );
+
+        leftFlame.className =
+            "streak-flame-side streak-flame-left";
+
+        const rightFlame =
+            document.createElement(
+                "span"
+            );
+
+        rightFlame.className =
+            "streak-flame-side streak-flame-right";
+
+        flame.append(
+            leftFlame,
+            rightFlame
+        );
+    }
+
+    const mainFlame =
+        document.createElement(
+            "span"
+        );
+
+    mainFlame.className =
+        "streak-flame-main";
+
+    flame.appendChild(
+        mainFlame
+    );
+
+    return flame;
+}
+
+function renderStreakFlame(
+    container,
+    streakDay,
+    extraClassName = ""
+) {
+    if (!container) {
+        return;
+    }
+
+    container.innerHTML = "";
+
+    container.appendChild(
+        createStreakFlameElement(
+            streakDay,
+            extraClassName
+        )
+    );
+}
+
+function getShareFlame(streakDay) {
+    return getStreakFlameTier(
+        streakDay
+    ).shareEmoji;
+}
+
+function updateStreakFlameDisplays() {
+    const streakDay =
+        Math.max(
+            1,
+            getSavedStreakDay()
+        );
+
+    queryAll(
+        "#streakFlame, " +
+        "#mainStreakFlame, " +
+        "#finalStreakFlame, " +
+        "[data-streak-flame]"
+    ).forEach(container => {
+        renderStreakFlame(
+            container,
+            streakDay
+        );
+    });
+}
+
+
+/* =========================================================
    PAGE NAVIGATION
 ========================================================= */
 
@@ -460,7 +662,7 @@ function createNameWarning(input) {
     warning.className = "warning";
 
     warning.textContent =
-        "Magacaaga geli marka hore.";
+        "Marka hore magacaaga geli.";
 
     input.insertAdjacentElement(
         "afterend",
@@ -515,6 +717,7 @@ function prepareNameInput() {
         event => {
             if (event.key === "Enter") {
                 event.preventDefault();
+
                 startQuiz();
             }
         }
@@ -571,7 +774,7 @@ function fillPlayerNameElements() {
     const playerName =
         localStorage.getItem(
             STORAGE_KEYS.playerName
-        ) || "Player";
+        ) || "Ciyaaryahan";
 
     queryAll("[data-player-name]")
         .forEach(element => {
@@ -720,7 +923,6 @@ function generatePersonalityResults() {
 
     return results;
 }
-
 function getPersonalityResults() {
     const savedResults =
         localStorage.getItem(
@@ -740,7 +942,7 @@ function getPersonalityResults() {
             }
         } catch (error) {
             console.warn(
-                "Personality results could not be read:",
+                "Natiijooyinka personality-ga lama akhrin karin:",
                 error
             );
         }
@@ -1120,6 +1322,8 @@ function displayStreakDay() {
         element.textContent =
             String(displayedStreak);
     });
+
+    updateStreakFlameDisplays();
 }
 
 
@@ -1129,7 +1333,7 @@ function displayStreakDay() {
 
 function showAlreadyCompletedMessage() {
     const message =
-        "You've already continued your streak today! Come back tomorrow to keep your streak alive. 🔥";
+        "Maanta streak-gaaga waad sii wadatay! Berri soo noqo si uusan streak-gaagu u go'in. 🔥";
 
     const messageElement =
         byId(
@@ -1203,8 +1407,8 @@ function prepareHomepageActions() {
 
         continueButton.textContent =
             completedToday
-                ? "🌙 Come Back Tomorrow"
-                : "Continue Streak 🔥";
+                ? "🌙 Berri Soo Noqo"
+                : "Sii Wad Streak-ga 🔥";
 
         continueButton.dataset.completedToday =
             completedToday
@@ -1220,6 +1424,9 @@ function prepareHomepageActions() {
     }
 
     if (retakeButton) {
+        retakeButton.textContent =
+            "Mar Kale Qaado";
+
         retakeButton.onclick =
             event => {
                 event.preventDefault();
@@ -1248,15 +1455,15 @@ function updateResultsPageHeadings(mode) {
     if (title) {
         title.textContent =
             mode === "streak"
-                ? "Streak Complete 🔥"
-                : "Your Personality";
+                ? "Streak-ga Waa La Dhammaystiray 🔥"
+                : "Personality-gaaga";
     }
 
     if (subtitle) {
         subtitle.textContent =
             mode === "streak"
-                ? "You continued your streak today."
-                : "Here are your new personality results.";
+                ? "Maanta streak-gaaga waad sii wadatay."
+                : "Kuwani waa natiijooyinka personality-gaaga cusub.";
     }
 }
 
@@ -1295,13 +1502,23 @@ function ensureGeneratedStreakResultCard() {
         "result-label";
 
     label.textContent =
-        "Streak";
+        "Streak-gaaga";
 
-    const icon =
-        document.createElement("h1");
+    const flameContainer =
+        document.createElement(
+            "div"
+        );
 
-    icon.textContent =
-        "🔥";
+    flameContainer.id =
+        "generatedMainStreakFlame";
+
+    flameContainer.className =
+        "generated-streak-flame";
+
+    flameContainer.setAttribute(
+        "data-streak-flame",
+        ""
+    );
 
     const value =
         document.createElement(
@@ -1318,11 +1535,11 @@ function ensureGeneratedStreakResultCard() {
         document.createElement("p");
 
     description.textContent =
-        "Your streak has been continued for today.";
+        "Maanta streak-gaaga si guul leh ayaad u sii wadatay.";
 
     card.append(
         label,
-        icon,
+        flameContainer,
         value,
         description
     );
@@ -1451,7 +1668,7 @@ function prepareResultsPageMode() {
         "[data-main-streak]"
     ).forEach(element => {
         element.textContent =
-            `${streakDay}-day streak`;
+            `${streakDay} maalmood`;
     });
 
     queryAll(
@@ -1460,8 +1677,8 @@ function prepareResultsPageMode() {
     ).forEach(button => {
         button.textContent =
             hasCompletedStreakToday()
-                ? "🌙 Come Back Tomorrow"
-                : "Continue Your Streak";
+                ? "🌙 Berri Soo Noqo"
+                : "Sii Wad Streak-ga 🔥";
 
         button.onclick =
             event => {
@@ -1475,6 +1692,9 @@ function prepareResultsPageMode() {
         "#retakeResultButton, " +
         "[data-action='retake-test']"
     ).forEach(button => {
+        button.textContent =
+            "Mar Kale Qaado";
+
         button.onclick =
             event => {
                 event.preventDefault();
@@ -1482,6 +1702,8 @@ function prepareResultsPageMode() {
                 retakePersonalityTest();
             };
     });
+
+    updateStreakFlameDisplays();
 }
 
 
@@ -1537,10 +1759,16 @@ function displayLeaderboard() {
                     "span"
                 );
 
+            nameElement.className =
+                "leaderboard-name";
+
             const streakElement =
                 document.createElement(
                     "span"
                 );
+
+            streakElement.className =
+                "leaderboard-streak";
 
             let rank =
                 `${index + 1}.`;
@@ -1556,8 +1784,27 @@ function displayLeaderboard() {
             nameElement.textContent =
                 `${rank} ${player.name}`;
 
-            streakElement.textContent =
-                `🔥 Day ${player.streak}`;
+            const flame =
+                createStreakFlameElement(
+                    player.streak,
+                    "leaderboard-flame"
+                );
+
+            const streakText =
+                document.createElement(
+                    "span"
+                );
+
+            streakText.className =
+                "leaderboard-streak-text";
+
+            streakText.textContent =
+                `Maalinta ${player.streak}`;
+
+            streakElement.append(
+                flame,
+                streakText
+            );
 
             row.appendChild(
                 nameElement
@@ -1583,7 +1830,7 @@ function shareResultsOnWhatsApp() {
     const playerName =
         localStorage.getItem(
             STORAGE_KEYS.playerName
-        ) || "Player";
+        ) || "Ciyaaryahan";
 
     const streakDay =
         Math.max(
@@ -1598,14 +1845,19 @@ function shareResultsOnWhatsApp() {
                 return result.name;
             });
 
+    const flame =
+        getShareFlame(
+            streakDay
+        );
+
     const message = [
-        `🔥 ${playerName} has a ${streakDay}-day streak! Join in!`,
+        `${flame} ${playerName} wuxuu haystaa streak ${streakDay} maalmood ah! Adiguna ku soo biir!`,
         "",
-        "✨ Their Personality ✨",
+        "✨ Personality-giisa ✨",
         "",
         ...topTraits,
         "",
-        "Test yourself!",
+        "Adiguna is tijaabi!",
         WEBSITE_LINK
     ].join("\n");
 
@@ -1696,7 +1948,7 @@ function playPopSound() {
         );
     } catch (error) {
         console.warn(
-            "Sound could not play:",
+            "Codka lama ciyaari karin:",
             error
         );
     }
@@ -1875,6 +2127,297 @@ document.addEventListener(
         }
     }
 );
+/* =========================================================
+   COLORED FLAME STYLES
+========================================================= */
+
+function injectStreakFlameStyles() {
+    if (byId("generatedStreakFlameStyles")) {
+        return;
+    }
+
+    const style =
+        document.createElement(
+            "style"
+        );
+
+    style.id =
+        "generatedStreakFlameStyles";
+
+    style.textContent = `
+        .streak-flame {
+            --flame-main: #ff8a00;
+            --flame-light: #ffd166;
+            --flame-dark: #ff4500;
+
+            position: relative;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 1.35em;
+            height: 1.65em;
+            margin: 0 0.22em;
+            vertical-align: middle;
+            filter:
+                drop-shadow(
+                    0 0 5px
+                    var(--flame-main)
+                );
+        }
+
+        .streak-flame-main {
+            position: relative;
+            display: block;
+            width: 0.9em;
+            height: 1.25em;
+            border-radius:
+                70% 30% 65% 35% /
+                70% 35% 65% 30%;
+            background:
+                radial-gradient(
+                    circle at 50% 72%,
+                    var(--flame-light) 0 18%,
+                    transparent 19%
+                ),
+                linear-gradient(
+                    145deg,
+                    var(--flame-light) 0%,
+                    var(--flame-main) 48%,
+                    var(--flame-dark) 100%
+                );
+            transform:
+                rotate(45deg);
+            animation:
+                streakFlameMove
+                0.85s
+                ease-in-out
+                infinite alternate;
+        }
+
+        .streak-flame-main::before {
+            content: "";
+            position: absolute;
+            left: 20%;
+            top: 16%;
+            width: 55%;
+            height: 62%;
+            border-radius:
+                70% 30% 65% 35%;
+            background:
+                linear-gradient(
+                    145deg,
+                    rgba(
+                        255,
+                        255,
+                        255,
+                        0.85
+                    ),
+                    var(--flame-light)
+                );
+            opacity: 0.72;
+        }
+
+        .streak-flame-side {
+            position: absolute;
+            bottom: 0.17em;
+            width: 0.43em;
+            height: 0.72em;
+            border-radius:
+                65% 35% 60% 40%;
+            background:
+                linear-gradient(
+                    145deg,
+                    var(--flame-light),
+                    var(--flame-main),
+                    var(--flame-dark)
+                );
+            animation:
+                streakSideFlameMove
+                0.72s
+                ease-in-out
+                infinite alternate;
+        }
+
+        .streak-flame-left {
+            left: -0.04em;
+            transform:
+                rotate(-24deg);
+        }
+
+        .streak-flame-right {
+            right: -0.04em;
+            transform:
+                rotate(24deg);
+            animation-delay:
+                0.17s;
+        }
+
+        .streak-flame-crown {
+            position: absolute;
+            top: -0.72em;
+            left: 50%;
+            z-index: 4;
+            color: #ffd700;
+            font-size: 0.86em;
+            line-height: 1;
+            transform:
+                translateX(-50%);
+            filter:
+                drop-shadow(
+                    0 0 4px
+                    rgba(
+                        255,
+                        215,
+                        0,
+                        0.9
+                    )
+                );
+            animation:
+                streakCrownFloat
+                1.2s
+                ease-in-out
+                infinite alternate;
+        }
+
+        .flame-orange {
+            --flame-main: #ff8a00;
+            --flame-light: #ffe066;
+            --flame-dark: #ff3d00;
+        }
+
+        .flame-pink {
+            --flame-main: #ff4fa3;
+            --flame-light: #ffd1e8;
+            --flame-dark: #d90070;
+        }
+
+        .flame-red {
+            --flame-main: #ff1f32;
+            --flame-light: #ffb199;
+            --flame-dark: #a90000;
+        }
+
+        .flame-purple {
+            --flame-main: #a855f7;
+            --flame-light: #e9d5ff;
+            --flame-dark: #5b21b6;
+        }
+
+        .flame-gold {
+            --flame-main: #ffc400;
+            --flame-light: #fff4a3;
+            --flame-dark: #d97706;
+        }
+
+        .flame-blue-crown {
+            --flame-main: #1e90ff;
+            --flame-light: #b9ecff;
+            --flame-dark: #003cff;
+        }
+
+        .generated-streak-flame {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 84px;
+            margin: 10px 0;
+            font-size: 3rem;
+        }
+
+        .generated-streak-flame
+        .streak-flame {
+            font-size: 1em;
+        }
+
+        #streakFlame,
+        #mainStreakFlame,
+        #finalStreakFlame,
+        [data-streak-flame] {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .leaderboard-streak {
+            display: inline-flex;
+            align-items: center;
+            justify-content: flex-end;
+            gap: 6px;
+            white-space: nowrap;
+        }
+
+        .leaderboard-flame {
+            font-size: 1.05rem;
+            flex-shrink: 0;
+        }
+
+        .leaderboard-streak-text {
+            font-weight: 700;
+        }
+
+        .leaderboard-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+        }
+
+        @keyframes streakFlameMove {
+            0% {
+                transform:
+                    rotate(40deg)
+                    scale(0.96, 1.02);
+            }
+
+            100% {
+                transform:
+                    rotate(49deg)
+                    scale(1.05, 0.96);
+            }
+        }
+
+        @keyframes streakSideFlameMove {
+            0% {
+                opacity: 0.76;
+                scale: 0.9;
+            }
+
+            100% {
+                opacity: 1;
+                scale: 1.08;
+            }
+        }
+
+        @keyframes streakCrownFloat {
+            0% {
+                transform:
+                    translateX(-50%)
+                    translateY(0);
+            }
+
+            100% {
+                transform:
+                    translateX(-50%)
+                    translateY(-0.1em);
+            }
+        }
+
+        @media (
+            prefers-reduced-motion:
+            reduce
+        ) {
+            .streak-flame-main,
+            .streak-flame-side,
+            .streak-flame-crown {
+                animation: none;
+            }
+        }
+    `;
+
+    document.head.appendChild(
+        style
+    );
+}
 
 
 /* =========================================================
@@ -1985,7 +2528,7 @@ function initializeStreakGame() {
         )
     ) {
         console.error(
-            "The streak game could not start because one or more HTML elements are missing."
+            "Ciyaarta streak-ga ma bilaaban karto sababtoo ah qaar ka mid ah qaybaha HTML-ka ayaa maqan."
         );
 
         return;
@@ -2067,7 +2610,8 @@ function initializeStreakGame() {
             return;
         }
 
-        gameAnnouncement.textContent = "";
+        gameAnnouncement.textContent =
+            "";
 
         window.setTimeout(() => {
             gameAnnouncement.textContent =
@@ -2162,20 +2706,20 @@ function initializeStreakGame() {
 
         if (remainingStages === 1) {
             remainingStagesText.textContent =
-                "Waxa kuu hadhay hal stage.";
+                "Hal marxalad ayaa kuu hadhay.";
 
             return;
         }
 
         if (remainingStages === 0) {
             remainingStagesText.textContent =
-                "Dhammaan stage-yada waad dhammeeysay.";
+                "Dhammaan marxaladaha waad dhammaystirtay.";
 
             return;
         }
 
         remainingStagesText.textContent =
-            `Waxa kuu hadhay ${remainingStages} stage.`;
+            `${remainingStages} marxaladood ayaa kuu hadhay.`;
     }
 
 
@@ -2319,10 +2863,10 @@ function initializeStreakGame() {
         targetIsActive = true;
 
         gameMessage.textContent =
-            "Riix hadda!";
+            "Hadda riix!";
 
         announce(
-            `Stage ${currentStage}, kubbadda ${currentCircle}.`
+            `Marxaladda ${currentStage}, goobada ${currentCircle}.`
         );
 
         targetTimeout =
@@ -2354,10 +2898,10 @@ function initializeStreakGame() {
         updateGameDisplay();
 
         gameMessage.textContent =
-            `Stage ${currentStage} — Is diyaari...`;
+            `Marxaladda ${currentStage} — Is diyaari...`;
 
         announce(
-            `Stage ${currentStage} ayaa bilaabanaya.`
+            `Marxaladda ${currentStage} ayaa bilaabanaysa.`
         );
 
         actionTimeout =
@@ -2401,7 +2945,9 @@ function initializeStreakGame() {
         gameMessage.textContent =
             "Waa sax!";
 
-        announce("Waa sax.");
+        announce(
+            "Waa sax."
+        );
 
         actionTimeout =
             window.setTimeout(() => {
@@ -2500,7 +3046,9 @@ function initializeStreakGame() {
 
         showMissAnimation();
 
-        announce("Waad seegtay.");
+        announce(
+            "Waad seegtay."
+        );
 
         actionTimeout =
             window.setTimeout(() => {
@@ -2510,7 +3058,7 @@ function initializeStreakGame() {
                     .remove("hidden");
 
                 announce(
-                    `Stage ${currentStage} wuxuu dib uga bilaabanayaa kubbadda koowaad.`
+                    `Marxaladda ${currentStage} waxay dib uga bilaabanaysaa goobada koowaad.`
                 );
 
                 overlayTimeout =
@@ -2565,7 +3113,7 @@ function initializeStreakGame() {
             .remove("hidden");
 
         announce(
-            `Stage ${completedStage} waa la dhammeeyay.`
+            `Marxaladda ${completedStage} waa la dhammaystiray.`
         );
 
         overlayTimeout =
@@ -2613,6 +3161,19 @@ function initializeStreakGame() {
         finalStreakNumber.textContent =
             String(updatedStreak);
 
+        const finalFlameContainer =
+            byId("finalStreakFlame") ||
+            query(
+                "[data-final-streak-flame]"
+            );
+
+        if (finalFlameContainer) {
+            renderStreakFlame(
+                finalFlameContainer,
+                updatedStreak
+            );
+        }
+
         gameScreen.classList.add(
             "hidden"
         );
@@ -2622,6 +3183,8 @@ function initializeStreakGame() {
         );
 
         setResultsMode("streak");
+
+        updateStreakFlameDisplays();
 
         announce(
             `Hambalyo. Streak-gaagu hadda waa ${updatedStreak} maalmood.`
@@ -2850,6 +3413,8 @@ function initializeStreakGame() {
 document.addEventListener(
     "DOMContentLoaded",
     () => {
+        injectStreakFlameStyles();
+
         if (redirectUnnamedPlayer()) {
             return;
         }
@@ -2877,6 +3442,7 @@ document.addEventListener(
         displayLeaderboard();
         displayPersonalityResults();
         displayStreakDay();
+        updateStreakFlameDisplays();
 
         initializeStreakGame();
     }
