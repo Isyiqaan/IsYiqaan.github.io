@@ -1333,7 +1333,7 @@ function displayStreakDay() {
 
 function showAlreadyCompletedMessage() {
     const message =
-        "Maanta streak-gaaga waad sii wadatay! Berri soo noqo si uusan streak-gaagu u go'in. 🔥";
+        "Maanta streak-gaaga waad sii wadatay! Berri soo noqo si aanu streak-gaagu u go'in. 🔥";
 
     const messageElement =
         byId(
