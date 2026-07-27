@@ -1838,26 +1838,79 @@ function shareResultsOnWhatsApp() {
             getSavedStreakDay()
         );
 
-    const topTraits =
+    /*
+      Shows the top 5 personality traits.
+      Change 5 to another number if needed.
+    */
+    const personalityTraits =
         getPersonalityResults()
-            .slice(0, 3)
+            .slice(0, 5)
             .map(result => {
-                return result.name;
+                const traitName =
+                    result.name;
+
+                const normalizedName =
+                    traitName
+                        .toLowerCase()
+                        .trim();
+
+                let emoji = "✨";
+
+                if (
+                    normalizedName.includes("qurux")
+                ) {
+                    emoji = "✨";
+                } else if (
+                    normalizedName.includes("jees")
+                ) {
+                    emoji = "😏";
+                } else if (
+                    normalizedName.includes("firfir")
+                ) {
+                    emoji = "⚡";
+                } else if (
+                    normalizedName.includes("daryeel")
+                ) {
+                    emoji = "❤️";
+                } else if (
+                    normalizedName.includes("madax")
+                ) {
+                    emoji = "🦅";
+                } else if (
+                    normalizedName.includes("maskax")
+                ) {
+                    emoji = "🧠";
+                } else if (
+                    normalizedName.includes("degan") ||
+                    normalizedName.includes("dagan")
+                ) {
+                    emoji = "🌙";
+                } else if (
+                    normalizedName.includes("Xaraabaad")
+                ) {
+                    emoji = "😂";
+                } else if (
+                    normalizedName.includes("kalsooni")
+                ) {
+                    emoji = "💪";
+                } else if (
+                    normalizedName.includes("hal-abuur") ||
+                    normalizedName.includes("hal abuur")
+                ) {
+                    emoji = "🎨";
+                }
+
+                return `${emoji} ${traitName}`;
             });
 
-    const flame =
-        getShareFlame(
-            streakDay
-        );
-
     const message = [
-        `${flame} ${playerName} wuxuu haystaa streak ${streakDay} maalmood ah! Adiguna ku soo biir!`,
+        `✨ *${playerName}* shakhsiyadooda ✨`,
         "",
-        "✨ Personality-giisa ✨",
+        ...personalityTraits,
         "",
-        ...topTraits,
+        `🔥 Streak Day ${streakDay} Complete`,
         "",
-        "Adiguna is tijaabi!",
+        "Kaalay adiguna is tijaabi",
         WEBSITE_LINK
     ].join("\n");
 
@@ -4029,6 +4082,308 @@ window.toggleInfoMenu =
                     }
                 );
             }
+        }
+    );
+})();
+
+/* =========================================================
+   LOSE 1 STREAK POINT FOR EACH MISSED DAY
+   Paste once at the bottom of script.js
+========================================================= */
+
+(function () {
+    "use strict";
+
+    const DAY_IN_MILLISECONDS =
+        24 * 60 * 60 * 1000;
+
+    function getLocalDayString() {
+        const today =
+            new Date();
+
+        const year =
+            today.getFullYear();
+
+        const month =
+            String(
+                today.getMonth() + 1
+            ).padStart(2, "0");
+
+        const day =
+            String(
+                today.getDate()
+            ).padStart(2, "0");
+
+        return `${year}-${month}-${day}`;
+    }
+
+    function convertDateToDayNumber(
+        dateString
+    ) {
+        if (
+            !dateString ||
+            !/^\d{4}-\d{2}-\d{2}$/.test(
+                dateString
+            )
+        ) {
+            return null;
+        }
+
+        const [
+            year,
+            month,
+            day
+        ] =
+            dateString
+                .split("-")
+                .map(Number);
+
+        return Math.floor(
+            Date.UTC(
+                year,
+                month - 1,
+                day
+            ) /
+            DAY_IN_MILLISECONDS
+        );
+    }
+
+    function saveReducedStreak(
+        newStreak
+    ) {
+        const safeStreak =
+            Math.max(
+                0,
+                Math.floor(newStreak)
+            );
+
+        /*
+          Use the website's normal save function
+          if it exists.
+        */
+        if (
+            typeof saveStreakDay ===
+            "function"
+        ) {
+            saveStreakDay(
+                safeStreak
+            );
+        }
+
+        /*
+          These backups keep all common streak
+          storage values synchronized.
+        */
+        localStorage.setItem(
+            "streakDays",
+            String(safeStreak)
+        );
+
+        localStorage.setItem(
+            "completedDay",
+            String(safeStreak)
+        );
+
+        localStorage.setItem(
+            "streak",
+            String(safeStreak)
+        );
+    }
+
+    function applyMissedDayDeduction() {
+        const lastCompletedDate =
+            localStorage.getItem(
+                "lastCompletedDate"
+            ) ||
+            localStorage.getItem(
+                "lastStreakDate"
+            );
+
+        /*
+          A new player has no completion date,
+          so nothing should be deducted.
+        */
+        if (!lastCompletedDate) {
+            return;
+        }
+
+        const today =
+            getLocalDayString();
+
+        const todayNumber =
+            convertDateToDayNumber(
+                today
+            );
+
+        const completionNumber =
+            convertDateToDayNumber(
+                lastCompletedDate
+            );
+
+        if (
+            todayNumber === null ||
+            completionNumber === null ||
+            todayNumber <= completionNumber
+        ) {
+            return;
+        }
+
+        /*
+          Reset the deduction tracker whenever
+          the player completes a new streak day.
+        */
+        const savedBaseDate =
+            localStorage.getItem(
+                "streakDeductionBaseDate"
+            );
+
+        if (
+            savedBaseDate !==
+            lastCompletedDate
+        ) {
+            localStorage.setItem(
+                "streakDeductionBaseDate",
+                lastCompletedDate
+            );
+
+            localStorage.setItem(
+                "deductedMissedDays",
+                "0"
+            );
+        }
+
+        const daysSinceCompletion =
+            todayNumber -
+            completionNumber;
+
+        /*
+          Today is still available to play,
+          so today is not counted as missed.
+
+          Completed Monday:
+          Tuesday = available, no deduction.
+          Wednesday = Tuesday was missed, deduct 1.
+        */
+        const totalMissedDays =
+            Math.max(
+                0,
+                daysSinceCompletion - 1
+            );
+
+        const previouslyDeducted =
+            Math.max(
+                0,
+                Number(
+                    localStorage.getItem(
+                        "deductedMissedDays"
+                    )
+                ) || 0
+            );
+
+        const newDaysToDeduct =
+            Math.max(
+                0,
+                totalMissedDays -
+                previouslyDeducted
+            );
+
+        if (newDaysToDeduct === 0) {
+            return;
+        }
+
+        const currentStreak =
+            Math.max(
+                0,
+                Number(
+                    getSavedStreakDay()
+                ) || 0
+            );
+
+        const reducedStreak =
+            Math.max(
+                0,
+                currentStreak -
+                newDaysToDeduct
+            );
+
+        saveReducedStreak(
+            reducedStreak
+        );
+
+        /*
+          Stops refreshing from repeatedly
+          deducting the same missed days.
+        */
+        localStorage.setItem(
+            "deductedMissedDays",
+            String(totalMissedDays)
+        );
+
+        sessionStorage.setItem(
+            "missedDayNotice",
+            JSON.stringify({
+                missedDays:
+                    newDaysToDeduct,
+
+                newStreak:
+                    reducedStreak
+            })
+        );
+
+        window.location.reload();
+    }
+
+    function showMissedDayNotice() {
+        const savedNotice =
+            sessionStorage.getItem(
+                "missedDayNotice"
+            );
+
+        if (!savedNotice) {
+            return;
+        }
+
+        sessionStorage.removeItem(
+            "missedDayNotice"
+        );
+
+        try {
+            const notice =
+                JSON.parse(
+                    savedNotice
+                );
+
+            const missedDays =
+                Number(
+                    notice.missedDays
+                );
+
+            const newStreak =
+                Number(
+                    notice.newStreak
+                );
+
+            const dayWord =
+                missedDays === 1
+                    ? "maalin"
+                    : "maalmood";
+
+            alert(
+                `Waxaad seegtay ${missedDays} ${dayWord}. Streak-gaagu hadda waa ${newStreak}.`
+            );
+        } catch (error) {
+            console.error(
+                "Could not read missed-day notice.",
+                error
+            );
+        }
+    }
+
+    document.addEventListener(
+        "DOMContentLoaded",
+        function () {
+            applyMissedDayDeduction();
+            showMissedDayNotice();
         }
     );
 })();
