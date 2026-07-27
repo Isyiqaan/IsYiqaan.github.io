@@ -1073,17 +1073,37 @@ function finishQuiz() {
         return;
     }
 
+    const isFirstPersonalityTest =
+        !localStorage.getItem(
+            STORAGE_KEYS.personalityResults
+        );
+
     generatePersonalityResults();
+
+    if (isFirstPersonalityTest) {
+        saveUnifiedStreakDay(1);
+        saveLastCompletedDate(
+            getLocalDateKey()
+        );
+
+        localStorage.setItem(
+            STORAGE_KEYS.completedToday,
+            "true"
+        );
+
+        sessionStorage.setItem(
+            "firstPersonalityDayResult",
+            "true"
+        );
+    } else {
+        sessionStorage.removeItem(
+            "firstPersonalityDayResult"
+        );
+    }
 
     setResultsMode("personality");
 
     goTo("results.html");
-}
-
-function retakePersonalityTest() {
-    setResultsMode("personality");
-
-    goTo("question1.html");
 }
 
 
