@@ -3336,3 +3336,439 @@ window.retakePersonalityTest =
 
 window.toggleInfoMenu =
     toggleInfoMenu;
+
+
+/* =========================================================
+   FIRST-PLAYER + MOBILE PATCH
+   Paste this at the VERY BOTTOM of script.js
+========================================================= */
+
+(function () {
+    "use strict";
+
+    const FIRST_DAY_RESULT_KEY =
+        "firstPersonalityDayResult";
+
+    function patchTodayKey() {
+        const now = new Date();
+
+        const year =
+            now.getFullYear();
+
+        const month =
+            String(
+                now.getMonth() + 1
+            ).padStart(2, "0");
+
+        const day =
+            String(
+                now.getDate()
+            ).padStart(2, "0");
+
+        return `${year}-${month}-${day}`;
+    }
+
+    function patchHasPersonalityResults() {
+        const saved =
+            localStorage.getItem(
+                "personalityResults"
+            );
+
+        if (!saved) {
+            return false;
+        }
+
+        try {
+            const parsed =
+                JSON.parse(saved);
+
+            return (
+                Array.isArray(parsed) &&
+                parsed.length > 0
+            );
+        } catch (error) {
+            return false;
+        }
+    }
+
+    function patchSaveFirstStreakDay() {
+        localStorage.setItem(
+            "completedDay",
+            "1"
+        );
+
+        localStorage.setItem(
+            "streakDays",
+            "1"
+        );
+
+        localStorage.setItem(
+            "streak",
+            "1"
+        );
+
+        localStorage.setItem(
+            "lastCompletedDate",
+            patchTodayKey()
+        );
+
+        localStorage.setItem(
+            "lastStreakDate",
+            patchTodayKey()
+        );
+
+        localStorage.setItem(
+            "streakCompletedToday",
+            "true"
+        );
+
+        sessionStorage.setItem(
+            FIRST_DAY_RESULT_KEY,
+            "true"
+        );
+    }
+
+    /*
+      NEW PLAYER:
+      Entering a name now goes directly to Question 1.
+      They will not see the homepage or Streak Day 1 first.
+    */
+    window.startQuiz = function () {
+        const input =
+            document.getElementById("name");
+
+        if (!input) {
+            return;
+        }
+
+        const playerName =
+            input.value.trim();
+
+        if (!playerName) {
+            const warning =
+                document.getElementById(
+                    "nameWarning"
+                );
+
+            if (warning) {
+                warning.classList.add(
+                    "show"
+                );
+            }
+
+            input.focus();
+
+            input.classList.remove(
+                "input-shake"
+            );
+
+            void input.offsetWidth;
+
+            input.classList.add(
+                "input-shake"
+            );
+
+            return;
+        }
+
+        localStorage.setItem(
+            "playerName",
+            playerName
+        );
+
+        localStorage.setItem(
+            "resultsMode",
+            "personality"
+        );
+
+        localStorage.setItem(
+            "resultMode",
+            "personality"
+        );
+
+        sessionStorage.setItem(
+            "resultsMode",
+            "personality"
+        );
+
+        if (
+            typeof goTo === "function"
+        ) {
+            goTo("question1.html");
+        } else {
+            window.location.href =
+                "question1.html";
+        }
+    };
+
+    /*
+      FINISHING THE FIRST PERSONALITY TEST:
+      - Saves personality results
+      - Creates Streak Day 1
+      - Marks today as completed
+      - Does not allow today's minigame
+    */
+    window.finishQuiz = function () {
+        const isFirstTest =
+            !patchHasPersonalityResults();
+
+        if (isFirstTest) {
+            patchSaveFirstStreakDay();
+        } else {
+            sessionStorage.removeItem(
+                FIRST_DAY_RESULT_KEY
+            );
+        }
+
+        if (
+            typeof generatePersonalityResults ===
+            "function"
+        ) {
+            generatePersonalityResults();
+        }
+
+        localStorage.setItem(
+            "resultsMode",
+            "personality"
+        );
+
+        localStorage.setItem(
+            "resultMode",
+            "personality"
+        );
+
+        sessionStorage.setItem(
+            "resultsMode",
+            "personality"
+        );
+
+        if (
+            typeof goTo === "function"
+        ) {
+            goTo("results.html");
+        } else {
+            window.location.href =
+                "results.html";
+        }
+    };
+
+    document.addEventListener(
+        "DOMContentLoaded",
+        () => {
+            const page =
+                window.location.pathname
+                    .split("/")
+                    .pop()
+                    .toLowerCase() ||
+                "index.html";
+
+            const hasResults =
+                patchHasPersonalityResults();
+
+            /*
+              FIRST-TIME HOMEPAGE PROTECTION:
+              Hide all streak information until the test
+              has actually been completed.
+            */
+            if (
+                page === "index.html" &&
+                !hasResults
+            ) {
+                const streakSelectors = [
+                    ".home-streak-card",
+                    "#homeStreakCard",
+                    "#streakDay",
+                    "#streakFlame",
+                    "[data-home-streak-card]",
+                    "[data-streak-day]",
+                    "[data-streak-flame]"
+                ];
+
+                streakSelectors.forEach(
+                    selector => {
+                        document
+                            .querySelectorAll(
+                                selector
+                            )
+                            .forEach(
+                                element => {
+                                    element.hidden =
+                                        true;
+
+                                    element.classList.add(
+                                        "hidden"
+                                    );
+                                }
+                            );
+                    }
+                );
+
+                const retakeButton =
+                    document.querySelector(
+                        "#retakeTestButton, " +
+                        "#retakeButton, " +
+                        "#retakeTest, " +
+                        "[data-action='retake-test'], " +
+                        "[data-retake-test]"
+                    );
+
+                if (retakeButton) {
+                    retakeButton.hidden =
+                        true;
+
+                    retakeButton.classList.add(
+                        "hidden"
+                    );
+                }
+
+                const testButton =
+                    document.querySelector(
+                        "#continueStreakButton, " +
+                        "#continueStreak, " +
+                        "#streakButton, " +
+                        "[data-action='continue-streak'], " +
+                        "[data-continue-streak]"
+                    );
+
+                if (testButton) {
+                    testButton.textContent =
+                        "Bilow Personality Test-ka ✨";
+
+                    testButton.onclick =
+                        event => {
+                            event.preventDefault();
+
+                            window.location.href =
+                                "question1.html";
+                        };
+                }
+            }
+
+            /*
+              FIRST RESULTS PAGE:
+              Show Streak Day 1 only AFTER the personality
+              test has been completed.
+            */
+            if (
+                page === "results.html" &&
+                sessionStorage.getItem(
+                    FIRST_DAY_RESULT_KEY
+                ) === "true"
+            ) {
+                const resultTitle =
+                    document.getElementById(
+                        "resultsTitle"
+                    ) ||
+                    document.getElementById(
+                        "resultTitle"
+                    ) ||
+                    document.querySelector(
+                        "[data-results-title]"
+                    );
+
+                if (resultTitle) {
+                    resultTitle.textContent =
+                        "Streak Day 1 🔥";
+                }
+
+                const resultSubtitle =
+                    document.getElementById(
+                        "resultsSubtitle"
+                    ) ||
+                    document.getElementById(
+                        "resultSubtitle"
+                    ) ||
+                    document.querySelector(
+                        "[data-results-subtitle]"
+                    );
+
+                if (resultSubtitle) {
+                    resultSubtitle.textContent =
+                        "Maalinta 1-aad waad dhammaystirtay! Berri soo noqo si aad u ciyaarto minigame-ka.";
+                }
+
+                document
+                    .querySelectorAll(
+                        "#streakDay, " +
+                        "#mainStreakDay, " +
+                        "[data-streak-day], " +
+                        "[data-main-streak]"
+                    )
+                    .forEach(
+                        element => {
+                            element.textContent =
+                                "1";
+                        }
+                    );
+            }
+
+            /*
+              BLOCK THE MINIGAME:
+              - Before personality-test completion
+              - During the same day as Streak Day 1
+            */
+            if (
+                page === "streak-game.html"
+            ) {
+                const lastDate =
+                    localStorage.getItem(
+                        "lastCompletedDate"
+                    ) ||
+                    localStorage.getItem(
+                        "lastStreakDate"
+                    );
+
+                if (
+                    !hasResults ||
+                    lastDate === patchTodayKey()
+                ) {
+                    window.location.replace(
+                        "index.html"
+                    );
+
+                    return;
+                }
+            }
+
+            /*
+              MOBILE TARGET FIX:
+              pointerdown works with fingers, mice,
+              touchscreens and styluses.
+            */
+            const targetButton =
+                document.getElementById(
+                    "targetButton"
+                );
+
+            if (targetButton) {
+                targetButton.addEventListener(
+                    "pointerdown",
+                    event => {
+                        event.preventDefault();
+
+                        /*
+                          Trigger the game's existing click
+                          handler without rewriting the game.
+                        */
+                        targetButton.click();
+                    },
+                    {
+                        passive: false
+                    }
+                );
+
+                targetButton.addEventListener(
+                    "touchstart",
+                    event => {
+                        event.preventDefault();
+
+                        targetButton.click();
+                    },
+                    {
+                        passive: false
+                    }
+                );
+            }
+        }
+    );
+})();
