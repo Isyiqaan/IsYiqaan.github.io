@@ -2760,3 +2760,266 @@ body.results-personality-mode #previousPersonalityCard { display: none; }
     .big-streak-number,
     #mainStreakDay { font-size: 2.35rem; }
 }
+
+/* =========================================================
+   MOBILE-FIRST STREAK GAME FIX
+   Paste this at the VERY BOTTOM of style.css
+========================================================= */
+
+/* Match the personality-test pink/purple theme */
+body.streak-game-page {
+    color: #704579;
+
+    background:
+        radial-gradient(
+            circle at 15% 15%,
+            rgba(220, 170, 255, 0.55),
+            transparent 38%
+        ),
+        radial-gradient(
+            circle at 85% 75%,
+            rgba(255, 175, 212, 0.52),
+            transparent 42%
+        ),
+        linear-gradient(
+            135deg,
+            #f2dcff 0%,
+            #ffe1ef 32%,
+            #eadcff 67%,
+            #ffd9e9 100%
+        );
+
+    background-size: 400% 400%;
+    animation: backgroundAnimation 14s ease-in-out infinite;
+
+    overscroll-behavior: none;
+}
+
+/* Intro card */
+.streak-intro-card,
+.streak-success-card {
+    color: #704579;
+
+    border: 2px solid rgba(255, 255, 255, 0.85);
+
+    background:
+        rgba(255, 255, 255, 0.72);
+
+    box-shadow:
+        0 22px 60px rgba(143, 78, 166, 0.2);
+
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+}
+
+/* Headings */
+.streak-game-page h1,
+.streak-game-page h2,
+.streak-game-page h3 {
+    color: #87479e;
+}
+
+/* Normal text */
+.streak-game-page p,
+.streak-game-page .tutorial-status,
+.streak-game-page .game-status-label,
+.streak-game-page .streak-game-footer {
+    color: #795480;
+}
+
+/* Instruction cards */
+.streak-game-page .instruction-item {
+    border: 2px solid rgba(255, 255, 255, 0.75);
+
+    background:
+        rgba(255, 255, 255, 0.58);
+}
+
+.streak-game-page .instruction-icon {
+    color: #9856aa;
+    background: rgba(216, 171, 238, 0.3);
+}
+
+/* Header status boxes */
+.streak-game-page .game-status-group {
+    color: #704579;
+
+    border: 2px solid rgba(255, 255, 255, 0.78);
+
+    background:
+        rgba(255, 255, 255, 0.64);
+
+    box-shadow:
+        0 8px 24px rgba(143, 78, 166, 0.13);
+}
+
+/* Progress bar */
+.streak-game-page .stage-progress {
+    background: rgba(255, 255, 255, 0.62);
+}
+
+.streak-game-page .stage-progress-fill {
+    background:
+        linear-gradient(
+            90deg,
+            #ba72d6,
+            #ed8eb7,
+            #cb8ce4
+        );
+
+    box-shadow:
+        0 0 14px rgba(205, 117, 215, 0.42);
+}
+
+/* Main gameplay area */
+.streak-game-page .game-area {
+    border: 2px solid rgba(255, 255, 255, 0.8);
+
+    background:
+        radial-gradient(
+            circle at center,
+            rgba(215, 169, 241, 0.24),
+            transparent 48%
+        ),
+        rgba(255, 255, 255, 0.48);
+
+    box-shadow:
+        0 18px 45px rgba(143, 78, 166, 0.16);
+
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+
+    /* Stops scrolling and zoom gestures while playing */
+    touch-action: none;
+    overscroll-behavior: contain;
+    -webkit-user-select: none;
+    user-select: none;
+}
+
+.streak-game-page .game-message {
+    color: #7c4b86;
+}
+
+/* Pink/purple target */
+.streak-game-page .target-circle {
+    border: 5px solid rgba(255, 255, 255, 0.96);
+
+    background:
+        linear-gradient(
+            135deg,
+            #b96fd2,
+            #e483ad
+        );
+
+    box-shadow:
+        0 0 0 8px rgba(220, 143, 220, 0.18),
+        0 10px 28px rgba(174, 88, 180, 0.35);
+}
+
+/* Shrinking ring */
+.streak-game-page .target-ring {
+    border-color: #b96fd2;
+    box-shadow:
+        0 0 18px rgba(185, 111, 210, 0.45);
+
+    /*
+      CRITICAL:
+      The ring can no longer steal mobile taps.
+    */
+    pointer-events: none !important;
+}
+
+/* The entire invisible target area accepts taps */
+.streak-game-page .target-button {
+    z-index: 20 !important;
+
+    pointer-events: auto !important;
+    touch-action: none !important;
+
+    cursor: pointer;
+
+    -webkit-user-select: none;
+    user-select: none;
+
+    -webkit-tap-highlight-color: transparent;
+}
+
+/* Decorative objects must never block taps */
+.streak-game-page .miss-animation,
+.streak-game-page .particle {
+    pointer-events: none !important;
+}
+
+/* Stage boxes */
+.streak-game-page .stage-box {
+    color: #8f509d;
+
+    border: 2px solid rgba(255, 255, 255, 0.78);
+
+    background:
+        rgba(255, 255, 255, 0.62);
+}
+
+.streak-game-page .stage-box.completed {
+    color: #ffffff;
+
+    background:
+        linear-gradient(
+            135deg,
+            #b96fd2,
+            #e483ad
+        );
+}
+
+/* Overlay colors */
+.streak-game-page .game-overlay {
+    background:
+        rgba(108, 62, 120, 0.82);
+
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+}
+
+.streak-game-page .overlay-content,
+.streak-game-page .overlay-content h2,
+.streak-game-page .overlay-content p {
+    color: #ffffff;
+}
+
+/* Mobile */
+@media (max-width: 650px) {
+    body.streak-game-page {
+        padding: 0;
+    }
+
+    .streak-game-page .streak-game-screen {
+        min-height: 100svh;
+        padding: 12px;
+    }
+
+    .streak-game-page .game-area {
+        width: 100%;
+        min-height: 430px;
+        margin: 12px auto;
+        border-radius: 24px;
+    }
+
+    /*
+      Large invisible tap area for thumbs.
+      The visible center remains smaller.
+    */
+    .streak-game-page .target-button {
+        width: 150px !important;
+        height: 150px !important;
+    }
+
+    .streak-game-page .target-ring {
+        width: 145px !important;
+        height: 145px !important;
+    }
+
+    .streak-game-page .target-circle {
+        width: 76px !important;
+        height: 76px !important;
+    }
+}
