@@ -4387,3 +4387,131 @@ window.toggleInfoMenu =
         }
     );
 })();
+
+/* =========================================================
+   RETURNING PLAYER MESSAGE
+   Paste at the VERY BOTTOM of script.js
+========================================================= */
+
+(function () {
+    "use strict";
+
+    function getTodayDate() {
+        const today = new Date();
+
+        const year = today.getFullYear();
+        const month = String(
+            today.getMonth() + 1
+        ).padStart(2, "0");
+
+        const day = String(
+            today.getDate()
+        ).padStart(2, "0");
+
+        return `${year}-${month}-${day}`;
+    }
+
+    function hasCompletedPersonalityTest() {
+        const savedResults =
+            localStorage.getItem(
+                "personalityResults"
+            );
+
+        if (!savedResults) {
+            return false;
+        }
+
+        try {
+            const results =
+                JSON.parse(savedResults);
+
+            return (
+                Array.isArray(results) &&
+                results.length > 0
+            );
+        } catch (error) {
+            return false;
+        }
+    }
+
+    document.addEventListener(
+        "DOMContentLoaded",
+        function () {
+            const pageName =
+                window.location.pathname
+                    .split("/")
+                    .pop()
+                    .toLowerCase() ||
+                "index.html";
+
+            if (pageName !== "index.html") {
+                return;
+            }
+
+            const returningPlayer =
+                hasCompletedPersonalityTest();
+
+            /*
+              New players keep the normal welcome message.
+            */
+            if (!returningPlayer) {
+                return;
+            }
+
+            const today =
+                getTodayDate();
+
+            const lastCompletedDate =
+                localStorage.getItem(
+                    "lastCompletedDate"
+                ) ||
+                localStorage.getItem(
+                    "lastStreakDate"
+                );
+
+            /*
+              If they already completed today,
+              keep the "Berri Soo Noqo" page unchanged.
+            */
+            if (lastCompletedDate === today) {
+                return;
+            }
+
+            /*
+              Returning player who can continue today.
+            */
+            const description =
+                document.querySelector(
+                    "#welcomeDescription, " +
+                    "#homeDescription, " +
+                    ".welcome-description, " +
+                    ".home-description, " +
+                    ".returning-description, " +
+                    "main h1 + p"
+                );
+
+            if (description) {
+                description.textContent =
+                    "Maanta waa fursaddaada inaad streak-gaaga sii wadato!";
+            }
+
+            /*
+              Also update the lower message box,
+              if your homepage has one.
+            */
+            const notice =
+                document.querySelector(
+                    "#streakMessage, " +
+                    "#dailyMessage, " +
+                    ".streak-message, " +
+                    ".daily-message, " +
+                    ".streak-notice"
+                );
+
+            if (notice) {
+                notice.textContent =
+                    "Maanta waa fursaddaada inaad streak-gaaga sii wadato! 🔥";
+            }
+        }
+    );
+})();
