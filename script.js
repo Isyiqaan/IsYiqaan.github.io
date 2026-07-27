@@ -3772,3 +3772,263 @@ window.toggleInfoMenu =
         }
     );
 })();
+
+/* =========================================================
+   FIX: WELCOME PAGE -> INDEX -> FIRST QUESTION
+   Paste at the VERY BOTTOM of script.js
+========================================================= */
+
+(function () {
+    "use strict";
+
+    /*
+      After entering their name, a first-time player
+      must go to index.html — not directly to Question 1.
+    */
+    window.startQuiz = function () {
+        const nameInput =
+            document.getElementById("name");
+
+        if (!nameInput) {
+            return;
+        }
+
+        const playerName =
+            nameInput.value.trim();
+
+        if (!playerName) {
+            const warning =
+                document.getElementById(
+                    "nameWarning"
+                );
+
+            if (warning) {
+                warning.classList.add("show");
+            }
+
+            nameInput.focus();
+            return;
+        }
+
+        localStorage.setItem(
+            "playerName",
+            playerName
+        );
+
+        /*
+          This tells index.html that this is a new player
+          who has not completed the personality test yet.
+        */
+        sessionStorage.setItem(
+            "showFirstTestIntro",
+            "true"
+        );
+
+        window.location.href =
+            "index.html";
+    };
+
+    function hasFinishedPersonalityTest() {
+        const savedResults =
+            localStorage.getItem(
+                "personalityResults"
+            );
+
+        if (!savedResults) {
+            return false;
+        }
+
+        try {
+            const parsed =
+                JSON.parse(savedResults);
+
+            return (
+                Array.isArray(parsed) &&
+                parsed.length > 0
+            );
+        } catch (error) {
+            return false;
+        }
+    }
+
+    document.addEventListener(
+        "DOMContentLoaded",
+        function () {
+            const pageName =
+                window.location.pathname
+                    .split("/")
+                    .pop()
+                    .toLowerCase() ||
+                "index.html";
+
+            if (pageName !== "index.html") {
+                return;
+            }
+
+            const finishedTest =
+                hasFinishedPersonalityTest();
+
+            /*
+              Returning players keep the normal streak page.
+            */
+            if (finishedTest) {
+                sessionStorage.removeItem(
+                    "showFirstTestIntro"
+                );
+
+                return;
+            }
+
+            /*
+              First-time players see the introduction,
+              but no streak number or minigame option.
+            */
+            const playerName =
+                localStorage.getItem(
+                    "playerName"
+                ) || "";
+
+            const heading =
+                document.querySelector(
+                    "#welcomeTitle, " +
+                    "#homeTitle, " +
+                    ".welcome-title, " +
+                    ".home-title, " +
+                    "main h1"
+                );
+
+            if (heading) {
+                heading.textContent =
+                    playerName
+                        ? `Soo dhowow, ${playerName}! 👋`
+                        : "Soo dhowow! 👋";
+            }
+
+            const description =
+                document.querySelector(
+                    "#welcomeDescription, " +
+                    "#homeDescription, " +
+                    ".welcome-description, " +
+                    ".home-description, " +
+                    "main h1 + p"
+                );
+
+            if (description) {
+                description.textContent =
+                    "Ku soo dhowow imtixaanka shakhsiyadda! Waxaad ka jawaabi doontaa su’aalo fudud oo kaa caawinaya inaad ogaato shakhsiyaddaada, oo streak furatid! Badhanka hoose taabo sida u bilowdid.";
+            }
+
+            /*
+              Hide streak information until the first
+              personality test has been completed.
+            */
+            const thingsToHide = [
+                "#streakDay",
+                "#mainStreakDay",
+                "#streakFlame",
+                "#streakCount",
+                "#continueStreak",
+                "#continueStreakButton",
+                "#retakeTest",
+                "#retakeButton",
+                "#retakeTestButton",
+                ".home-streak-card",
+                ".streak-card",
+                ".streak-info",
+                ".continue-streak-button",
+                ".retake-test-button",
+                "[data-streak-day]",
+                "[data-main-streak]",
+                "[data-continue-streak]",
+                "[data-retake-test]"
+            ];
+
+            thingsToHide.forEach(
+                function (selector) {
+                    document
+                        .querySelectorAll(selector)
+                        .forEach(
+                            function (element) {
+                                element.style.display =
+                                    "none";
+                            }
+                        );
+                }
+            );
+
+            /*
+              Find the main homepage button.
+            */
+            let startButton =
+                document.querySelector(
+                    "#startTestButton, " +
+                    "#startTest, " +
+                    "#mainButton, " +
+                    ".start-test-button, " +
+                    ".main-button, " +
+                    "[data-start-test]"
+                );
+
+            /*
+              If your index page does not already have
+              a first-test button, create one.
+            */
+            if (!startButton) {
+                const main =
+                    document.querySelector(
+                        "main"
+                    );
+
+                if (main) {
+                    startButton =
+                        document.createElement(
+                            "button"
+                        );
+
+                    startButton.id =
+                        "startTestButton";
+
+                    startButton.className =
+                        "primary-button start-test-button";
+
+                    main.appendChild(
+                        startButton
+                    );
+                }
+            }
+
+            if (startButton) {
+                startButton.style.display =
+                    "";
+
+                startButton.textContent =
+                    "Bilow Imtixaanka ✨";
+
+                /*
+                  Remove old button listeners by replacing
+                  the button with an identical clean copy.
+                */
+                const cleanButton =
+                    startButton.cloneNode(true);
+
+                startButton.replaceWith(
+                    cleanButton
+                );
+
+                cleanButton.addEventListener(
+                    "click",
+                    function (event) {
+                        event.preventDefault();
+
+                        sessionStorage.removeItem(
+                            "showFirstTestIntro"
+                        );
+
+                        window.location.href =
+                            "question1.html";
+                    }
+                );
+            }
+        }
+    );
+})();
