@@ -3023,3 +3023,20 @@ body.streak-game-page {
         height: 76px !important;
     }
 }
+
+#gameArea {
+    touch-action: none;
+    overscroll-behavior: contain;
+}
+
+#targetButton {
+    pointer-events: auto;
+    touch-action: none;
+    -webkit-tap-highlight-color: transparent;
+    z-index: 20;
+}
+
+#targetRing,
+#missAnimation {
+    pointer-events: none;
+}
