@@ -1403,37 +1403,152 @@ function prepareHomepageActions() {
         return;
     }
 
+    const mainMessage =
+        byId("homeMainMessage");
+
+    const streakCard =
+        query(".home-streak-card");
+
     const continueButton =
-        findFirstElement([
-            "#continueStreakButton",
-            "#continueStreak",
-            "#streakButton",
-            "[data-action='continue-streak']",
-            "[data-continue-streak]"
-        ]);
+        byId("continueStreakButton");
 
     const retakeButton =
-        findFirstElement([
-            "#retakeTestButton",
-            "#retakeButton",
-            "#retakeTest",
-            "[data-action='retake-test']",
-            "[data-retake-test]"
-        ]);
+        byId("retakeTestButton");
+
+    const completedMessage =
+        byId(
+            "streakAlreadyCompletedMessage"
+        );
+
+    const hasPersonalityResults =
+        Boolean(
+            localStorage.getItem(
+                STORAGE_KEYS.personalityResults
+            )
+        );
+
+    /*
+      FIRST-TIME PLAYER
+    */
+    if (!hasPersonalityResults) {
+        if (mainMessage) {
+            mainMessage.textContent =
+                "Ku soo dhowow imtixaanka shakhsiyadda! Waxaad ka jawaabi doontaa su’aalo fudud oo kaa caawinaya inaad ogaato shakhsiyaddaada, oo streak furatid! Badhanka hoose taabo si aad u bilowdid.";
+        }
+
+        setElementVisibility(
+            streakCard,
+            false
+        );
+
+        setElementVisibility(
+            retakeButton,
+            false
+        );
+
+        setElementVisibility(
+            completedMessage,
+            false
+        );
+
+        if (continueButton) {
+            setElementVisibility(
+                continueButton,
+                true
+            );
+
+            continueButton.textContent =
+                "Bilow Imtixaanka ✨";
+
+            continueButton.onclick =
+                event => {
+                    event.preventDefault();
+
+                    goTo(
+                        "question1.html"
+                    );
+                };
+        }
+
+        return;
+    }
+
+    /*
+      RETURNING PLAYER
+    */
+    setElementVisibility(
+        streakCard,
+        true
+    );
+
+    setElementVisibility(
+        retakeButton,
+        true
+    );
+
+    if (retakeButton) {
+        retakeButton.textContent =
+            "Shakhsiyadaada eeg";
+
+        retakeButton.onclick =
+            event => {
+                event.preventDefault();
+
+                setResultsMode(
+                    "personality"
+                );
+
+                goTo(
+                    "results.html"
+                );
+            };
+    }
+
+    const completedToday =
+        hasCompletedStreakToday();
+
+    if (completedToday) {
+        if (mainMessage) {
+            mainMessage.textContent =
+                "Maanta streak-gaaga waad sii wadatay! Berri soo noqo si aad mar kale u sii wadato.";
+        }
+
+        if (continueButton) {
+            continueButton.textContent =
+                "🌙 Berri Soo Noqo";
+
+            continueButton.onclick =
+                event => {
+                    event.preventDefault();
+
+                    showAlreadyCompletedMessage();
+                };
+        }
+
+        if (completedMessage) {
+            completedMessage.textContent =
+                "Maanta streak-gaaga waad sii wadatay! Berri soo noqo si aanu streak-gaagu u go'in. 🔥";
+
+            setElementVisibility(
+                completedMessage,
+                true
+            );
+        }
+
+        return;
+    }
+
+    /*
+      RETURNING PLAYER WHO CAN PLAY TODAY
+    */
+    if (mainMessage) {
+        mainMessage.textContent =
+            "Maanta waa fursaddaada inaad streak-gaaga sii wadato!";
+    }
 
     if (continueButton) {
-        const completedToday =
-            hasCompletedStreakToday();
-
         continueButton.textContent =
-            completedToday
-                ? "🌙 Berri Soo Noqo"
-                : "Sii Wad Streak-ga 🔥";
-
-        continueButton.dataset.completedToday =
-            completedToday
-                ? "true"
-                : "false";
+            "Sii wad streak-ga 🔥";
 
         continueButton.onclick =
             event => {
@@ -1443,17 +1558,10 @@ function prepareHomepageActions() {
             };
     }
 
-    if (retakeButton) {
-        retakeButton.textContent =
-            "Mar Kale Istijaabi";
-
-        retakeButton.onclick =
-            event => {
-                event.preventDefault();
-
-                retakePersonalityTest();
-            };
-    }
+    setElementVisibility(
+        completedMessage,
+        false
+    );
 }
 
 
@@ -3228,22 +3336,15 @@ function initializeStreakGame() {
     ===================================================== */
 
     targetButton.addEventListener(
-        "click",
-        handleTargetHit
-    );
-
-    targetButton.addEventListener(
-        "touchstart",
-        event => {
-            if (targetIsActive) {
-                event.preventDefault();
-            }
-        },
-        {
-            passive: false
-        }
-    );
-
+    "pointerdown",
+    event => {
+        event.preventDefault();
+        handleTargetHit();
+    },
+    {
+        passive: false
+    }
+);
     beginButton.addEventListener(
         "click",
         beginGame
