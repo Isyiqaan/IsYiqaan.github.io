@@ -1,5 +1,8 @@
+Exit code: 0
+Wall time: 3.7 seconds
+Output:
 <!DOCTYPE html>
-<html lang="so">
+<html lang="en">
 
 <head>
     <meta charset="UTF-8">
@@ -11,10 +14,10 @@
 
     <meta
         name="description"
-        content="Sii wad streak-gaaga ama dib u samee tartanka shakhsiyadda."
+        content="Continue your streak or retake the personality challenge."
     >
 
-    <title>Tartanka Shakhsiyadda</title>
+    <title>Personality Challenge</title>
 
     <script
         async
@@ -46,6 +49,8 @@
 
 <body class="home-page">
 
+    <a class="language-switch" href="so/index.html" lang="so">Soomaali</a>
+
     <div
         class="blob"
         aria-hidden="true"
@@ -64,33 +69,33 @@
     <main class="content home-content">
 
         <p class="player-name">
-            <span id="welcomeText">Salaan</span>,
+            <span id="welcomeText">Hello</span>,
             <span data-player-name></span>!
         </p>
 
         <h1>
-            Is Diyaari
+            Get Ready
         </h1>
 
      <h2 id="homeMainMessage">
-    Ku soo dhowow imtixaanka shakhsiyadda! Waxaad ka jawaabi doontaa su’aalo fudud oo kaa caawinaya inaad ogaato shakhsiyaddaada, oo streak furatid! Badhanka hoose taabo si aad u bilowdid.
+    Welcome to the personality test! Answer a few fun questions to discover your personality and start a daily streak. Tap the button below to begin.
 </h2>
 
         <section
             class="home-streak-card"
-            aria-label="Streak-gaaga"
+            aria-label="Your Streak"
         >
             <p class="home-streak-label">
-                Streak-gaaga
+                Your Streak
             </p>
 
             <div class="home-streak-value">
-                🔥
+                ðŸ”¥
                 <span data-streak-day>1</span>
             </div>
 
             <p class="home-streak-description">
-                maalmood
+                days
             </p>
         </section>
 
@@ -101,7 +106,7 @@
                 class="primary-button continue-streak-button"
                 type="button"
             >
-                Sii wad streakga 🔥
+                Continue Your Streak ðŸ”¥
             </button>
 
             <button
@@ -109,7 +114,15 @@
                 class="secondary-button retake-test-button"
                 type="button"
             >
-                 Shakhsiyadaada eeg
+                 View Your Personality
+            </button>
+
+            <button
+                id="takeTestAgainButton"
+                class="secondary-button take-test-again-button"
+                type="button"
+            >
+                Take Test Again
             </button>
 
         </div>
@@ -129,3 +142,4 @@
 </body>
 
 </html>
+
