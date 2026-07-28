@@ -1,4 +1,3 @@
-
 "use strict";
 
 /* =========================================================
@@ -299,7 +298,6 @@ function getLocalDateKey(
 
     const day =
         String(
-
             date.getDate()
         ).padStart(2, "0");
 
@@ -601,7 +599,6 @@ function redirectUnnamedPlayer() {
             STORAGE_KEYS.playerName
         );
 
-
     const publicPages = [
         "welcome.html",
         "about.html",
@@ -901,7 +898,6 @@ function generatePersonalityResults() {
         ).slice(0, 8);
 
     const results =
-
         selectedTraits
             .map(trait => {
                 return {
@@ -1202,7 +1198,6 @@ function saveUnifiedStreakDay(streakDay) {
     const safeStreak =
         Math.max(
             0,
-
             Number.parseInt(
                 streakDay,
                 10
@@ -1502,7 +1497,6 @@ function prepareHomepageActions() {
                 setResultsMode(
                     "personality"
                 );
-
 
                 goTo(
                     "results.html"
@@ -1805,7 +1799,6 @@ function prepareResultsPageMode() {
             `${streakDay} maalmood`;
     });
 
-
     queryAll(
         "#continueStreakResultButton, " +
         "[data-action='continue-streak']"
@@ -2105,7 +2098,6 @@ function playPopSound() {
         oscillator.frequency
             .exponentialRampToValueAtTime(
                 760,
-
                 audioContext.currentTime +
                 0.07
             );
@@ -2406,7 +2398,6 @@ function injectStreakFlameStyles() {
         .streak-flame-left {
             left: -0.35em;
             transform: rotate(-18deg);
-
         }
 
         .streak-flame-right {
@@ -2707,7 +2698,6 @@ function initializeStreakGame() {
                 completedStages /
                 TOTAL_STAGES
             ) *
-
             100;
 
         stageProgressFill.style.width =
@@ -3008,7 +2998,6 @@ function initializeStreakGame() {
                     currentCircle <
                     CIRCLES_PER_STAGE
                 ) {
-
                     currentCircle += 1;
 
                     currentCircleDisplay.textContent =
@@ -3309,7 +3298,6 @@ function initializeStreakGame() {
 
         beginButton.removeAttribute(
             "aria-hidden"
-
         );
 
         beginButton.classList.remove(
