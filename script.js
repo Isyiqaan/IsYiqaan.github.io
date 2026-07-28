@@ -1,3 +1,7 @@
+Exit code: 0
+Wall time: 1.4 seconds
+Total output lines: 3528
+Output:
 "use strict";
 
 /* =========================================================
@@ -24,11 +28,11 @@ const leaderboardPlayers = [
         startingStreak: 10
     },
     {
-        name: "Dilaaga 💀",
+        name: "Dilaaga ðŸ’€",
         startingStreak: 8
     },
     {
-        name: "Samsam 🌺",
+        name: "Samsam ðŸŒº",
         startingStreak: 6
     },
     {
@@ -43,122 +47,122 @@ const leaderboardPlayers = [
 
 const personalityTraits = [
     {
-        name: "Xaraabaad",
-        emoji: "😂",
+        name: "Playfulness",
+        emoji: "ðŸ˜‚",
         min: 65,
         max: 99
     },
     {
-        name: "Maskax",
-        emoji: "🧠",
+        name: "Intelligence",
+        emoji: "ðŸ§ ",
         min: 65,
         max: 99
     },
     {
-        name: "Jacayl",
-        emoji: "❤️",
+        name: "Affection",
+        emoji: "â¤ï¸",
         min: 65,
         max: 99
     },
     {
-        name: "Hal-abuur",
-        emoji: "🎨",
+        name: "Creativity",
+        emoji: "ðŸŽ¨",
         min: 55,
         max: 97
     },
     {
-        name: "Kalsooni",
-        emoji: "💪",
+        name: "Confidence",
+        emoji: "ðŸ’ª",
         min: 45,
         max: 95
     },
     {
-        name: "Daacadnimo",
-        emoji: "🤝",
+        name: "Honesty",
+        emoji: "ðŸ¤",
         min: 65,
         max: 99
     },
     {
-        name: "Xiiso",
-        emoji: "🔍",
+        name: "Curiosity",
+        emoji: "ðŸ”",
         min: 50,
         max: 96
     },
     {
-        name: "Safar-jacayl",
-        emoji: "🧭",
+        name: "Adventurousness",
+        emoji: "ðŸ§­",
         min: 40,
         max: 94
     },
     {
-        name: "Degganaan",
-        emoji: "😌",
+        name: "Calmness",
+        emoji: "ðŸ˜Œ",
         min: 40,
         max: 92
     },
     {
-        name: "Hami",
-        emoji: "🚀",
+        name: "Ambition",
+        emoji: "ðŸš€",
         min: 55,
         max: 98
     },
     {
-        name: "Qurux",
-        emoji: "✨",
+        name: "Charm",
+        emoji: "âœ¨",
         min: 80,
         max: 97
     },
     {
-        name: "Madax-bannaani",
-        emoji: "🦅",
+        name: "Independence",
+        emoji: "ðŸ¦…",
         min: 45,
         max: 95
     },
     {
-        name: "Rajo",
-        emoji: "🌈",
+        name: "Optimism",
+        emoji: "ðŸŒˆ",
         min: 50,
         max: 96
     },
     {
-        name: "Dulqaad",
-        emoji: "🌿",
+        name: "Patience",
+        emoji: "ðŸŒ¿",
         min: 35,
         max: 90
     },
     {
-        name: "Firfircooni",
-        emoji: "⚡",
+        name: "Energy",
+        emoji: "âš¡",
         min: 45,
         max: 97
     },
     {
-        name: "Tartame",
-        emoji: "🏆",
+        name: "Competitiveness",
+        emoji: "ðŸ†",
         min: 35,
         max: 91
     },
     {
-        name: "Hurdoole",
-        emoji: "😴",
+        name: "Sleepiness",
+        emoji: "ðŸ˜´",
         min: 5,
         max: 60
     },
     {
-        name: "Fikir-badan",
-        emoji: "💭",
+        name: "Thoughtfulness",
+        emoji: "ðŸ’­",
         min: 15,
         max: 78
     },
     {
-        name: "Ilow-badan",
-        emoji: "📝",
+        name: "Forgetfulness",
+        emoji: "ðŸ“",
         min: 5,
         max: 58
     },
     {
-        name: "Jees-jees",
-        emoji: "😏",
+        name: "Humor",
+        emoji: "ðŸ˜",
         min: 20,
         max: 85
     }
@@ -178,20 +182,20 @@ let audioContext = null;
 ========================================================= */
 
 const STORAGE_KEYS = {
-    playerName: "playerName",
-    personalityResults: "personalityResults",
+    playerName: "enPlayerName",
+    personalityResults: "enPersonalityResults",
 
-    streak: "completedDay",
-    alternateStreak: "streakDays",
-    oldStreak: "streak",
+    streak: "enCompletedDay",
+    alternateStreak: "enStreakDays",
+    oldStreak: "enStreak",
 
-    lastCompletedDate: "lastCompletedDate",
-    oldLastCompletedDate: "lastStreakDate",
+    lastCompletedDate: "enLastCompletedDate",
+    oldLastCompletedDate: "enLastStreakDate",
 
-    completedToday: "streakCompletedToday",
+    completedToday: "enStreakCompletedToday",
 
-    resultsMode: "resultsMode",
-    alternateResultsMode: "resultMode"
+    resultsMode: "enResultsMode",
+    alternateResultsMode: "enResultMode"
 };
 
 
@@ -372,8 +376,8 @@ function getStreakFlameTier(streakDay) {
     if (streak >= 100) {
         return {
             className: "flame-blue-crown",
-            label: "Olol buluug ah oo taaj leh",
-            shareEmoji: "👑💙🔥",
+            label: "Blue flame with a crown",
+            shareEmoji: "ðŸ‘‘ðŸ’™ðŸ”¥",
             sideFlames: true,
             crown: true
         };
@@ -382,8 +386,8 @@ function getStreakFlameTier(streakDay) {
     if (streak >= 75) {
         return {
             className: "flame-gold",
-            label: "Olol dahabi ah",
-            shareEmoji: "🟡🔥🔥🔥",
+            label: "Golden flame",
+            shareEmoji: "ðŸŸ¡ðŸ”¥ðŸ”¥ðŸ”¥",
             sideFlames: true,
             crown: false
         };
@@ -392,8 +396,8 @@ function getStreakFlameTier(streakDay) {
     if (streak >= 50) {
         return {
             className: "flame-purple",
-            label: "Olol guduud-buluug ah",
-            shareEmoji: "💜🔥🔥🔥",
+            label: "Purple flame",
+            shareEmoji: "ðŸ’œðŸ”¥ðŸ”¥ðŸ”¥",
             sideFlames: true,
             crown: false
         };
@@ -402,8 +406,8 @@ function getStreakFlameTier(streakDay) {
     if (streak >= 20) {
         return {
             className: "flame-red",
-            label: "Olol cas",
-            shareEmoji: "🔴🔥🔥🔥",
+            label: "Red flame",
+            shareEmoji: "ðŸ”´ðŸ”¥ðŸ”¥ðŸ”¥",
             sideFlames: true,
             crown: false
         };
@@ -412,8 +416,8 @@ function getStreakFlameTier(streakDay) {
     if (streak >= 10) {
         return {
             className: "flame-pink",
-            label: "Olol basali ah",
-            shareEmoji: "🩷🔥",
+            label: "Pink flame",
+            shareEmoji: "ðŸ©·ðŸ”¥",
             sideFlames: false,
             crown: false
         };
@@ -421,8 +425,8 @@ function getStreakFlameTier(streakDay) {
 
     return {
         className: "flame-orange",
-        label: "Olol oranji ah",
-        shareEmoji: "🔥",
+        label: "Orange flame",
+        shareEmoji: "ðŸ”¥",
         sideFlames: false,
         crown: false
     };
@@ -466,7 +470,7 @@ function createStreakFlameElement(
             "streak-flame-crown";
 
         crown.textContent =
-            "♛";
+            "â™›";
 
         flame.appendChild(
             crown
@@ -662,7 +666,7 @@ function createNameWarning(input) {
     warning.className = "warning";
 
     warning.textContent =
-        "Marka hore magacaaga geli.";
+        "Please enter your name first.";
 
     input.insertAdjacentElement(
         "afterend",
@@ -805,8 +809,8 @@ function updateWelcomeMessage() {
 
     welcomeText.textContent =
         hasResults
-            ? "Ku soo laabo"
-            : "Ku soo dhawoow";
+            ? "Welcome back"
+            : "Welcome";
 }
 
 
@@ -942,7 +946,7 @@ function getPersonalityResults() {
             }
         } catch (error) {
             console.warn(
-                "Natiijooyinka personality-ga lama akhrin karin:",
+                "Personality results could not be read:",
                 error
             );
         }
@@ -982,1648 +986,7 @@ function displayPersonalityResults() {
 
                     const traitHeader =
                         document.createElement(
-                            "div"
-                        );
-
-                    traitHeader.className =
-                        "traitHeader";
-
-                    const traitName =
-                        document.createElement(
-                            "span"
-                        );
-
-                    traitName.className =
-                        "traitName";
-
-                    traitName.textContent =
-                        `${result.emoji} ${result.name}`;
-
-                    const traitPercent =
-                        document.createElement(
-                            "span"
-                        );
-
-                    traitPercent.className =
-                        "traitPercent";
-
-                    traitPercent.textContent =
-                        `${result.percentage}%`;
-
-                    const traitBar =
-                        document.createElement(
-                            "div"
-                        );
-
-                    traitBar.className =
-                        "traitBar";
-
-                    const traitFill =
-                        document.createElement(
-                            "div"
-                        );
-
-                    traitFill.className =
-                        "traitFill";
-
-                    traitFill.style.width =
-                        "0%";
-
-                    traitHeader.appendChild(
-                        traitName
-                    );
-
-                    traitHeader.appendChild(
-                        traitPercent
-                    );
-
-                    traitBar.appendChild(
-                        traitFill
-                    );
-
-                    trait.appendChild(
-                        traitHeader
-                    );
-
-                    trait.appendChild(
-                        traitBar
-                    );
-
-                    resultsContainer.appendChild(
-                        trait
-                    );
-
-                    window.setTimeout(() => {
-                        traitFill.style.width =
-                            `${result.percentage}%`;
-                    }, 180 + index * 120);
-                }
-            );
-        }
-    );
-}
-
-
-/* =========================================================
-   FINISH AND RETAKE QUIZ
-========================================================= */
-
-function finishQuiz() {
-    if (isNavigating) {
-        return;
-    }
-
-    const isFirstPersonalityTest =
-        !localStorage.getItem(
-            STORAGE_KEYS.personalityResults
-        );
-
-    generatePersonalityResults();
-
-    if (isFirstPersonalityTest) {
-        saveUnifiedStreakDay(1);
-        saveLastCompletedDate(
-            getLocalDateKey()
-        );
-
-        localStorage.setItem(
-            STORAGE_KEYS.completedToday,
-            "true"
-        );
-
-        sessionStorage.setItem(
-            "firstPersonalityDayResult",
-            "true"
-        );
-    } else {
-        sessionStorage.removeItem(
-            "firstPersonalityDayResult"
-        );
-    }
-
-    setResultsMode("personality");
-
-    goTo("results.html");
-}
-
-
-/* =========================================================
-   RESULTS MODE
-========================================================= */
-
-function setResultsMode(mode) {
-    const safeMode =
-        mode === "streak"
-            ? "streak"
-            : "personality";
-
-    localStorage.setItem(
-        STORAGE_KEYS.resultsMode,
-        safeMode
-    );
-
-    localStorage.setItem(
-        STORAGE_KEYS.alternateResultsMode,
-        safeMode
-    );
-
-    sessionStorage.setItem(
-        STORAGE_KEYS.resultsMode,
-        safeMode
-    );
-
-    sessionStorage.setItem(
-        STORAGE_KEYS.alternateResultsMode,
-        safeMode
-    );
-}
-
-function getResultsMode() {
-    const savedMode =
-        sessionStorage.getItem(
-            STORAGE_KEYS.resultsMode
-        ) ||
-        sessionStorage.getItem(
-            STORAGE_KEYS.alternateResultsMode
-        ) ||
-        localStorage.getItem(
-            STORAGE_KEYS.resultsMode
-        ) ||
-        localStorage.getItem(
-            STORAGE_KEYS.alternateResultsMode
-        );
-
-    return savedMode === "streak"
-        ? "streak"
-        : "personality";
-}
-
-
-/* =========================================================
-   UNIFIED STREAK STORAGE
-========================================================= */
-
-function getSavedStreakDay() {
-    const possibleValues = [
-        localStorage.getItem(
-            STORAGE_KEYS.streak
-        ),
-        localStorage.getItem(
-            STORAGE_KEYS.alternateStreak
-        ),
-        localStorage.getItem(
-            STORAGE_KEYS.oldStreak
-        )
-    ];
-
-    for (const value of possibleValues) {
-        const parsedValue =
-            Number.parseInt(
-                value,
-                10
-            );
-
-        if (
-            Number.isFinite(parsedValue) &&
-            parsedValue >= 0
-        ) {
-            return parsedValue;
-        }
-    }
-
-    return 0;
-}
-
-function saveUnifiedStreakDay(streakDay) {
-    const safeStreak =
-        Math.max(
-            0,
-            Number.parseInt(
-                streakDay,
-                10
-            ) || 0
-        );
-
-    localStorage.setItem(
-        STORAGE_KEYS.streak,
-        String(safeStreak)
-    );
-
-    localStorage.setItem(
-        STORAGE_KEYS.alternateStreak,
-        String(safeStreak)
-    );
-
-    localStorage.setItem(
-        STORAGE_KEYS.oldStreak,
-        String(safeStreak)
-    );
-}
-
-function getLastCompletedDate() {
-    return (
-        localStorage.getItem(
-            STORAGE_KEYS.lastCompletedDate
-        ) ||
-        localStorage.getItem(
-            STORAGE_KEYS.oldLastCompletedDate
-        ) ||
-        ""
-    );
-}
-
-function saveLastCompletedDate(dateKey) {
-    localStorage.setItem(
-        STORAGE_KEYS.lastCompletedDate,
-        dateKey
-    );
-
-    localStorage.setItem(
-        STORAGE_KEYS.oldLastCompletedDate,
-        dateKey
-    );
-}
-
-function synchronizeStreakStorage() {
-    const currentStreak =
-        getSavedStreakDay();
-
-    saveUnifiedStreakDay(
-        currentStreak
-    );
-
-    const lastDate =
-        getLastCompletedDate();
-
-    if (lastDate) {
-        saveLastCompletedDate(
-            lastDate
-        );
-    }
-
-    if (
-        lastDate ===
-        getLocalDateKey()
-    ) {
-        localStorage.setItem(
-            STORAGE_KEYS.completedToday,
-            "true"
-        );
-    } else {
-        localStorage.removeItem(
-            STORAGE_KEYS.completedToday
-        );
-    }
-}
-
-function hasCompletedStreakToday() {
-    return (
-        getLastCompletedDate() ===
-        getLocalDateKey()
-    );
-}
-
-function completeDailyStreak() {
-    const today =
-        getLocalDateKey();
-
-    const yesterday =
-        getYesterdayDateKey();
-
-    const previousDate =
-        getLastCompletedDate();
-
-    let currentStreak =
-        getSavedStreakDay();
-
-    if (previousDate === today) {
-        localStorage.setItem(
-            STORAGE_KEYS.completedToday,
-            "true"
-        );
-
-        return Math.max(
-            1,
-            currentStreak
-        );
-    }
-
-    if (previousDate === yesterday) {
-        currentStreak += 1;
-    } else {
-        currentStreak = 1;
-    }
-
-    saveUnifiedStreakDay(
-        currentStreak
-    );
-
-    saveLastCompletedDate(today);
-
-    localStorage.setItem(
-        STORAGE_KEYS.completedToday,
-        "true"
-    );
-
-    return currentStreak;
-}
-
-function displayStreakDay() {
-    const displayedStreak =
-        Math.max(
-            1,
-            getSavedStreakDay()
-        );
-
-    queryAll(
-        "#streakDay, " +
-        "[data-streak-day]"
-    ).forEach(element => {
-        element.textContent =
-            String(displayedStreak);
-    });
-
-    updateStreakFlameDisplays();
-}
-
-
-/* =========================================================
-   HOMEPAGE STREAK ACTIONS
-========================================================= */
-
-function showAlreadyCompletedMessage() {
-    const message =
-        "Maanta streak-gaaga waad sii wadatay! Berri soo noqo si aanu streak-gaagu u go'in. 🔥";
-
-    const messageElement =
-        byId(
-            "streakAlreadyCompletedMessage"
-        ) ||
-        byId("streakMessage") ||
-        query("[data-streak-message]");
-
-    if (messageElement) {
-        messageElement.textContent =
-            message;
-
-        messageElement.hidden =
-            false;
-
-        messageElement.classList.add(
-            "show"
-        );
-
-        messageElement.setAttribute(
-            "aria-live",
-            "polite"
-        );
-
-        return;
-    }
-
-    window.alert(message);
-}
-
-function continueDailyStreak() {
-    if (hasCompletedStreakToday()) {
-        showAlreadyCompletedMessage();
-        return;
-    }
-
-    setResultsMode("streak");
-
-    goTo("streak-game.html");
-}
-
-function prepareHomepageActions() {
-    if (
-        getCurrentPageName() !==
-        "index.html"
-    ) {
-        return;
-    }
-
-    const mainMessage =
-        byId("homeMainMessage");
-
-    const streakCard =
-        query(".home-streak-card");
-
-    const continueButton =
-        byId("continueStreakButton");
-
-    const retakeButton =
-        byId("retakeTestButton");
-
-    const completedMessage =
-        byId(
-            "streakAlreadyCompletedMessage"
-        );
-
-    const hasPersonalityResults =
-        Boolean(
-            localStorage.getItem(
-                STORAGE_KEYS.personalityResults
-            )
-        );
-
-    /*
-      FIRST-TIME PLAYER
-    */
-    if (!hasPersonalityResults) {
-        if (mainMessage) {
-            mainMessage.textContent =
-                "Ku soo dhowow imtixaanka shakhsiyadda! Waxaad ka jawaabi doontaa su’aalo fudud oo kaa caawinaya inaad ogaato shakhsiyaddaada, oo streak furatid! Badhanka hoose taabo si aad u bilowdid.";
-        }
-
-        setElementVisibility(
-            streakCard,
-            false
-        );
-
-        setElementVisibility(
-            retakeButton,
-            false
-        );
-
-        setElementVisibility(
-            completedMessage,
-            false
-        );
-
-        if (continueButton) {
-            setElementVisibility(
-                continueButton,
-                true
-            );
-
-            continueButton.textContent =
-                "Bilow Imtixaanka ✨";
-
-            continueButton.onclick =
-                event => {
-                    event.preventDefault();
-
-                    goTo(
-                        "question1.html"
-                    );
-                };
-        }
-
-        return;
-    }
-
-    /*
-      RETURNING PLAYER
-    */
-    setElementVisibility(
-        streakCard,
-        true
-    );
-
-    setElementVisibility(
-        retakeButton,
-        true
-    );
-
-    if (retakeButton) {
-        retakeButton.textContent =
-            "Shakhsiyadaada eeg";
-
-        retakeButton.onclick =
-            event => {
-                event.preventDefault();
-
-                setResultsMode(
-                    "personality"
-                );
-
-                goTo(
-                    "results.html"
-                );
-            };
-    }
-
-    const completedToday =
-        hasCompletedStreakToday();
-
-    if (completedToday) {
-        if (mainMessage) {
-            mainMessage.textContent =
-                "Maanta streak-gaaga waad sii wadatay! Berri soo noqo si aad mar kale u sii wadato.";
-        }
-
-        if (continueButton) {
-            continueButton.textContent =
-                "🌙 Berri Soo Noqo";
-
-            continueButton.onclick =
-                event => {
-                    event.preventDefault();
-
-                    showAlreadyCompletedMessage();
-                };
-        }
-
-        if (completedMessage) {
-            completedMessage.textContent =
-                "Maanta streak-gaaga waad sii wadatay! Berri soo noqo si aanu streak-gaagu u go'in. 🔥";
-
-            setElementVisibility(
-                completedMessage,
-                true
-            );
-        }
-
-        return;
-    }
-
-    /*
-      RETURNING PLAYER WHO CAN PLAY TODAY
-    */
-    if (mainMessage) {
-        mainMessage.textContent =
-            "Maanta waa fursaddaada inaad streak-gaaga sii wadato!";
-    }
-
-    if (continueButton) {
-        continueButton.textContent =
-            "Sii wad streak-ga 🔥";
-
-        continueButton.onclick =
-            event => {
-                event.preventDefault();
-
-                continueDailyStreak();
-            };
-    }
-
-    setElementVisibility(
-        completedMessage,
-        false
-    );
-}
-
-
-/* =========================================================
-   RESULTS PAGE
-========================================================= */
-
-function updateResultsPageHeadings(mode) {
-    const title =
-        byId("resultsTitle") ||
-        byId("resultTitle") ||
-        query("[data-results-title]");
-
-    const subtitle =
-        byId("resultsSubtitle") ||
-        byId("resultSubtitle") ||
-        query("[data-results-subtitle]");
-
-    if (title) {
-        title.textContent =
-            mode === "streak"
-                ? "Streak-ga Waa Dhammaystirtay 🔥"
-                : "Shakhsiyadaada";
-    }
-
-    if (subtitle) {
-        subtitle.textContent =
-            mode === "streak"
-                ? "Maanta streak-gaaga waad sii wadatay."
-                : "Kuwani waa natiijooyinka personality-gaaga cusub.";
-    }
-}
-
-function ensureGeneratedStreakResultCard() {
-    let card =
-        byId(
-            "generatedStreakResultCard"
-        );
-
-    if (card) {
-        return card;
-    }
-
-    const personalityResults =
-        byId("personalityResults");
-
-    if (!personalityResults) {
-        return null;
-    }
-
-    card =
-        document.createElement(
-            "section"
-        );
-
-    card.id =
-        "generatedStreakResultCard";
-
-    card.className =
-        "result-card streak-result-card";
-
-    const label =
-        document.createElement("p");
-
-    label.className =
-        "result-label";
-
-    label.textContent =
-        "Streak-gaaga";
-
-    const flameContainer =
-        document.createElement(
-            "div"
-        );
-
-    flameContainer.id =
-        "generatedMainStreakFlame";
-
-    flameContainer.className =
-        "generated-streak-flame";
-
-    flameContainer.setAttribute(
-        "data-streak-flame",
-        ""
-    );
-
-    const value =
-        document.createElement(
-            "strong"
-        );
-
-    value.id =
-        "generatedMainStreakValue";
-
-    value.className =
-        "main-streak-value";
-
-    const description =
-        document.createElement("p");
-
-    description.textContent =
-        "Maanta streak-gaaga si guul leh ayaad u sii wadatay.";
-
-    card.append(
-        label,
-        flameContainer,
-        value,
-        description
-    );
-
-    const personalityCard =
-        personalityResults.closest(
-            ".result-card, " +
-            ".results-card, " +
-            "section"
-        );
-
-    if (
-        personalityCard &&
-        personalityCard.parentElement
-    ) {
-        personalityCard.parentElement
-            .insertBefore(
-                card,
-                personalityCard
-            );
-    } else if (
-        personalityResults.parentElement
-    ) {
-        personalityResults.parentElement
-            .insertBefore(
-                card,
-                personalityResults
-            );
-    }
-
-    return card;
-}
-
-function prepareResultsPageMode() {
-    if (
-        getCurrentPageName() !==
-        "results.html"
-    ) {
-        return;
-    }
-
-    const mode =
-        getResultsMode();
-
-    const streakDay =
-        Math.max(
-            1,
-            getSavedStreakDay()
-        );
-
-    document.body.dataset.resultsMode =
-        mode;
-
-    updateResultsPageHeadings(mode);
-
-    const streakMainCard =
-        byId("streakMainCard") ||
-        query(
-            "[data-result-card='streak']"
-        );
-
-    const personalityMainCard =
-        byId("personalityMainCard") ||
-        query(
-            "[data-result-card='personality-main']"
-        );
-
-    const previousPersonalityCard =
-        byId("previousPersonalityCard") ||
-        query(
-            "[data-result-card='previous-personality']"
-        );
-
-    const customCardsExist =
-        streakMainCard ||
-        personalityMainCard ||
-        previousPersonalityCard;
-
-    if (customCardsExist) {
-        setElementVisibility(
-            streakMainCard,
-            mode === "streak"
-        );
-
-        setElementVisibility(
-            personalityMainCard,
-            mode === "personality"
-        );
-
-        setElementVisibility(
-            previousPersonalityCard,
-            mode === "streak"
-        );
-    } else {
-        const generatedStreakCard =
-            ensureGeneratedStreakResultCard();
-
-        setElementVisibility(
-            generatedStreakCard,
-            mode === "streak"
-        );
-
-        const personalityResults =
-            byId("personalityResults");
-
-        if (personalityResults) {
-            const personalityContainer =
-                personalityResults.closest(
-                    ".result-card, " +
-                    ".results-card, " +
-                    "section"
-                ) ||
-                personalityResults;
-
-            personalityContainer.classList
-                .toggle(
-                    "previous-personality-result",
-                    mode === "streak"
-                );
-        }
-    }
-
-    queryAll(
-        "#mainStreakDay, " +
-        "#generatedMainStreakValue, " +
-        "[data-main-streak]"
-    ).forEach(element => {
-        element.textContent =
-            `${streakDay} maalmood`;
-    });
-
-    queryAll(
-        "#continueStreakResultButton, " +
-        "[data-action='continue-streak']"
-    ).forEach(button => {
-        button.textContent =
-            hasCompletedStreakToday()
-                ? "🌙 Berri Soo Noqo"
-                : "Sii Wad Streak-ga 🔥";
-
-        button.onclick =
-            event => {
-                event.preventDefault();
-
-                continueDailyStreak();
-            };
-    });
-
-    queryAll(
-        "#retakeResultButton, " +
-        "[data-action='retake-test']"
-    ).forEach(button => {
-        button.textContent =
-            "Mar Kale Qaado";
-
-        button.onclick =
-            event => {
-                event.preventDefault();
-
-                retakePersonalityTest();
-            };
-    });
-
-    updateStreakFlameDisplays();
-}
-
-
-/* =========================================================
-   DAILY LEADERBOARD
-========================================================= */
-
-function displayLeaderboard() {
-    const leaderboard =
-        byId("leaderboard");
-
-    if (!leaderboard) {
-        return;
-    }
-
-    const addedDays =
-        getDaysSince(
-            LEADERBOARD_START_DATE
-        );
-
-    const players =
-        leaderboardPlayers
-            .map(player => {
-                return {
-                    name:
-                        player.name,
-
-                    streak:
-                        player.startingStreak +
-                        addedDays
-                };
-            })
-            .sort(
-                (playerA, playerB) =>
-                    playerB.streak -
-                    playerA.streak
-            );
-
-    leaderboard.innerHTML = "";
-
-    players.forEach(
-        (player, index) => {
-            const row =
-                document.createElement(
-                    "div"
-                );
-
-            row.className =
-                "leaderboard-row";
-
-            const nameElement =
-                document.createElement(
-                    "span"
-                );
-
-            nameElement.className =
-                "leaderboard-name";
-
-            const streakElement =
-                document.createElement(
-                    "span"
-                );
-
-            streakElement.className =
-                "leaderboard-streak";
-
-            let rank =
-                `${index + 1}.`;
-
-            if (index === 0) {
-                rank = "🥇";
-            } else if (index === 1) {
-                rank = "🥈";
-            } else if (index === 2) {
-                rank = "🥉";
-            }
-
-            nameElement.textContent =
-                `${rank} ${player.name}`;
-
-            const flame =
-                createStreakFlameElement(
-                    player.streak,
-                    "leaderboard-flame"
-                );
-
-            const streakText =
-                document.createElement(
-                    "span"
-                );
-
-            streakText.className =
-                "leaderboard-streak-text";
-
-            streakText.textContent =
-                `Maalinta ${player.streak}`;
-
-            streakElement.append(
-                flame,
-                streakText
-            );
-
-            row.appendChild(
-                nameElement
-            );
-
-            row.appendChild(
-                streakElement
-            );
-
-            leaderboard.appendChild(
-                row
-            );
-        }
-    );
-}
-
-
-/* =========================================================
-   WHATSAPP SHARING
-========================================================= */
-
-function shareResultsOnWhatsApp() {
-    const playerName =
-        localStorage.getItem(
-            STORAGE_KEYS.playerName
-        ) || "Ciyaaryahan";
-
-    const streakDay =
-        Math.max(
-            1,
-            getSavedStreakDay()
-        );
-
-    /*
-      Shows the top 5 personality traits.
-      Change 5 to another number if needed.
-    */
-    const personalityTraits =
-        getPersonalityResults()
-            .slice(0, 5)
-            .map(result => {
-                const traitName =
-                    result.name;
-
-                const normalizedName =
-                    traitName
-                        .toLowerCase()
-                        .trim();
-
-                let emoji = "✨";
-
-                if (
-                    normalizedName.includes("qurux")
-                ) {
-                    emoji = "✨";
-                } else if (
-                    normalizedName.includes("jees")
-                ) {
-                    emoji = "😏";
-                } else if (
-                    normalizedName.includes("firfir")
-                ) {
-                    emoji = "⚡";
-                } else if (
-                    normalizedName.includes("daryeel")
-                ) {
-                    emoji = "❤️";
-                } else if (
-                    normalizedName.includes("madax")
-                ) {
-                    emoji = "🦅";
-                } else if (
-                    normalizedName.includes("maskax")
-                ) {
-                    emoji = "🧠";
-                } else if (
-                    normalizedName.includes("degan") ||
-                    normalizedName.includes("dagan")
-                ) {
-                    emoji = "🌙";
-                } else if (
-                    normalizedName.includes("Xaraabaad")
-                ) {
-                    emoji = "😂";
-                } else if (
-                    normalizedName.includes("kalsooni")
-                ) {
-                    emoji = "💪";
-                } else if (
-                    normalizedName.includes("hal-abuur") ||
-                    normalizedName.includes("hal abuur")
-                ) {
-                    emoji = "🎨";
-                }
-
-                return `${emoji} ${traitName} — ${result.percentage}%`;
-            });
-
-    const message = [
-        `✨ *${playerName}* shakhsiyadooda ✨`,
-        "",
-        ...personalityTraits,
-        "",
-        `🔥 Streak Day ${streakDay} Complete`,
-        "",
-        "Kaalay adiguna is tijaabi",
-        WEBSITE_LINK
-    ].join("\n");
-
-    const shareURL =
-        "https://wa.me/?text=" +
-        encodeURIComponent(message);
-
-    window.open(
-        shareURL,
-        "_blank",
-        "noopener,noreferrer"
-    );
-}
-
-
-/* =========================================================
-   GENERATED BUTTON SOUND
-========================================================= */
-
-function playPopSound() {
-    try {
-        const AudioContextClass =
-            window.AudioContext ||
-            window.webkitAudioContext;
-
-        if (!AudioContextClass) {
-            return;
-        }
-
-        if (!audioContext) {
-            audioContext =
-                new AudioContextClass();
-        }
-
-        if (
-            audioContext.state ===
-            "suspended"
-        ) {
-            audioContext.resume();
-        }
-
-        const oscillator =
-            audioContext.createOscillator();
-
-        const gain =
-            audioContext.createGain();
-
-        oscillator.type =
-            "triangle";
-
-        oscillator.frequency
-            .setValueAtTime(
-                520,
-                audioContext.currentTime
-            );
-
-        oscillator.frequency
-            .exponentialRampToValueAtTime(
-                760,
-                audioContext.currentTime +
-                0.07
-            );
-
-        gain.gain
-            .setValueAtTime(
-                0.09,
-                audioContext.currentTime
-            );
-
-        gain.gain
-            .exponentialRampToValueAtTime(
-                0.001,
-                audioContext.currentTime +
-                0.11
-            );
-
-        oscillator.connect(gain);
-
-        gain.connect(
-            audioContext.destination
-        );
-
-        oscillator.start();
-
-        oscillator.stop(
-            audioContext.currentTime +
-            0.12
-        );
-    } catch (error) {
-        console.warn(
-            "Codka lama ciyaari karin:",
-            error
-        );
-    }
-}
-
-
-/* =========================================================
-   CLICK PARTICLES
-========================================================= */
-
-function createParticles(button) {
-    const rect =
-        button.getBoundingClientRect();
-
-    const centerX =
-        rect.left +
-        rect.width / 2;
-
-    const centerY =
-        rect.top +
-        rect.height / 2;
-
-    const colors = [
-        "#ffffff",
-        "#f5d0fe",
-        "#e9d5ff",
-        "#fbcfe8",
-        "#ddd6fe",
-        "#f0abfc"
-    ];
-
-    const particleCount = 16;
-
-    for (
-        let index = 0;
-        index < particleCount;
-        index++
-    ) {
-        const particle =
-            document.createElement(
-                "span"
-            );
-
-        const angle =
-            (
-                Math.PI *
-                2 *
-                index
-            ) /
-                particleCount +
-            Math.random() *
-                0.35;
-
-        const distance =
-            38 +
-            Math.random() *
-                45;
-
-        const moveX =
-            Math.cos(angle) *
-            distance;
-
-        const moveY =
-            Math.sin(angle) *
-            distance;
-
-        const size =
-            6 +
-            Math.random() *
-                7;
-
-        particle.className =
-            "particle";
-
-        particle.style.left =
-            `${centerX}px`;
-
-        particle.style.top =
-            `${centerY}px`;
-
-        particle.style.width =
-            `${size}px`;
-
-        particle.style.height =
-            `${size}px`;
-
-        particle.style.background =
-            colors[
-                Math.floor(
-                    Math.random() *
-                    colors.length
-                )
-            ];
-
-        particle.style.setProperty(
-            "--particle-x",
-            `${moveX}px`
-        );
-
-        particle.style.setProperty(
-            "--particle-y",
-            `${moveY}px`
-        );
-
-        document.body.appendChild(
-            particle
-        );
-
-        particle.addEventListener(
-            "animationend",
-            () => {
-                particle.remove();
-            },
-            {
-                once: true
-            }
-        );
-    }
-}
-
-document.addEventListener(
-    "click",
-    event => {
-        const button =
-            event.target.closest(
-                "button"
-            );
-
-        if (!button) {
-            return;
-        }
-
-        playPopSound();
-        createParticles(button);
-    }
-);
-
-
-/* =========================================================
-   INFORMATION MENU
-========================================================= */
-
-function toggleInfoMenu() {
-    const menu =
-        byId("infoMenu");
-
-    if (!menu) {
-        return;
-    }
-
-    menu.classList.toggle(
-        "show"
-    );
-}
-
-document.addEventListener(
-    "click",
-    event => {
-        const menu =
-            byId("infoMenu");
-
-        const button =
-            query(".infoButton");
-
-        if (!menu || !button) {
-            return;
-        }
-
-        if (
-            !menu.contains(event.target) &&
-            !button.contains(event.target)
-        ) {
-            menu.classList.remove(
-                "show"
-            );
-        }
-    }
-);
-/* =========================================================
-   COLORED FLAME STYLES
-========================================================= */
-
-function injectStreakFlameStyles() {
-    if (byId("generatedStreakFlameStyles")) {
-        return;
-    }
-
-    const style = document.createElement("style");
-
-    style.id = "generatedStreakFlameStyles";
-
-    style.textContent = `
-        .streak-flame {
-            position: relative;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            min-width: 1.5em;
-            min-height: 1.5em;
-            margin: 0 0.2em;
-            vertical-align: middle;
-            font-size: 1.3em;
-            line-height: 1;
-            animation: flameBounce 0.8s ease-in-out infinite alternate;
-        }
-
-        .streak-flame-main::before {
-            content: "🔥";
-            display: block;
-        }
-
-        .flame-orange {
-            filter:
-                hue-rotate(0deg)
-                saturate(1.2)
-                drop-shadow(0 0 5px #ff7b00);
-        }
-
-        .flame-pink {
-            filter:
-                hue-rotate(285deg)
-                saturate(1.8)
-                brightness(1.2)
-                drop-shadow(0 0 6px #ff4fa3);
-        }
-
-        .flame-red {
-            filter:
-                hue-rotate(335deg)
-                saturate(2)
-                drop-shadow(0 0 7px #ff1f32);
-        }
-
-        .flame-purple {
-            filter:
-                hue-rotate(235deg)
-                saturate(1.7)
-                drop-shadow(0 0 7px #a855f7);
-        }
-
-        .flame-gold {
-            filter:
-                hue-rotate(15deg)
-                saturate(1.6)
-                brightness(1.25)
-                drop-shadow(0 0 8px #ffd700);
-        }
-
-        .flame-blue-crown {
-            filter:
-                hue-rotate(175deg)
-                saturate(2)
-                drop-shadow(0 0 8px #1e90ff);
-        }
-
-        .streak-flame-side {
-            position: absolute;
-            bottom: 0;
-            font-size: 0.6em;
-        }
-
-        .streak-flame-side::before {
-            content: "🔥";
-        }
-
-        .streak-flame-left {
-            left: -0.35em;
-            transform: rotate(-18deg);
-        }
-
-        .streak-flame-right {
-            right: -0.35em;
-            transform: rotate(18deg);
-        }
-
-        .streak-flame-crown {
-            position: absolute;
-            top: -0.75em;
-            left: 50%;
-            transform: translateX(-50%);
-            font-size: 0.75em;
-            filter: none;
-            z-index: 3;
-        }
-
-        .leaderboard-flame {
-            font-size: 1rem;
-        }
-
-        .generated-streak-flame {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 80px;
-            font-size: 3rem;
-        }
-
-        .leaderboard-streak {
-            display: inline-flex;
-            align-items: center;
-            gap: 7px;
-        }
-
-        .leaderboard-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            gap: 14px;
-        }
-
-        @keyframes flameBounce {
-            from {
-                transform: translateY(1px) scale(0.96);
-            }
-
-            to {
-                transform: translateY(-2px) scale(1.05);
-            }
-        }
-
-        @media (prefers-reduced-motion: reduce) {
-            .streak-flame {
-                animation: none;
-            }
-        }
-    `;
-
-    document.head.appendChild(style);
-}
-
-
-/* =========================================================
-   STREAK CHALLENGE GAME
-========================================================= */
-
-function initializeStreakGame() {
-    if (
-        !document.body.classList.contains(
-            "streak-game-page"
-        )
-    ) {
-        return;
-    }
-
-    const introScreen =
-        byId("streakIntro");
-
-    const beginButton =
-        byId("beginStreakButton");
-
-    const tutorialStatus =
-        byId("tutorialStatus");
-
-    const gameScreen =
-        byId("streakGame");
-
-    const gameArea =
-        byId("gameArea");
-
-    const gameMessage =
-        byId("gameMessage");
-
-    const targetButton =
-        byId("targetButton");
-
-    const targetRing =
-        byId("targetRing");
-
-    const missAnimation =
-        byId("missAnimation");
-
-    const currentStageDisplay =
-        byId("currentStage");
-
-    const currentCircleDisplay =
-        byId("currentCircle");
-
-    const stageTimerDisplay =
-        byId("stageTimerValue");
-
-    const stageProgressFill =
-        byId("stageProgressFill");
-
-    const stageCompleteOverlay =
-        byId("stageCompleteOverlay");
-
-    const completedStageNumber =
-        byId("completedStageNumber");
-
-    const remainingStagesText =
-        byId("remainingStagesText");
-
-    const missedOverlay =
-        byId("missedOverlay");
-
-    const successScreen =
-        byId("streakSuccessScreen");
-
-    const finalStreakNumber =
-        byId("finalStreakNumber");
-
-    const viewResultsButton =
-        byId("viewResultsButton");
-
-    const gameAnnouncement =
-        byId("gameAnnouncement");
-
-    const stageBoxes =
-        queryAll(".stage-box");
-
-    const requiredElements = [
-        introScreen,
-        beginButton,
-        tutorialStatus,
-        gameScreen,
-        gameArea,
-        gameMessage,
-        targetButton,
-        targetRing,
-        missAnimation,
-        currentStageDisplay,
-        currentCircleDisplay,
-        stageTimerDisplay,
-        stageProgressFill,
-        stageCompleteOverlay,
-        completedStageNumber,
-        remainingStagesText,
-        missedOverlay,
-        successScreen,
-        finalStreakNumber,
-        viewResultsButton
-    ];
-
-    if (
-        requiredElements.some(
-            element => !element
-        )
-    ) {
-        console.error(
-            "Ciyaarta streak-ga ma bilaaban karto sababtoo ah qaar ka mid ah qaybaha HTML-ka ayaa maqan."
-        );
-
-        return;
-    }
-
-
-    /* =====================================================
-       GAME SETTINGS
-    ===================================================== */
-
-    const TOTAL_STAGES = 10;
-    const CIRCLES_PER_STAGE = 3;
-
-    const TUTORIAL_DURATION = 5000;
-    const CIRCLE_PAUSE_DURATION = 500;
-    const STAGE_READY_DURATION = 700;
-    const STAGE_COMPLETE_DURATION = 2400;
-    const MISS_ANIMATION_DURATION = 700;
-    const MISSED_OVERLAY_DURATION = 1700;
-
-    const STAGE_TIMES = [
-        1.0,
-        0.9,
-        0.85,
-        0.84,
-        0.81,
-        0.8,
-        0.79,
-        0.75,
-        0.73,
-        0.69
-    ];
-
-
-    /* =====================================================
-       GAME STATE
-    ===================================================== */
-
-    let currentStage = 1;
-    let currentCircle = 1;
-
-    let targetTimeout = null;
-    let actionTimeout = null;
-    let overlayTimeout = null;
-
-    let targetIsActive = false;
-    let gameIsRunning = false;
-    let inputIsLocked = true;
-    let gameHasFinished = false;
-
-
-    /* =====================================================
-       TIMER HELPERS
-    ===================================================== */
+           …9491 tokens truncated…=========== */
 
     function clearTimer(timer) {
         if (timer !== null) {
@@ -2747,20 +1110,20 @@ function initializeStreakGame() {
 
         if (remainingStages === 1) {
             remainingStagesText.textContent =
-                "Hal marxalad ayaa kuu hadhay.";
+                "One stage remains.";
 
             return;
         }
 
         if (remainingStages === 0) {
             remainingStagesText.textContent =
-                "Dhammaan marxaladaha waad dhammaystirtay.";
+                "You completed every stage.";
 
             return;
         }
 
         remainingStagesText.textContent =
-            `${remainingStages} marxaladood ayaa kuu hadhay.`;
+            `${remainingStages} stages remain.`;
     }
 
 
@@ -2904,10 +1267,10 @@ function initializeStreakGame() {
         targetIsActive = true;
 
         gameMessage.textContent =
-            "Hadda riix!";
+            "Tap now!";
 
         announce(
-            `Marxaladda ${currentStage}, goobada ${currentCircle}.`
+            `Stage ${currentStage}, circle ${currentCircle}.`
         );
 
         targetTimeout =
@@ -2939,10 +1302,10 @@ function initializeStreakGame() {
         updateGameDisplay();
 
         gameMessage.textContent =
-            `Marxaladda ${currentStage} — Is diyaari...`;
+            `Stage ${currentStage} â€” Get ready...`;
 
         announce(
-            `Marxaladda ${currentStage} ayaa bilaabanaysa.`
+            `Stage ${currentStage} is starting.`
         );
 
         actionTimeout =
@@ -2984,10 +1347,10 @@ function initializeStreakGame() {
         );
 
         gameMessage.textContent =
-            "Waa sax!";
+            "Great!";
 
         announce(
-            "Waa sax."
+            "Great."
         );
 
         actionTimeout =
@@ -3006,7 +1369,7 @@ function initializeStreakGame() {
                         );
 
                     gameMessage.textContent =
-                        "Midka xiga...";
+                        "Next one...";
 
                     actionTimeout =
                         window.setTimeout(
@@ -3083,12 +1446,12 @@ function initializeStreakGame() {
         );
 
         gameMessage.textContent =
-            "Waad seegtay.";
+            "You missed.";
 
         showMissAnimation();
 
         announce(
-            "Waad seegtay."
+            "You missed."
         );
 
         actionTimeout =
@@ -3099,7 +1462,7 @@ function initializeStreakGame() {
                     .remove("hidden");
 
                 announce(
-                    `Marxaladda ${currentStage} waxay dib uga bilaabanaysaa goobada koowaad.`
+                    `Stage ${currentStage} will restart from the first circle.`
                 );
 
                 overlayTimeout =
@@ -3154,7 +1517,7 @@ function initializeStreakGame() {
             .remove("hidden");
 
         announce(
-            `Marxaladda ${completedStage} waa la dhammaystiray.`
+            `Stage ${completedStage} is complete.`
         );
 
         overlayTimeout =
@@ -3228,7 +1591,7 @@ function initializeStreakGame() {
         updateStreakFlameDisplays();
 
         announce(
-            `Hambalyo. Streak-gaagu hadda waa ${updatedStreak} maalmood.`
+            `Congratulations. Your streak is now ${updatedStreak} days.`
         );
     }
 
@@ -3318,7 +1681,7 @@ function initializeStreakGame() {
 
         window.setTimeout(() => {
             tutorialStatus.textContent =
-                "Diyaar ma tahay?";
+                "Are you ready?";
 
             tutorialStatus.classList.remove(
                 "finished"
@@ -3326,7 +1689,7 @@ function initializeStreakGame() {
         }, 380);
 
         announce(
-            "Badhanka Bilow hadda waa diyaar."
+            "The Start button is now ready."
         );
     }
 
@@ -3510,3 +1873,4 @@ window.retakePersonalityTest =
 
 window.toggleInfoMenu =
     toggleInfoMenu;
+
