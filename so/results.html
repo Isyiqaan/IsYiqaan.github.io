@@ -1,0 +1,195 @@
+Exit code: 0
+Wall time: 2.1 seconds
+Output:
+<!DOCTYPE html>
+<html lang="so">
+
+<head>
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <script
+        async
+        src="https://pagead2.googlesyndication.com/pagead/js?client=ca-pub-9591229850045984"
+        crossorigin="anonymous"
+    ></script>
+
+    <title>Natiijooyinka</title>
+
+    <link
+        rel="preconnect"
+        href="https://fonts.googleapis.com"
+    >
+
+    <link
+        rel="preconnect"
+        href="https://fonts.gstatic.com"
+        crossorigin
+    >
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&display=swap"
+        rel="stylesheet"
+    >
+
+    <link
+        rel="stylesheet"
+        href="style.css"
+    >
+</head>
+
+<body data-progress="100">
+
+    <div class="blob"></div>
+    <div class="blob"></div>
+    <div class="blob"></div>
+
+    <main class="content">
+
+        <p class="player-name">
+            Hambalyo,
+            <span data-player-name></span>!
+        </p>
+
+        <h1 id="resultsTitle">
+            Natiijooyinkaaga
+        </h1>
+
+        <h2 id="resultsSubtitle">
+            Waa kan waxa aad heshay maanta.
+        </h2>
+
+        <!-- =========================
+             STREAK MAIN CARD
+        ========================== -->
+
+        <section
+            id="streakMainCard"
+            class="result-card"
+            hidden
+        >
+
+            <h2>ðŸ”¥ Streak</h2>
+
+            <div
+                id="mainStreakDay"
+                class="big-streak-number"
+            >
+                1-day streak
+            </div>
+
+            <p>
+                Waxaad sii wadatay streak-gaaga maanta.
+            </p>
+
+        </section>
+
+        <!-- =========================
+             PERSONALITY MAIN CARD
+        ========================== -->
+
+        <section
+            id="personalityMainCard"
+            class="result-card"
+        >
+
+            <div
+                id="personalityResults"
+                class="personalityResults"
+            ></div>
+
+        </section>
+
+        <!-- =========================
+             PREVIOUS PERSONALITY
+        ========================== -->
+
+        <section
+            id="previousPersonalityCard"
+            class="result-card"
+            hidden
+        >
+
+            <h2>
+                âœ¨ Personality-gaagii
+            </h2>
+
+            <div
+                id="previousPersonalityResults"
+                class="personalityResults"
+            ></div>
+
+        </section>
+
+        <!-- =========================
+             BUTTONS
+        ========================== -->
+
+        <button
+            id="continueStreakResultButton"
+            class="answer"
+            type="button"
+        >
+            Sii Wad Streak-ga ðŸ”¥
+        </button>
+
+        <button
+            id="retakeResultButton"
+            class="answer"
+            type="button"
+        >
+            Dib U Samee Tartanka
+        </button>
+
+        <button
+            class="answer shareButton"
+            type="button"
+            onclick="shareResultsOnWhatsApp()"
+        >
+            ðŸ“± WhatsApp ku Share Garee
+        </button>
+
+        <h2 class="leaderboard-title">
+            ðŸ† Kala Sarreynta Streak-ga
+        </h2>
+
+        <div id="leaderboard"></div>
+
+        <p class="bottom-message">
+            Soo noqo berri si aad streak-gaaga u sii wadato oo aad ugu sii kacdo kala sarreynta.
+        </p>
+
+    </main>
+
+    <div class="progress">
+        <div class="progressFill"></div>
+    </div>
+
+    <script src="script.js"></script>
+
+    <div
+        class="infoButton"
+        onclick="toggleInfoMenu()"
+    >
+        â„¹
+    </div>
+
+    <div
+        id="infoMenu"
+        class="infoMenu"
+    >
+        <a href="about.html">ðŸ§  About</a>
+        <a href="faq.html">â“ FAQ</a>
+        <a href="contact.html">ðŸ“§ Contact</a>
+        <a href="privacy.html">ðŸ”’ Privacy Policy</a>
+        <a href="terms.html">ðŸ“œ Terms of Service</a>
+    </div>
+
+</body>
+
+</html>
+
