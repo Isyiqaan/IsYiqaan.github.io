@@ -2762,8 +2762,7 @@ body.results-personality-mode #previousPersonalityCard { display: none; }
 }
 
 /* =========================================================
-   MOBILE-FIRST STREAK GAME FIX
-   Paste this at the VERY BOTTOM of style.css
+   STREAK GAME THEME AND MOBILE INPUT FIXES
 ========================================================= */
 
 /* Match the personality-test pink/purple theme */
@@ -2796,8 +2795,8 @@ body.streak-game-page {
 }
 
 /* Intro card */
-.streak-intro-card,
-.streak-success-card {
+.streak-game-page .streak-intro-card,
+.streak-game-page .streak-success-card {
     color: #704579;
 
     border: 2px solid rgba(255, 255, 255, 0.85);
@@ -3024,19 +3023,3 @@ body.streak-game-page {
     }
 }
 
-#gameArea {
-    touch-action: none;
-    overscroll-behavior: contain;
-}
-
-#targetButton {
-    pointer-events: auto;
-    touch-action: none;
-    -webkit-tap-highlight-color: transparent;
-    z-index: 20;
-}
-
-#targetRing,
-#missAnimation {
-    pointer-events: none;
-}

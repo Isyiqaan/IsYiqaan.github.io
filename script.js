@@ -2028,7 +2028,7 @@ function shareResultsOnWhatsApp() {
                     emoji = "🎨";
                 }
 
-                return `${emoji} ${traitName}`;
+                return `${emoji} ${traitName} — ${result.percentage}%`;
             });
 
     const message = [
