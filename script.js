@@ -1,4 +1,3 @@
-
 "use strict";
 
 /* =========================================================
@@ -299,7 +298,6 @@ function getLocalDateKey(
 
     const day =
         String(
-
             date.getDate()
         ).padStart(2, "0");
 
@@ -601,7 +599,6 @@ function redirectUnnamedPlayer() {
             STORAGE_KEYS.playerName
         );
 
-
     const publicPages = [
         "welcome.html",
         "about.html",
@@ -901,7 +898,6 @@ function generatePersonalityResults() {
         ).slice(0, 8);
 
     const results =
-
         selectedTraits
             .map(trait => {
                 return {
@@ -1203,7 +1199,6 @@ function getSavedStreakDay() {
     return 0;
 }
 
-
 function saveUnifiedStreakDay(streakDay) {
     const safeStreak =
         Math.max(
@@ -1503,7 +1498,6 @@ function prepareHomepageActions() {
 
     setElementVisibility(
         retakeButton,
-
         true
     );
 
@@ -1804,7 +1798,6 @@ function prepareResultsPageMode() {
                 personalityResults;
 
             personalityContainer.classList
-
                 .toggle(
                     "previous-personality-result",
                     mode === "streak"
@@ -2104,7 +2097,6 @@ function playPopSound() {
 
         const oscillator =
             audioContext.createOscillator();
-
 
         const gain =
             audioContext.createGain();
@@ -2406,7 +2398,6 @@ function injectStreakFlameStyles() {
                 hue-rotate(175deg)
                 saturate(2)
                 drop-shadow(0 0 8px #1e90ff);
-
         }
 
         .streak-flame-side {
@@ -2707,7 +2698,6 @@ function initializeStreakGame() {
             String(currentStage);
 
         currentCircleDisplay.textContent =
-
             String(currentCircle);
 
         stageTimerDisplay.textContent =
@@ -3008,7 +2998,6 @@ function initializeStreakGame() {
             "target-hit"
         );
 
-
         gameMessage.textContent =
             "Great!";
 
@@ -3308,7 +3297,6 @@ function initializeStreakGame() {
 
         updateStageBoxes(0);
         updateGameDisplay();
-
 
         requestAnimationFrame(() => {
             startCurrentStage();
