@@ -1,4 +1,3 @@
-
 /* =========================================================
    ULTIMATE PERSONALITY TEST
    CLEAN SHARED STYLE.CSS
@@ -299,7 +298,6 @@ h1 {
 }
 
 h2 {
-
     margin-top: 24px;
     margin-bottom: 12px;
 
@@ -601,7 +599,6 @@ button:disabled {
     transform: translateY(0);
 }
 
-
 .input-shake {
     animation:
         inputShake 400ms ease;
@@ -900,7 +897,6 @@ button:disabled {
     gap: 13px;
 
     padding: 13px 16px;
-
 
     border:
         2px solid
@@ -1202,7 +1198,6 @@ button:disabled {
             translate(
                 var(--particle-x),
                 var(--particle-y)
-
             )
             scale(0.15);
     }
@@ -1503,7 +1498,6 @@ button:disabled {
   font-weight: 700;
   cursor: pointer;
   transition:
-
     transform 180ms ease,
     box-shadow 180ms ease,
     filter 180ms ease;
@@ -1804,7 +1798,6 @@ button:disabled {
   100% {
     transform: scale(1);
   }
-
 }
 
 @keyframes demoTapEffect {
@@ -2105,7 +2098,6 @@ button:disabled {
 
 .target-button:active .target-circle {
   transform: scale(0.88);
-
   filter: brightness(1.12);
 }
 
@@ -2406,7 +2398,6 @@ button:disabled {
   box-shadow:
     0 26px 80px rgba(0, 0, 0, 0.4),
     inset 0 1px 0 rgba(255, 255, 255, 0.07);
-
   text-align: center;
   backdrop-filter: blur(18px);
   animation: successCardEnter 700ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
@@ -2707,7 +2698,6 @@ button:disabled {
 #mainStreakDay {
     margin: 7px 0 13px;
     color: #944c91;
-
     font-size: clamp(2rem, 9vw, 3.8rem);
     font-weight: 800;
     line-height: 1.1;
@@ -3008,7 +2998,6 @@ body.streak-game-page {
 
     .streak-game-page .game-area {
         width: 100%;
-
         min-height: 430px;
         margin: 12px auto;
         border-radius: 24px;
