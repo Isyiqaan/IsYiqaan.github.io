@@ -774,7 +774,7 @@ function fillPlayerNameElements() {
     const playerName =
         localStorage.getItem(
             STORAGE_KEYS.playerName
-        ) || "Ciyaaryahan";
+        ) || "Player";
 
     queryAll("[data-player-name]")
         .forEach(element => {
@@ -1973,7 +1973,7 @@ function shareResultsOnWhatsApp() {
     const playerName =
         localStorage.getItem(
             STORAGE_KEYS.playerName
-        ) || "Ciyaaryahan";
+        ) || "Player";
 
     const streakDay =
         Math.max(
@@ -2000,45 +2000,43 @@ function shareResultsOnWhatsApp() {
                 let emoji = "✨";
 
                 if (
-                    normalizedName.includes("qurux")
+                    normalizedName.includes("charm")
                 ) {
                     emoji = "✨";
                 } else if (
-                    normalizedName.includes("jees")
+                    normalizedName.includes("humor")
                 ) {
                     emoji = "😏";
                 } else if (
-                    normalizedName.includes("firfir")
+                    normalizedName.includes("energy")
                 ) {
                     emoji = "⚡";
                 } else if (
-                    normalizedName.includes("daryeel")
+                    normalizedName.includes("affection")
                 ) {
                     emoji = "❤️";
                 } else if (
-                    normalizedName.includes("madax")
+                    normalizedName.includes("independence")
                 ) {
                     emoji = "🦅";
                 } else if (
-                    normalizedName.includes("maskax")
+                    normalizedName.includes("intelligence")
                 ) {
                     emoji = "🧠";
                 } else if (
-                    normalizedName.includes("degan") ||
-                    normalizedName.includes("dagan")
+                    normalizedName.includes("calmness")
                 ) {
                     emoji = "🌙";
                 } else if (
-                    normalizedName.includes("Playfulness")
+                    normalizedName.includes("playfulness")
                 ) {
                     emoji = "😂";
                 } else if (
-                    normalizedName.includes("kalsooni")
+                    normalizedName.includes("confidence")
                 ) {
                     emoji = "💪";
                 } else if (
-                    normalizedName.includes("hal-abuur") ||
-                    normalizedName.includes("hal abuur")
+                    normalizedName.includes("creativity")
                 ) {
                     emoji = "🎨";
                 }
