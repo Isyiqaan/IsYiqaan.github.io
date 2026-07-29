@@ -170,7 +170,6 @@ const personalityTraits = [
 ========================================================= */
 
 let isNavigating = false;
-let audioContext = null;
 
 
 /* =========================================================
@@ -774,7 +773,7 @@ function fillPlayerNameElements() {
     const playerName =
         localStorage.getItem(
             STORAGE_KEYS.playerName
-        ) || "Ciyaaryahan";
+        ) || "Player";
 
     queryAll("[data-player-name]")
         .forEach(element => {
@@ -1448,7 +1447,7 @@ function prepareHomepageActions() {
     if (!hasPersonalityResults) {
         if (mainMessage) {
             mainMessage.textContent =
-                "Ku soo dhowow imtixaanka shakhsiyadda! Waxaad ka jawaabi doontaa su’aalo fudud oo kaa caawinaya inaad ogaato shakhsiyaddaada, oo streak furatid! Badhanka hoose taabo si aad u bilowdid.";
+                "Welcome to the personality test! Answer a few simple questions to discover your personality and begin your streak. Tap the button below to get started.";
         }
 
         setElementVisibility(
@@ -1599,7 +1598,7 @@ function updateResultsPageHeadings(mode) {
         title.textContent =
             mode === "streak"
                 ? "Streak Completed 🔥"
-                : "Shakhsiyadaada";
+                : "Your Personality";
     }
 
     if (subtitle) {
@@ -1973,7 +1972,7 @@ function shareResultsOnWhatsApp() {
     const playerName =
         localStorage.getItem(
             STORAGE_KEYS.playerName
-        ) || "Ciyaaryahan";
+        ) || "Player";
 
     const streakDay =
         Math.max(
@@ -2000,45 +1999,43 @@ function shareResultsOnWhatsApp() {
                 let emoji = "✨";
 
                 if (
-                    normalizedName.includes("qurux")
+                    normalizedName.includes("charm")
                 ) {
                     emoji = "✨";
                 } else if (
-                    normalizedName.includes("jees")
+                    normalizedName.includes("humor")
                 ) {
                     emoji = "😏";
                 } else if (
-                    normalizedName.includes("firfir")
+                    normalizedName.includes("energy")
                 ) {
                     emoji = "⚡";
                 } else if (
-                    normalizedName.includes("daryeel")
+                    normalizedName.includes("affection")
                 ) {
                     emoji = "❤️";
                 } else if (
-                    normalizedName.includes("madax")
+                    normalizedName.includes("independence")
                 ) {
                     emoji = "🦅";
                 } else if (
-                    normalizedName.includes("maskax")
+                    normalizedName.includes("intelligence")
                 ) {
                     emoji = "🧠";
                 } else if (
-                    normalizedName.includes("degan") ||
-                    normalizedName.includes("dagan")
+                    normalizedName.includes("calmness")
                 ) {
                     emoji = "🌙";
                 } else if (
-                    normalizedName.includes("Playfulness")
+                    normalizedName.includes("playfulness")
                 ) {
                     emoji = "😂";
                 } else if (
-                    normalizedName.includes("kalsooni")
+                    normalizedName.includes("confidence")
                 ) {
                     emoji = "💪";
                 } else if (
-                    normalizedName.includes("hal-abuur") ||
-                    normalizedName.includes("hal abuur")
+                    normalizedName.includes("creativity")
                 ) {
                     emoji = "🎨";
                 }
@@ -2066,88 +2063,6 @@ function shareResultsOnWhatsApp() {
         "_blank",
         "noopener,noreferrer"
     );
-}
-
-
-/* =========================================================
-   GENERATED BUTTON SOUND
-========================================================= */
-
-function playPopSound() {
-    try {
-        const AudioContextClass =
-            window.AudioContext ||
-            window.webkitAudioContext;
-
-        if (!AudioContextClass) {
-            return;
-        }
-
-        if (!audioContext) {
-            audioContext =
-                new AudioContextClass();
-        }
-
-        if (
-            audioContext.state ===
-            "suspended"
-        ) {
-            audioContext.resume();
-        }
-
-        const oscillator =
-            audioContext.createOscillator();
-
-        const gain =
-            audioContext.createGain();
-
-        oscillator.type =
-            "triangle";
-
-        oscillator.frequency
-            .setValueAtTime(
-                520,
-                audioContext.currentTime
-            );
-
-        oscillator.frequency
-            .exponentialRampToValueAtTime(
-                760,
-                audioContext.currentTime +
-                0.07
-            );
-
-        gain.gain
-            .setValueAtTime(
-                0.09,
-                audioContext.currentTime
-            );
-
-        gain.gain
-            .exponentialRampToValueAtTime(
-                0.001,
-                audioContext.currentTime +
-                0.11
-            );
-
-        oscillator.connect(gain);
-
-        gain.connect(
-            audioContext.destination
-        );
-
-        oscillator.start();
-
-        oscillator.stop(
-            audioContext.currentTime +
-            0.12
-        );
-    } catch (error) {
-        console.warn(
-            "Audio could not be played:",
-            error
-        );
-    }
 }
 
 
@@ -2276,8 +2191,6 @@ document.addEventListener(
         if (!button) {
             return;
         }
-
-        playPopSound();
         createParticles(button);
     }
 );
