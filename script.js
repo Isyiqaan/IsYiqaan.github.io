@@ -1448,7 +1448,7 @@ function prepareHomepageActions() {
     if (!hasPersonalityResults) {
         if (mainMessage) {
             mainMessage.textContent =
-                "Ku soo dhowow imtixaanka shakhsiyadda! Waxaad ka jawaabi doontaa su’aalo fudud oo kaa caawinaya inaad ogaato shakhsiyaddaada, oo streak furatid! Badhanka hoose taabo si aad u bilowdid.";
+                "Welcome to the personality test! Answer a few simple questions to discover your personality and begin your streak. Tap the button below to get started.";
         }
 
         setElementVisibility(
@@ -1599,7 +1599,7 @@ function updateResultsPageHeadings(mode) {
         title.textContent =
             mode === "streak"
                 ? "Streak Completed 🔥"
-                : "Shakhsiyadaada";
+                : "Your Personality";
     }
 
     if (subtitle) {
