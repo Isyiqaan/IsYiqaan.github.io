@@ -170,7 +170,6 @@ const personalityTraits = [
 ========================================================= */
 
 let isNavigating = false;
-let audioContext = null;
 
 
 /* =========================================================
@@ -2068,88 +2067,6 @@ function shareResultsOnWhatsApp() {
 
 
 /* =========================================================
-   GENERATED BUTTON SOUND
-========================================================= */
-
-function playPopSound() {
-    try {
-        const AudioContextClass =
-            window.AudioContext ||
-            window.webkitAudioContext;
-
-        if (!AudioContextClass) {
-            return;
-        }
-
-        if (!audioContext) {
-            audioContext =
-                new AudioContextClass();
-        }
-
-        if (
-            audioContext.state ===
-            "suspended"
-        ) {
-            audioContext.resume();
-        }
-
-        const oscillator =
-            audioContext.createOscillator();
-
-        const gain =
-            audioContext.createGain();
-
-        oscillator.type =
-            "triangle";
-
-        oscillator.frequency
-            .setValueAtTime(
-                520,
-                audioContext.currentTime
-            );
-
-        oscillator.frequency
-            .exponentialRampToValueAtTime(
-                760,
-                audioContext.currentTime +
-                0.07
-            );
-
-        gain.gain
-            .setValueAtTime(
-                0.09,
-                audioContext.currentTime
-            );
-
-        gain.gain
-            .exponentialRampToValueAtTime(
-                0.001,
-                audioContext.currentTime +
-                0.11
-            );
-
-        oscillator.connect(gain);
-
-        gain.connect(
-            audioContext.destination
-        );
-
-        oscillator.start();
-
-        oscillator.stop(
-            audioContext.currentTime +
-            0.12
-        );
-    } catch (error) {
-        console.warn(
-            "Audio could not be played:",
-            error
-        );
-    }
-}
-
-
-/* =========================================================
    CLICK PARTICLES
 ========================================================= */
 
@@ -2274,8 +2191,6 @@ document.addEventListener(
         if (!button) {
             return;
         }
-
-        playPopSound();
         createParticles(button);
     }
 );
