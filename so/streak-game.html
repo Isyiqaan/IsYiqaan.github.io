@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="so">
 <head>
   <meta charset="UTF-8">
 
@@ -10,18 +10,16 @@
 
   <meta
     name="description"
-    content="Complete today's challenge to continue your streak."
+    content="Dhammee caqabadda maanta si aad streak-gaaga u sii waddo."
   >
 
-  <title>Continue Your Streak</title>
+  <title>Streak Kordhin</title>
 
   <link rel="stylesheet" href="style.css">
   <script src="script.js" defer></script>
 </head>
 
 <body class="streak-game-page">
-
-    <a class="language-switch" href="so/streak-game.html" lang="so">Soomaali</a>
 
   <!-- Background decoration -->
   <div class="background-particles" aria-hidden="true">
@@ -48,29 +46,30 @@
       </div>
 
       <p class="streak-label">
-        Today's Streak
+        Streak-ga Maanta
       </p>
 
       <h1>
-        Get Ready
+        Is Diyaarso
       </h1>
 
       <p class="streak-intro-description">
-        Complete all 10 challenges to continue your streak today.
+        Dhammee dhammaan 10-ka caqabadood si aad streak-gaaga
+        maanta u sii waddo.
       </p>
 
 
       <!-- Animated tutorial demo -->
       <div
         class="streak-demo"
-        aria-label="Demonstration showing how to tap the circle"
+        aria-label="Tusaale muujinaya sida kubbadda loo riixo"
       >
         <div class="demo-target">
 
           <div class="demo-ring"></div>
 
           <div class="demo-circle">
-            <span>Tap</span>
+            <span>Riix</span>
           </div>
 
           <div
@@ -81,7 +80,7 @@
         </div>
 
         <p class="demo-caption">
-          Tap the circle before it closes.
+          Riix kubbadda ka hor inta ay xidhmin.
         </p>
       </div>
 
@@ -95,9 +94,9 @@
           </div>
 
           <div>
-            <h2>Tap in Time</h2>
+            <h2>Riix waqtigeeda</h2>
             <p>
-              Tap the circle before time runs out.
+              Riix kubbadda ka hor inta waqtigu dhammaan.
             </p>
           </div>
         </div>
@@ -109,9 +108,10 @@
           </div>
 
           <div>
-            <h2>Three Circles</h2>
+            <h2>Saddex kubbadood</h2>
             <p>
-              Each stage has 3 circles that appear one at a time.
+              Stage kasta wuxuu leeyahay 3 kubbadood oo
+              mid mid u soo baxaya.
             </p>
           </div>
         </div>
@@ -123,9 +123,10 @@
           </div>
 
           <div>
-            <h2>If You Miss</h2>
+            <h2>Haddii aad seegto</h2>
             <p>
-              Your current stage restarts from the first circle.
+              Stage-ka aad joogto wuxuu dib uga bilaabanayaa
+              kubbadda koowaad.
             </p>
           </div>
         </div>
@@ -137,9 +138,10 @@
           </div>
 
           <div>
-            <h2>Complete 10 Stages</h2>
+            <h2>Dhammee 10-ka stage</h2>
             <p>
-              Finish them all to add one day to your streak.
+              Markaad dhammeystirto, streak-gaaga ayaa
+              hal maalin ku kordhaya.
             </p>
           </div>
         </div>
@@ -160,7 +162,7 @@
         disabled
         aria-hidden="true"
       >
-        Start
+        Bilow
       </button>
 
       <p
@@ -168,7 +170,7 @@
         class="tutorial-status"
         aria-live="polite"
       >
-        Watch how to play...
+        Fiiri sida loo ciyaaro...
       </p>
 
     </section>
@@ -202,7 +204,7 @@
 
       <div class="game-status-group game-status-right">
         <p class="game-status-label">
-          Circle
+          Kubbadda
         </p>
 
         <p class="game-status-value">
@@ -218,7 +220,7 @@
     <!-- Stage progress -->
     <div
       class="stage-progress"
-      aria-label="Stage progress"
+      aria-label="Horumarka stage-yada"
     >
       <div
         id="stageProgressFill"
@@ -237,7 +239,7 @@
         id="gameMessage"
         class="game-message"
       >
-        Get ready...
+        Is diyaari...
       </p>
 
 
@@ -246,7 +248,7 @@
         id="targetButton"
         class="target-button hidden"
         type="button"
-        aria-label="Tap the circle"
+        aria-label="Riix kubbadda"
       >
         <span
           id="targetRing"
@@ -277,7 +279,7 @@
     <footer class="streak-game-footer">
 
       <p id="stageSpeedText">
-        Time for this stage:
+        Waqtiga stage-kan:
         <strong>
           <span id="stageTimerValue">2.0</span>s
         </strong>
@@ -306,17 +308,17 @@
       </div>
 
       <p class="overlay-label">
-        Great Progress
+        Horumar Fiican
       </p>
 
       <h2>
         Stage
         <span id="completedStageNumber">1</span>
-        is complete
+        waa la dhammeeyay
       </h2>
 
       <p id="remainingStagesText">
-        You have 9 stages remaining.
+        Waxa kuu hadhay 9 stage.
       </p>
 
 
@@ -324,7 +326,7 @@
       <div
         id="stageBoxes"
         class="stage-boxes"
-        aria-label="Completed stages"
+        aria-label="Stage-yada la dhammeeyay"
       >
         <span class="stage-box" data-stage="1"></span>
         <span class="stage-box" data-stage="2"></span>
@@ -339,7 +341,7 @@
       </div>
 
       <p class="overlay-encouragement">
-        Keep going. You are almost there.
+        Sii wad. Wax yar ayaa kuu hadhay.
       </p>
 
     </div>
@@ -364,15 +366,15 @@
       </div>
 
       <h2>
-        You Missed
+        Waad seegtay
       </h2>
 
       <p>
-        This stage will restart from the first circle.
+        Stage-kan wuxuu dib uga bilaabanayaa kubbadda koowaad.
       </p>
 
       <p class="overlay-encouragement">
-        Try again.
+        Mar kale isku day.
       </p>
 
     </div>
@@ -397,27 +399,27 @@
       </div>
 
       <p class="streak-label">
-        Streak Completed
+        Streakga Waa La Dhammeeyay
       </p>
 
       <h1>
-        Congratulations!
+        Hambalyo!
       </h1>
 
       <p class="success-description">
-        You successfully continued your streak today.
+        Waxaad si guul leh u sii wadatay streak-gaaga maanta.
       </p>
 
 
       <div class="final-streak-display">
 
         <p>
-          Your Streak
+          Streak-gaaga
         </p>
 
         <strong>
           <span id="finalStreakNumber">1</span>
-          days
+          maalmood
         </strong>
 
       </div>
@@ -428,7 +430,7 @@
         class="primary-button"
         type="button"
       >
-        View Results
+        Arag Natiijada
       </button>
 
     </div>

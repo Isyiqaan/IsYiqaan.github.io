@@ -43,121 +43,121 @@ const leaderboardPlayers = [
 
 const personalityTraits = [
     {
-        name: "Playfulness",
+        name: "Xaraabaad",
         emoji: "😂",
         min: 65,
         max: 99
     },
     {
-        name: "Intelligence",
+        name: "Maskax",
         emoji: "🧠",
         min: 65,
         max: 99
     },
     {
-        name: "Affection",
+        name: "Jacayl",
         emoji: "❤️",
         min: 65,
         max: 99
     },
     {
-        name: "Creativity",
+        name: "Hal-abuur",
         emoji: "🎨",
         min: 55,
         max: 97
     },
     {
-        name: "Confidence",
+        name: "Kalsooni",
         emoji: "💪",
         min: 45,
         max: 95
     },
     {
-        name: "Honesty",
+        name: "Daacadnimo",
         emoji: "🤝",
         min: 65,
         max: 99
     },
     {
-        name: "Curiosity",
+        name: "Xiiso",
         emoji: "🔍",
         min: 50,
         max: 96
     },
     {
-        name: "Adventurousness",
+        name: "Safar-jacayl",
         emoji: "🧭",
         min: 40,
         max: 94
     },
     {
-        name: "Calmness",
+        name: "Degganaan",
         emoji: "😌",
         min: 40,
         max: 92
     },
     {
-        name: "Ambition",
+        name: "Hami",
         emoji: "🚀",
         min: 55,
         max: 98
     },
     {
-        name: "Charm",
+        name: "Qurux",
         emoji: "✨",
         min: 80,
         max: 97
     },
     {
-        name: "Independence",
+        name: "Madax-bannaani",
         emoji: "🦅",
         min: 45,
         max: 95
     },
     {
-        name: "Optimism",
+        name: "Rajo",
         emoji: "🌈",
         min: 50,
         max: 96
     },
     {
-        name: "Patience",
+        name: "Dulqaad",
         emoji: "🌿",
         min: 35,
         max: 90
     },
     {
-        name: "Energy",
+        name: "Firfircooni",
         emoji: "⚡",
         min: 45,
         max: 97
     },
     {
-        name: "Competitiveness",
+        name: "Tartame",
         emoji: "🏆",
         min: 35,
         max: 91
     },
     {
-        name: "Sleepiness",
+        name: "Hurdoole",
         emoji: "😴",
         min: 5,
         max: 60
     },
     {
-        name: "Thoughtfulness",
+        name: "Fikir-badan",
         emoji: "💭",
         min: 15,
         max: 78
     },
     {
-        name: "Forgetfulness",
+        name: "Ilow-badan",
         emoji: "📝",
         min: 5,
         max: 58
     },
     {
-        name: "Humor",
+        name: "Jees-jees",
         emoji: "😏",
         min: 20,
         max: 85
@@ -178,20 +178,20 @@ let audioContext = null;
 ========================================================= */
 
 const STORAGE_KEYS = {
-    playerName: "enPlayerName",
-    personalityResults: "enPersonalityResults",
+    playerName: "playerName",
+    personalityResults: "personalityResults",
 
-    streak: "enCompletedDay",
-    alternateStreak: "enStreakDays",
-    oldStreak: "enStreak",
+    streak: "completedDay",
+    alternateStreak: "streakDays",
+    oldStreak: "streak",
 
-    lastCompletedDate: "enLastCompletedDate",
-    oldLastCompletedDate: "enLastStreakDate",
+    lastCompletedDate: "lastCompletedDate",
+    oldLastCompletedDate: "lastStreakDate",
 
-    completedToday: "enStreakCompletedToday",
+    completedToday: "streakCompletedToday",
 
-    resultsMode: "enResultsMode",
-    alternateResultsMode: "enResultMode"
+    resultsMode: "resultsMode",
+    alternateResultsMode: "resultMode"
 };
 
 
@@ -372,7 +372,7 @@ function getStreakFlameTier(streakDay) {
     if (streak >= 100) {
         return {
             className: "flame-blue-crown",
-            label: "Blue flame with a crown",
+            label: "Olol buluug ah oo taaj leh",
             shareEmoji: "👑💙🔥",
             sideFlames: true,
             crown: true
@@ -382,7 +382,7 @@ function getStreakFlameTier(streakDay) {
     if (streak >= 75) {
         return {
             className: "flame-gold",
-            label: "Golden flame",
+            label: "Olol dahabi ah",
             shareEmoji: "🟡🔥🔥🔥",
             sideFlames: true,
             crown: false
@@ -392,7 +392,7 @@ function getStreakFlameTier(streakDay) {
     if (streak >= 50) {
         return {
             className: "flame-purple",
-            label: "Purple flame",
+            label: "Olol guduud-buluug ah",
             shareEmoji: "💜🔥🔥🔥",
             sideFlames: true,
             crown: false
@@ -402,7 +402,7 @@ function getStreakFlameTier(streakDay) {
     if (streak >= 20) {
         return {
             className: "flame-red",
-            label: "Red flame",
+            label: "Olol cas",
             shareEmoji: "🔴🔥🔥🔥",
             sideFlames: true,
             crown: false
@@ -412,7 +412,7 @@ function getStreakFlameTier(streakDay) {
     if (streak >= 10) {
         return {
             className: "flame-pink",
-            label: "Pink flame",
+            label: "Olol basali ah",
             shareEmoji: "🩷🔥",
             sideFlames: false,
             crown: false
@@ -421,7 +421,7 @@ function getStreakFlameTier(streakDay) {
 
     return {
         className: "flame-orange",
-        label: "Orange flame",
+        label: "Olol oranji ah",
         shareEmoji: "🔥",
         sideFlames: false,
         crown: false
@@ -662,7 +662,7 @@ function createNameWarning(input) {
     warning.className = "warning";
 
     warning.textContent =
-        "Please enter your name first.";
+        "Marka hore magacaaga geli.";
 
     input.insertAdjacentElement(
         "afterend",
@@ -805,8 +805,8 @@ function updateWelcomeMessage() {
 
     welcomeText.textContent =
         hasResults
-            ? "Welcome back"
-            : "Welcome";
+            ? "Ku soo laabo"
+            : "Ku soo dhawoow";
 }
 
 
@@ -942,7 +942,7 @@ function getPersonalityResults() {
             }
         } catch (error) {
             console.warn(
-                "Personality results could not be read:",
+                "Natiijooyinka personality-ga lama akhrin karin:",
                 error
             );
         }
@@ -1068,11 +1068,6 @@ function displayPersonalityResults() {
    FINISH AND RETAKE QUIZ
 ========================================================= */
 
-function retakePersonalityTest() {
-    setResultsMode("personality");
-    goTo("question1.html");
-}
-
 function finishQuiz() {
     if (isNavigating) {
         return;
@@ -1097,12 +1092,12 @@ function finishQuiz() {
         );
 
         sessionStorage.setItem(
-            "enFirstPersonalityDayResult",
+            "firstPersonalityDayResult",
             "true"
         );
     } else {
         sessionStorage.removeItem(
-            "enFirstPersonalityDayResult"
+            "firstPersonalityDayResult"
         );
     }
 
@@ -1358,7 +1353,7 @@ function displayStreakDay() {
 
 function showAlreadyCompletedMessage() {
     const message =
-        "You completed today's streak! Come back tomorrow to keep it going. 🔥";
+        "Maanta streak-gaaga waad sii wadatay! Berri soo noqo si aanu streak-gaagu u go'in. 🔥";
 
     const messageElement =
         byId(
@@ -1420,16 +1415,6 @@ function prepareHomepageActions() {
     const retakeButton =
         byId("retakeTestButton");
 
-    const takeTestAgainButton =
-        byId("takeTestAgainButton");
-
-    if (takeTestAgainButton) {
-        takeTestAgainButton.onclick = event => {
-            event.preventDefault();
-            retakePersonalityTest();
-        };
-    }
-
     const completedMessage =
         byId(
             "streakAlreadyCompletedMessage"
@@ -1473,7 +1458,7 @@ function prepareHomepageActions() {
             );
 
             continueButton.textContent =
-                "Start the Test ✨";
+                "Bilow Imtixaanka ✨";
 
             continueButton.onclick =
                 event => {
@@ -1503,7 +1488,7 @@ function prepareHomepageActions() {
 
     if (retakeButton) {
         retakeButton.textContent =
-            "View Your Personality";
+            "Shakhsiyadaada eeg";
 
         retakeButton.onclick =
             event => {
@@ -1525,12 +1510,12 @@ function prepareHomepageActions() {
     if (completedToday) {
         if (mainMessage) {
             mainMessage.textContent =
-                "You completed today's streak! Come back tomorrow to continue it again.";
+                "Maanta streak-gaaga waad sii wadatay! Berri soo noqo si aad mar kale u sii wadato.";
         }
 
         if (continueButton) {
             continueButton.textContent =
-                "🌙 Come Back Tomorrow";
+                "🌙 Berri Soo Noqo";
 
             continueButton.onclick =
                 event => {
@@ -1542,7 +1527,7 @@ function prepareHomepageActions() {
 
         if (completedMessage) {
             completedMessage.textContent =
-                "You completed today's streak! Come back tomorrow to keep it going. 🔥";
+                "Maanta streak-gaaga waad sii wadatay! Berri soo noqo si aanu streak-gaagu u go'in. 🔥";
 
             setElementVisibility(
                 completedMessage,
@@ -1558,12 +1543,12 @@ function prepareHomepageActions() {
     */
     if (mainMessage) {
         mainMessage.textContent =
-            "Today is your chance to continue your streak!";
+            "Maanta waa fursaddaada inaad streak-gaaga sii wadato!";
     }
 
     if (continueButton) {
         continueButton.textContent =
-            "Continue Your Streak 🔥";
+            "Sii wad streak-ga 🔥";
 
         continueButton.onclick =
             event => {
@@ -1598,15 +1583,15 @@ function updateResultsPageHeadings(mode) {
     if (title) {
         title.textContent =
             mode === "streak"
-                ? "Streak Completed 🔥"
+                ? "Streak-ga Waa Dhammaystirtay 🔥"
                 : "Shakhsiyadaada";
     }
 
     if (subtitle) {
         subtitle.textContent =
             mode === "streak"
-                ? "You continued your streak today."
-                : "Here are your new personality results.";
+                ? "Maanta streak-gaaga waad sii wadatay."
+                : "Kuwani waa natiijooyinka personality-gaaga cusub.";
     }
 }
 
@@ -1645,7 +1630,7 @@ function ensureGeneratedStreakResultCard() {
         "result-label";
 
     label.textContent =
-        "Your Streak";
+        "Streak-gaaga";
 
     const flameContainer =
         document.createElement(
@@ -1678,7 +1663,7 @@ function ensureGeneratedStreakResultCard() {
         document.createElement("p");
 
     description.textContent =
-        "You successfully continued your streak today.";
+        "Maanta streak-gaaga si guul leh ayaad u sii wadatay.";
 
     card.append(
         label,
@@ -1811,7 +1796,7 @@ function prepareResultsPageMode() {
         "[data-main-streak]"
     ).forEach(element => {
         element.textContent =
-            `${streakDay} days`;
+            `${streakDay} maalmood`;
     });
 
     queryAll(
@@ -1820,8 +1805,8 @@ function prepareResultsPageMode() {
     ).forEach(button => {
         button.textContent =
             hasCompletedStreakToday()
-                ? "🌙 Come Back Tomorrow"
-                : "Continue Your Streak 🔥";
+                ? "🌙 Berri Soo Noqo"
+                : "Sii Wad Streak-ga 🔥";
 
         button.onclick =
             event => {
@@ -1836,7 +1821,7 @@ function prepareResultsPageMode() {
         "[data-action='retake-test']"
     ).forEach(button => {
         button.textContent =
-            "Retake the Test";
+            "Mar Kale Qaado";
 
         button.onclick =
             event => {
@@ -1942,7 +1927,7 @@ function displayLeaderboard() {
                 "leaderboard-streak-text";
 
             streakText.textContent =
-                `Day ${player.streak}`;
+                `Maalinta ${player.streak}`;
 
             streakElement.append(
                 flame,
@@ -2029,7 +2014,7 @@ function shareResultsOnWhatsApp() {
                 ) {
                     emoji = "🌙";
                 } else if (
-                    normalizedName.includes("Playfulness")
+                    normalizedName.includes("Xaraabaad")
                 ) {
                     emoji = "😂";
                 } else if (
@@ -2047,13 +2032,13 @@ function shareResultsOnWhatsApp() {
             });
 
     const message = [
-        `✨ *${playerName}'s* personality ✨`,
+        `✨ *${playerName}* shakhsiyadooda ✨`,
         "",
         ...personalityTraits,
         "",
         `🔥 Streak Day ${streakDay} Complete`,
         "",
-        "Try the personality challenge yourself",
+        "Kaalay adiguna is tijaabi",
         WEBSITE_LINK
     ].join("\n");
 
@@ -2144,7 +2129,7 @@ function playPopSound() {
         );
     } catch (error) {
         console.warn(
-            "Audio could not be played:",
+            "Codka lama ciyaari karin:",
             error
         );
     }
@@ -2584,7 +2569,7 @@ function initializeStreakGame() {
         )
     ) {
         console.error(
-            "The streak game cannot start because some HTML elements are missing."
+            "Ciyaarta streak-ga ma bilaaban karto sababtoo ah qaar ka mid ah qaybaha HTML-ka ayaa maqan."
         );
 
         return;
@@ -2762,20 +2747,20 @@ function initializeStreakGame() {
 
         if (remainingStages === 1) {
             remainingStagesText.textContent =
-                "One stage remains.";
+                "Hal marxalad ayaa kuu hadhay.";
 
             return;
         }
 
         if (remainingStages === 0) {
             remainingStagesText.textContent =
-                "You completed every stage.";
+                "Dhammaan marxaladaha waad dhammaystirtay.";
 
             return;
         }
 
         remainingStagesText.textContent =
-            `${remainingStages} stages remain.`;
+            `${remainingStages} marxaladood ayaa kuu hadhay.`;
     }
 
 
@@ -2919,10 +2904,10 @@ function initializeStreakGame() {
         targetIsActive = true;
 
         gameMessage.textContent =
-            "Tap now!";
+            "Hadda riix!";
 
         announce(
-            `Stage ${currentStage}, circle ${currentCircle}.`
+            `Marxaladda ${currentStage}, goobada ${currentCircle}.`
         );
 
         targetTimeout =
@@ -2954,10 +2939,10 @@ function initializeStreakGame() {
         updateGameDisplay();
 
         gameMessage.textContent =
-            `Stage ${currentStage} — Get ready...`;
+            `Marxaladda ${currentStage} — Is diyaari...`;
 
         announce(
-            `Stage ${currentStage} is starting.`
+            `Marxaladda ${currentStage} ayaa bilaabanaysa.`
         );
 
         actionTimeout =
@@ -2999,10 +2984,10 @@ function initializeStreakGame() {
         );
 
         gameMessage.textContent =
-            "Great!";
+            "Waa sax!";
 
         announce(
-            "Great."
+            "Waa sax."
         );
 
         actionTimeout =
@@ -3021,7 +3006,7 @@ function initializeStreakGame() {
                         );
 
                     gameMessage.textContent =
-                        "Next one...";
+                        "Midka xiga...";
 
                     actionTimeout =
                         window.setTimeout(
@@ -3098,12 +3083,12 @@ function initializeStreakGame() {
         );
 
         gameMessage.textContent =
-            "You missed.";
+            "Waad seegtay.";
 
         showMissAnimation();
 
         announce(
-            "You missed."
+            "Waad seegtay."
         );
 
         actionTimeout =
@@ -3114,7 +3099,7 @@ function initializeStreakGame() {
                     .remove("hidden");
 
                 announce(
-                    `Stage ${currentStage} will restart from the first circle.`
+                    `Marxaladda ${currentStage} waxay dib uga bilaabanaysaa goobada koowaad.`
                 );
 
                 overlayTimeout =
@@ -3169,7 +3154,7 @@ function initializeStreakGame() {
             .remove("hidden");
 
         announce(
-            `Stage ${completedStage} is complete.`
+            `Marxaladda ${completedStage} waa la dhammaystiray.`
         );
 
         overlayTimeout =
@@ -3243,7 +3228,7 @@ function initializeStreakGame() {
         updateStreakFlameDisplays();
 
         announce(
-            `Congratulations. Your streak is now ${updatedStreak} days.`
+            `Hambalyo. Streak-gaagu hadda waa ${updatedStreak} maalmood.`
         );
     }
 
@@ -3333,7 +3318,7 @@ function initializeStreakGame() {
 
         window.setTimeout(() => {
             tutorialStatus.textContent =
-                "Are you ready?";
+                "Diyaar ma tahay?";
 
             tutorialStatus.classList.remove(
                 "finished"
@@ -3341,7 +3326,7 @@ function initializeStreakGame() {
         }, 380);
 
         announce(
-            "The Start button is now ready."
+            "Badhanka Bilow hadda waa diyaar."
         );
     }
 

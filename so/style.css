@@ -3023,8 +3023,3 @@ body.streak-game-page {
     }
 }
 
-
-
-/* LANGUAGE SWITCH */
-.language-switch { position: fixed; top: 16px; right: 16px; z-index: 10000; padding: 9px 14px; border: 1px solid rgba(255,255,255,.82); border-radius: 999px; color: #704579; background: rgba(255,255,255,.82); box-shadow: 0 8px 22px rgba(126,62,148,.16); font-size: .88rem; font-weight: 800; text-decoration: none; backdrop-filter: blur(14px); }
-.language-switch:hover { transform: translateY(-2px); }
