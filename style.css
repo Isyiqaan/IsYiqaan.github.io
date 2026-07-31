@@ -1,3 +1,4 @@
+
 /* =========================================================
    ULTIMATE PERSONALITY TEST
    CLEAN SHARED STYLE.CSS
@@ -1274,53 +1275,7 @@ button:disabled {
     }
 
     .blob:nth-of-type(2) {
-        width: 245px;…4940 tokens truncated… rgba(255, 255, 255, 0.16);
-  border-radius: 14px;
-  background: rgba(255, 255, 255, 0.04);
-  transition:
-    transform 300ms ease,
-    border-color 300ms ease,
-    background 300ms ease,
-    box-shadow 300ms ease;
-}
-
-.stage-box.completed {
-  border-color: rgba(74, 218, 148, 0.72);
-  background: rgba(51, 197, 130, 0.18);
-  box-shadow: 0 0 20px rgba(51, 197, 130, 0.25);
-  animation: stageBoxFlip 650ms cubic-bezier(0.2, 0.8, 0.2, 1.2) both;
-}
-
-.stage-box.completed::after {
-  content: "✓";
-  color: #75e6ad;
-  font-size: 1.45rem;
-  font-weight: 900;
-  animation: stageTickEnter 500ms 150ms ease both;
-}
-
-.stage-box.next-stage {
-  border-color: rgba(173, 145, 255, 0.65);
-  animation: nextStagePulse 1.4s ease-in-out infinite;
-}
-
-@keyframes stageBoxFlip {
-  0% {
-    transform: rotateY(90deg) scale(0.8);
-  }
-
-  70% {
-    transform: rotateY(-8deg) scale(1.08);
-  }
-
-  100% {
-    transform: rotateY(0) scale(1);
-  }
-}
-
-@keyframes stageTickEnter {
-  from {
-    transform: scale(0.3) rotate(-120deg);
+        width: 245px;…5201 tokens truncated…eg);
     opacity: 0;
   }
 
@@ -1537,6 +1492,62 @@ button:disabled {
     align-items: center;
     flex-direction: column;
     gap: 24px;
+}
+
+/* =========================================================
+   STABLE PAGE LAYOUT
+   Keep content, ads, and footer in one readable column.
+========================================================= */
+
+body.home-page {
+    display: block;
+    min-height: 100vh;
+    padding: 42px 16px 24px;
+    overflow-x: hidden;
+}
+
+.home-page .home-content,
+.home-page .ad-section,
+.home-page .site-footer-nav {
+    width: min(100%, 760px);
+    margin-right: auto;
+    margin-left: auto;
+}
+
+.home-page .home-content {
+    min-height: auto;
+}
+
+.home-page .content-guide {
+    width: 100%;
+}
+
+.home-page .guide-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+}
+
+.home-page .ad-section {
+    margin-top: 26px;
+}
+
+.home-page .site-footer-nav {
+    display: flex;
+    margin-top: 28px;
+}
+
+@media (max-width: 600px) {
+    body.home-page {
+        padding: 24px 12px 18px;
+    }
+
+    .home-page .content-guide {
+        padding: 20px 16px;
+    }
+
+    .home-page .guide-grid {
+        grid-template-columns: 1fr;
+    }
 }
 
 /* Trust, navigation, and educational content */
