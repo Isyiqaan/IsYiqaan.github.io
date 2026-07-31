@@ -1642,7 +1642,7 @@ function prepareHomepageActions() {
 
     if (continueButton) {
         continueButton.textContent =
-            "Sii wad streak-ga 🔥";
+            "Sii wad streak-ga";
 
         continueButton.onclick =
             event => {
@@ -1901,7 +1901,7 @@ function prepareResultsPageMode() {
         button.textContent =
             hasCompletedStreakToday()
                 ? "🌙 Berri Soo Noqo"
-                : "Sii Wad Streak-ga 🔥";
+                : "Sii Wad Streak-ga";
 
         button.onclick =
             event => {
@@ -2440,24 +2440,27 @@ function injectStreakFlameStyles() {
         .streak-flame-main {
             position: relative;
             display: block;
-            width: 0.92em;
-            height: 1.28em;
+            width: 1em;
+            height: 1.42em;
             overflow: hidden;
-            border-radius: 70% 30% 62% 38% / 72% 38% 62% 28%;
-            background: linear-gradient(145deg, var(--flame-light), var(--flame-main) 58%, #e93822);
-            transform: rotate(45deg);
-            box-shadow: inset -0.12em -0.1em 0.2em rgba(152, 18, 24, 0.25);
+            border-radius: 48% 52% 50% 50% / 62% 62% 38% 38%;
+            background: linear-gradient(180deg, var(--flame-light), var(--flame-main) 54%, #d92835);
+            clip-path: polygon(50% 0%, 68% 24%, 76% 12%, 91% 40%, 100% 64%, 91% 84%, 72% 98%, 50% 100%, 27% 97%, 8% 82%, 0% 62%, 12% 39%, 31% 18%, 34% 43%);
+            transform: none;
+            box-shadow: inset -0.12em -0.1em 0.2em rgba(152, 18, 24, 0.22);
         }
 
         .streak-flame-main::after {
             content: "";
             position: absolute;
-            right: 0.12em;
-            bottom: 0.08em;
-            width: 0.42em;
-            height: 0.7em;
-            border-radius: 70% 30% 65% 35%;
-            background: rgba(255, 250, 190, 0.9);
+            left: 50%;
+            bottom: -0.04em;
+            width: 0.48em;
+            height: 0.82em;
+            border-radius: 50% 50% 45% 45% / 68% 68% 32% 32%;
+            background: rgba(255, 247, 176, 0.94);
+            clip-path: polygon(50% 0%, 88% 47%, 100% 72%, 76% 100%, 24% 100%, 0 72%, 14% 44%);
+            transform: translateX(-50%);
         }
 
         .flame-orange {
@@ -2703,10 +2706,10 @@ function initializeStreakGame() {
         remainingStagesText,
         missedOverlay,
         successScreen,
+
         finalStreakNumber,
         viewResultsButton
     ];
-
 
     if (
         requiredElements.some(
@@ -3005,9 +3008,9 @@ function initializeStreakGame() {
             "";
     }
 
+
     function restartRingAnimation(
         durationSeconds
-
     ) {
         targetRing.classList.remove(
             "ring-shrinking"
@@ -3305,9 +3308,9 @@ function initializeStreakGame() {
 
         overlayTimeout =
             window.setTimeout(() => {
+
                 stageCompleteOverlay.classList
                     .add("hidden");
-
 
                 if (
                     completedStage >=
@@ -3606,10 +3609,10 @@ document.addEventListener(
     () => {
         injectStreakFlameStyles();
 
+
         if (redirectUnnamedPlayer()) {
             return;
         }
-
 
         if (redirectReturningPlayer()) {
             return;
