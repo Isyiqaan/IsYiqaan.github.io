@@ -16,8 +16,8 @@
 
   <title>Streak Kordhin</title>
 
-  <link rel="stylesheet" href="style.css?v=20260731d">
-  <script src="script.js?v=20260731d" defer></script>
+  <link rel="stylesheet" href="style.css?v=20260731e">
+  <script src="script.js?v=20260731e" defer></script>
 </head>
 
 <body class="streak-game-page">
@@ -42,9 +42,7 @@
   >
     <section class="streak-intro-card">
 
-      <div class="streak-intro-icon" aria-hidden="true">
-        🔥
-      </div>
+      <div id="introStreakFlame" class="streak-intro-icon generated-streak-flame" data-streak-flame aria-hidden="true"></div>
 
       <p class="streak-label">
         Streak-ga Maanta
@@ -392,12 +390,7 @@
   >
     <div class="streak-success-card">
 
-      <div
-        class="success-fire"
-        aria-hidden="true"
-      >
-        🔥
-      </div>
+      <div id="finalStreakFlame" class="success-fire generated-streak-flame streak-flame-celebration" data-final-streak-flame aria-hidden="true"></div>
 
       <p class="streak-label">
         Streakga Waa La Dhammeeyay
@@ -419,8 +412,7 @@
         </p>
 
         <strong>
-          <span id="finalStreakNumber">1</span>
-          maalmood
+          maalinta <span id="finalStreakNumber">1</span>
         </strong>
 
       </div>
