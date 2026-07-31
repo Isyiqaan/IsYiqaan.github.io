@@ -1275,62 +1275,7 @@ button:disabled {
     }
 
     .blob:nth-of-type(2) {
-        width: 245px;…5201 tokens truncated…eg);
-    opacity: 0;
-  }
-
-  to {
-    transform: scale(1) rotate(0);
-    opacity: 1;
-  }
-}
-
-@keyframes nextStagePulse {
-  0%,
-  100% {
-    transform: scale(1);
-    box-shadow: 0 0 0 rgba(159, 124, 255, 0);
-  }
-
-  50% {
-    transform: scale(1.08);
-    box-shadow: 0 0 22px rgba(159, 124, 255, 0.35);
-  }
-}
-
-
-/* =========================================================
-   FINAL SUCCESS SCREEN
-========================================================= */
-
-.streak-success-screen {
-  display: grid;
-  place-items: center;
-  padding: 30px 20px;
-}
-
-.streak-success-card {
-  width: min(100%, 620px);
-  padding: 46px 36px;
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  border-radius: 30px;
-  background: rgba(20, 21, 42, 0.82);
-  box-shadow:
-    0 26px 80px rgba(0, 0, 0, 0.4),
-    inset 0 1px 0 rgba(255, 255, 255, 0.07);
-  text-align: center;
-  backdrop-filter: blur(18px);
-  animation: successCardEnter 700ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
-}
-
-@keyframes successCardEnter {
-  from {
-    transform: translateY(28px) scale(0.92);
-    opacity: 0;
-  }
-
-  to {
-    transform: translateY(0) scale(1);
+        width: 245px;…5488 tokens truncated…);
     opacity: 1;
   }
 }
@@ -1547,6 +1492,62 @@ body.home-page {
 
     .home-page .guide-grid {
         grid-template-columns: 1fr;
+    }
+}
+
+/* Polished layout for About, FAQ, Contact, Privacy, and Terms. */
+body:has(> main.container) {
+    display: block;
+    min-height: 100vh;
+    padding: 44px 16px 24px;
+    overflow-x: hidden;
+}
+
+body > main.container {
+    position: relative;
+    z-index: 2;
+    display: block;
+    width: min(100%, 820px);
+    min-height: auto;
+    margin: 0 auto;
+    padding: clamp(26px, 5vw, 52px);
+    border: 1px solid rgba(255, 255, 255, 0.8);
+    border-radius: 28px;
+    background: rgba(255, 255, 255, 0.72);
+    box-shadow: 0 22px 55px rgba(117, 62, 134, 0.16);
+    text-align: left;
+}
+
+body > main.container h1 {
+    margin: 8px 0 24px;
+    font-size: clamp(2rem, 6vw, 3.35rem);
+    line-height: 1.08;
+}
+
+body > main.container h2 {
+    margin: 30px 0 10px;
+    color: #774282;
+    font-size: 1.3rem;
+}
+
+body > main.container p {
+    color: #574b5a;
+    line-height: 1.75;
+}
+
+body > main.container a:not(.startButton) {
+    color: #7b3f8e;
+    font-weight: 700;
+}
+
+@media (max-width: 600px) {
+    body:has(> main.container) {
+        padding: 20px 12px;
+    }
+
+    body > main.container {
+        padding: 24px 18px;
+        border-radius: 22px;
     }
 }
 
