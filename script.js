@@ -1,3 +1,4 @@
+
 "use strict";
 
 /* =========================================================
@@ -988,7 +989,7 @@ function displayPersonalityResults() {
                         "traitHeader";
 
                     const traitName =
-                        document.crea…8991 tokens truncated…earTimeout(timer);
+                        document.crea…8996 tokens truncated…earTimeout(timer);
         }
     }
 
