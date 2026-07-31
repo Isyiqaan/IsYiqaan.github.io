@@ -2998,3 +2998,529 @@ function initializeStreakGame() {
         );
 
         gameMessage.textContent =
+            "Waa sax!";
+
+        announce(
+            "Waa sax."
+        );
+
+        actionTimeout =
+            window.setTimeout(() => {
+                hideTarget();
+
+                if (
+                    currentCircle <
+                    CIRCLES_PER_STAGE
+                ) {
+                    currentCircle += 1;
+
+                    currentCircleDisplay.textContent =
+                        String(
+                            currentCircle
+                        );
+
+                    gameMessage.textContent =
+                        "Midka xiga...";
+
+                    actionTimeout =
+                        window.setTimeout(
+                            () => {
+                                inputIsLocked =
+                                    false;
+
+                                showTarget();
+                            },
+                            CIRCLE_PAUSE_DURATION
+                        );
+
+                    return;
+                }
+
+                completeCurrentStage();
+            }, 320);
+    }
+
+
+    /* =====================================================
+       MISS ANIMATION
+    ===================================================== */
+
+    function showMissAnimation() {
+        missAnimation.classList.remove(
+            "hidden"
+        );
+
+        const cross =
+            missAnimation.querySelector(
+                "span"
+            );
+
+        if (cross) {
+            cross.style.animation =
+                "none";
+
+            void cross.offsetWidth;
+
+            cross.style.animation =
+                "";
+        }
+    }
+
+    function hideMissAnimation() {
+        missAnimation.classList.add(
+            "hidden"
+        );
+    }
+
+    function handleMiss() {
+        if (
+            !targetIsActive ||
+            !gameIsRunning ||
+            gameHasFinished
+        ) {
+            return;
+        }
+
+        targetIsActive = false;
+        inputIsLocked = true;
+
+        clearTimer(targetTimeout);
+
+        targetTimeout = null;
+
+        targetRing.classList.remove(
+            "ring-shrinking"
+        );
+
+        targetButton.classList.add(
+            "hidden"
+        );
+
+        gameMessage.textContent =
+            "Waad seegtay.";
+
+        showMissAnimation();
+
+        announce(
+            "Waad seegtay."
+        );
+
+        actionTimeout =
+            window.setTimeout(() => {
+                hideMissAnimation();
+
+                missedOverlay.classList
+                    .remove("hidden");
+
+                announce(
+                    `Marxaladda ${currentStage} waxay dib uga bilaabanaysaa goobada koowaad.`
+                );
+
+                overlayTimeout =
+                    window.setTimeout(
+                        () => {
+                            missedOverlay.classList
+                                .add(
+                                    "hidden"
+                                );
+
+                            startCurrentStage();
+                        },
+                        MISSED_OVERLAY_DURATION
+                    );
+            }, MISS_ANIMATION_DURATION);
+    }
+
+
+    /* =====================================================
+       STAGE COMPLETION
+    ===================================================== */
+
+    function completeCurrentStage() {
+        inputIsLocked = true;
+
+        hideTarget();
+
+        const completedStage =
+            currentStage;
+
+        completedStageNumber.textContent =
+            String(completedStage);
+
+        updateStageBoxes(
+            completedStage
+        );
+
+        updateRemainingStagesMessage(
+            completedStage
+        );
+
+        stageProgressFill.style.width =
+            `${
+                (
+                    completedStage /
+                    TOTAL_STAGES
+                ) *
+                100
+            }%`;
+
+        stageCompleteOverlay.classList
+            .remove("hidden");
+
+        announce(
+            `Marxaladda ${completedStage} waa la dhammaystiray.`
+        );
+
+        overlayTimeout =
+            window.setTimeout(() => {
+                stageCompleteOverlay.classList
+                    .add("hidden");
+
+                if (
+                    completedStage >=
+                    TOTAL_STAGES
+                ) {
+                    finishEntireGame();
+
+                    return;
+                }
+
+                currentStage += 1;
+                currentCircle = 1;
+
+                updateGameDisplay();
+                startCurrentStage();
+            }, STAGE_COMPLETE_DURATION);
+    }
+
+
+    /* =====================================================
+       FINAL SUCCESS
+    ===================================================== */
+
+    function finishEntireGame() {
+        if (gameHasFinished) {
+            return;
+        }
+
+        gameHasFinished = true;
+        gameIsRunning = false;
+        inputIsLocked = true;
+
+        clearAllGameTimers();
+        hideTarget();
+
+        const updatedStreak =
+            completeDailyStreak();
+
+        finalStreakNumber.textContent =
+            String(updatedStreak);
+
+        const finalFlameContainer =
+            byId("finalStreakFlame") ||
+            query(
+                "[data-final-streak-flame]"
+            );
+
+        if (finalFlameContainer) {
+            renderStreakFlame(
+                finalFlameContainer,
+                updatedStreak
+            );
+        }
+
+        gameScreen.classList.add(
+            "hidden"
+        );
+
+        successScreen.classList.remove(
+            "hidden"
+        );
+
+        setResultsMode("streak");
+
+        updateStreakFlameDisplays();
+
+        announce(
+            `Hambalyo. Streak-gaagu hadda waa ${updatedStreak} maalmood.`
+        );
+    }
+
+
+    /* =====================================================
+       BEGIN GAME
+    ===================================================== */
+
+    function beginGame() {
+        if (
+            beginButton.disabled ||
+            gameIsRunning ||
+            gameHasFinished
+        ) {
+            return;
+        }
+
+        beginButton.disabled = true;
+
+        clearAllGameTimers();
+
+        currentStage = 1;
+        currentCircle = 1;
+
+        targetIsActive = false;
+        inputIsLocked = true;
+        gameIsRunning = true;
+        gameHasFinished = false;
+
+        introScreen.classList.add(
+            "hidden"
+        );
+
+        successScreen.classList.add(
+            "hidden"
+        );
+
+        gameScreen.classList.remove(
+            "hidden"
+        );
+
+        missedOverlay.classList.add(
+            "hidden"
+        );
+
+        stageCompleteOverlay.classList.add(
+            "hidden"
+        );
+
+        hideMissAnimation();
+
+        updateStageBoxes(0);
+        updateGameDisplay();
+
+        requestAnimationFrame(() => {
+            startCurrentStage();
+        });
+    }
+
+
+    /* =====================================================
+       TUTORIAL BUTTON
+    ===================================================== */
+
+    function unlockBeginButton() {
+        beginButton.disabled = false;
+
+        beginButton.removeAttribute(
+            "aria-hidden"
+        );
+
+        beginButton.classList.remove(
+            "hidden"
+        );
+
+        tutorialStatus.classList.add(
+            "finished"
+        );
+
+        requestAnimationFrame(() => {
+            requestAnimationFrame(() => {
+                beginButton.classList.add(
+                    "show"
+                );
+            });
+        });
+
+        window.setTimeout(() => {
+            tutorialStatus.textContent =
+                "Diyaar ma tahay?";
+
+            tutorialStatus.classList.remove(
+                "finished"
+            );
+        }, 380);
+
+        announce(
+            "Badhanka Bilow hadda waa diyaar."
+        );
+    }
+
+
+    /* =====================================================
+       GAME EVENTS
+    ===================================================== */
+
+    targetButton.addEventListener(
+    "pointerdown",
+    event => {
+        event.preventDefault();
+        handleTargetHit();
+    },
+    {
+        passive: false
+    }
+);
+    beginButton.addEventListener(
+        "click",
+        beginGame
+    );
+
+    viewResultsButton.addEventListener(
+        "click",
+        () => {
+            setResultsMode("streak");
+
+            goTo("results.html");
+        }
+    );
+
+    window.addEventListener(
+        "resize",
+        () => {
+            if (
+                targetIsActive &&
+                !targetButton.classList
+                    .contains("hidden")
+            ) {
+                placeTargetRandomly();
+            }
+        }
+    );
+
+    document.addEventListener(
+        "visibilitychange",
+        () => {
+            if (
+                document.hidden &&
+                targetIsActive &&
+                gameIsRunning &&
+                !gameHasFinished
+            ) {
+                handleMiss();
+            }
+        }
+    );
+
+
+    /* =====================================================
+       INITIAL GAME STATE
+    ===================================================== */
+
+    gameScreen.classList.add(
+        "hidden"
+    );
+
+    successScreen.classList.add(
+        "hidden"
+    );
+
+    stageCompleteOverlay.classList.add(
+        "hidden"
+    );
+
+    missedOverlay.classList.add(
+        "hidden"
+    );
+
+    targetButton.classList.add(
+        "hidden"
+    );
+
+    missAnimation.classList.add(
+        "hidden"
+    );
+
+    beginButton.disabled = true;
+
+    beginButton.setAttribute(
+        "aria-hidden",
+        "true"
+    );
+
+    beginButton.classList.add(
+        "hidden"
+    );
+
+    beginButton.classList.remove(
+        "show"
+    );
+
+    updateStageBoxes(0);
+    updateGameDisplay();
+
+    window.setTimeout(
+        unlockBeginButton,
+        TUTORIAL_DURATION
+    );
+}
+
+
+/* =========================================================
+   PAGE STARTUP
+========================================================= */
+
+document.addEventListener(
+    "DOMContentLoaded",
+    () => {
+        injectStreakFlameStyles();
+
+        if (redirectUnnamedPlayer()) {
+            return;
+        }
+
+        if (redirectReturningPlayer()) {
+            return;
+        }
+
+        synchronizeStreakStorage();
+
+        requestAnimationFrame(() => {
+            document.body.classList.add(
+                "loaded"
+            );
+        });
+
+        prepareNameInput();
+        fillPlayerNameElements();
+        updateWelcomeMessage();
+        updateProgressBar();
+
+        prepareHomepageActions();
+        prepareResultsPageMode();
+
+        displayLeaderboard();
+        displayPersonalityResults();
+        displayStreakDay();
+        updateStreakFlameDisplays();
+
+        initializeStreakGame();
+    }
+);
+
+
+/* =========================================================
+   FUNCTIONS USED DIRECTLY BY HTML
+========================================================= */
+
+window.goTo =
+    goTo;
+
+window.startQuiz =
+    startQuiz;
+
+window.answerAndContinue =
+    answerAndContinue;
+
+window.finishQuiz =
+    finishQuiz;
+
+window.shareResultsOnWhatsApp =
+    shareResultsOnWhatsApp;
+
+window.continueDailyStreak =
+    continueDailyStreak;
+
+window.retakePersonalityTest =
+    retakePersonalityTest;
+
+window.toggleInfoMenu =
+    toggleInfoMenu;
