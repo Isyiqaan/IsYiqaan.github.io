@@ -299,7 +299,6 @@ body.fade-out {
     background:
         rgba(255, 255, 255, 0.68);
 
-
     box-shadow:
         0 22px 65px
         rgba(143, 78, 166, 0.2),
@@ -599,7 +598,6 @@ button,
 }
 
 button:hover,
-
 .answer:hover,
 .answerButton:hover,
 .startButton:hover,
@@ -901,7 +899,6 @@ button:disabled {
 
     gap: 14px;
 
-
     margin-bottom: 10px;
 
     color: #71417b;
@@ -1201,7 +1198,6 @@ button:disabled {
     border-radius: 20px;
 
     background:
-
         rgba(255, 255, 255, 0.78);
 
     box-shadow:
@@ -1502,7 +1498,6 @@ button:disabled {
         linear-gradient(
             135deg,
             #b96fd2,
-
             #e483ad
         );
 
@@ -1803,7 +1798,6 @@ button:disabled {
 
 /* =========================================================
    ANIMATED TUTORIAL DEMO
-
 ========================================================= */
 
 .streak-demo {
@@ -2104,7 +2098,6 @@ button:disabled {
 }
 
 .game-message {
-
   position: absolute;
   top: 28px;
   left: 50%;
@@ -2405,7 +2398,6 @@ button:disabled {
 ========================================================= */
 
 .stage-boxes {
-
   display: grid;
   grid-template-columns: repeat(5, 52px);
   justify-content: center;
@@ -2706,7 +2698,6 @@ body.home-page {
 
 .home-page .home-content {
     min-height: auto;
-
 }
 
 .home-page .content-guide {
@@ -3007,7 +2998,6 @@ body:has(> .site-footer-nav) > .container {
     margin: 26px auto 6px;
     padding: 24px 22px;
     border: 2px solid rgba(255, 255, 255, 0.82);
-
     border-radius: 24px;
     background: linear-gradient(135deg, rgba(255, 244, 250, 0.93), rgba(240, 227, 255, 0.92));
     box-shadow: 0 14px 34px rgba(150, 83, 169, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.95);
@@ -3144,6 +3134,30 @@ body:has(> .site-footer-nav) > .container {
 
 .result-card[hidden] { display: none !important; }
 .result-card h2 { margin: 0 0 13px; color: #8b4999; }
+
+.results-streak-badge {
+    display: grid;
+    place-items: center;
+    width: min(100%, 220px);
+    margin: 18px auto 24px;
+    padding: 10px 18px 14px;
+    border: 1px solid rgba(255, 255, 255, 0.86);
+    border-radius: 22px;
+    background: linear-gradient(145deg, rgba(255, 255, 255, 0.8), rgba(247, 224, 255, 0.74));
+    box-shadow: 0 14px 32px rgba(142, 70, 164, 0.14);
+}
+
+.results-streak-badge .generated-streak-flame {
+    min-height: 74px;
+    font-size: 2.7rem;
+}
+
+.results-streak-badge p {
+    margin: 0;
+    color: #874493;
+    font-size: 1.05rem;
+    font-weight: 800;
+}
 
 .big-streak-number,
 #mainStreakDay {
@@ -3307,7 +3321,6 @@ body.streak-game-page {
 .streak-game-page .stage-progress {
     background: rgba(255, 255, 255, 0.62);
 }
-
 
 .streak-game-page .stage-progress-fill {
     background:
@@ -3474,4 +3487,3 @@ body.streak-game-page {
         height: 76px !important;
     }
 }
-
