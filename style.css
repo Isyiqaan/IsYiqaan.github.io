@@ -27,9 +27,9 @@
     border: 1px solid rgba(255, 255, 255, 0.88);
     border-radius: 999px;
     background: rgba(91, 38, 111, 0.92);
-    box-shadow: 0 12px 30px rgba(67, 27, 82, 0.28);
+    box-shadow: 0 14px 34px rgba(67, 27, 82, 0.38), 0 0 0 5px rgba(255, 175, 217, 0.16);
     color: #fff;
-    font: 700 0.78rem/1.1 Poppins, sans-serif;
+    font: 800 1rem/1.1 Poppins, sans-serif;
     opacity: 0;
     pointer-events: none;
     transform: translate(50%, 18px);
