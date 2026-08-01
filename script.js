@@ -298,7 +298,6 @@ function getLocalDateKey(
 
     const day =
         String(
-
             date.getDate()
         ).padStart(2, "0");
 
@@ -392,10 +391,20 @@ function getStreakFlameTier(streakDay) {
 
     if (streak >= 50) {
         return {
+            className: "flame-green",
+            label: "Olol cagaar khafiif ah oo leh laba olol oo yaryar",
+            shareEmoji: "Olol cagaar khafiif ah",
+            sideFlames: true,
+            crown: false
+        };
+    }
+
+    if (streak >= 30) {
+        return {
             className: "flame-purple",
             label: "Olol guduud-buluug ah",
             shareEmoji: "Olol purple",
-            sideFlames: true,
+            sideFlames: false,
             crown: false
         };
     }
@@ -428,6 +437,8 @@ function getStreakFlameTier(streakDay) {
         crown: false
     };
 }
+
+let streakFlameInstanceId = 0;
 
 function createStreakFlameElement(
     streakDay,
@@ -494,13 +505,67 @@ function createStreakFlameElement(
         );
     }
 
+    const svgNamespace =
+        "http://www.w3.org/2000/svg";
+
     const mainFlame =
-        document.createElement(
-            "span"
+        document.createElementNS(
+            svgNamespace,
+            "svg"
         );
 
-    mainFlame.className =
-        "streak-flame-main";
+    mainFlame.classList.add(
+        "streak-flame-svg"
+    );
+
+    mainFlame.setAttribute(
+        "viewBox",
+        "0 0 100 140"
+    );
+
+    mainFlame.setAttribute(
+        "aria-hidden",
+        "true"
+    );
+
+    streakFlameInstanceId += 1;
+
+    const outerGradientId =
+        `flameOuterGradient${streakFlameInstanceId}`;
+
+    const middleGradientId =
+        `flameMiddleGradient${streakFlameInstanceId}`;
+
+    mainFlame.innerHTML = `
+        <defs>
+            <linearGradient id="${outerGradientId}" x1="18" y1="125" x2="78" y2="10" gradientUnits="userSpaceOnUse">
+                <stop offset="0" stop-color="var(--flame-deep)" />
+                <stop offset="0.48" stop-color="var(--flame-main)" />
+                <stop offset="1" stop-color="var(--flame-light)" />
+            </linearGradient>
+            <linearGradient id="${middleGradientId}" x1="45" y1="126" x2="58" y2="45" gradientUnits="userSpaceOnUse">
+                <stop offset="0" stop-color="var(--flame-inner)" />
+                <stop offset="0.62" stop-color="var(--flame-light)" />
+                <stop offset="1" stop-color="rgba(255,255,255,.96)" />
+            </linearGradient>
+        </defs>
+        <g class="flame-body">
+        <path class="flame-outer" style="fill:url(#${outerGradientId})" d="M50 137 C23 137 5 118 7 91 C8 73 18 58 29 44 C38 32 44 20 47 6 C64 19 72 36 68 55 C76 50 83 40 86 29 C98 48 100 67 95 86 C89 116 74 137 50 137 Z">
+            <animate attributeName="d" dur="3.8s" repeatCount="indefinite" calcMode="spline" keyTimes="0;0.33;0.66;1" keySplines=".45 0 .55 1;.45 0 .55 1;.45 0 .55 1" values="M50 137 C23 137 5 118 7 91 C8 73 18 58 29 44 C38 32 44 20 47 6 C64 19 72 36 68 55 C76 50 83 40 86 29 C98 48 100 67 95 86 C89 116 74 137 50 137 Z;M50 137 C22 137 5 117 8 90 C10 72 22 57 34 43 C44 31 51 18 56 5 C68 22 72 39 65 57 C75 53 82 45 88 34 C97 52 99 69 94 88 C87 117 73 137 50 137 Z;M50 137 C24 137 6 119 7 92 C8 75 15 60 25 46 C33 34 39 21 38 8 C57 18 68 33 69 52 C76 45 80 36 81 25 C96 43 101 64 96 84 C90 115 75 137 50 137 Z;M50 137 C23 137 5 118 7 91 C8 73 18 58 29 44 C38 32 44 20 47 6 C64 19 72 36 68 55 C76 50 83 40 86 29 C98 48 100 67 95 86 C89 116 74 137 50 137 Z" />
+        </path>
+        <path class="flame-soft-light" d="M25 116 C18 94 29 76 42 59 C49 50 54 40 56 29 C66 43 67 59 61 75 C56 88 48 101 50 117 C41 107 33 107 25 116 Z" />
+        <path class="flame-inner" style="fill:url(#${middleGradientId})" d="M51 127 C37 127 27 117 28 102 C29 91 36 84 42 75 C47 68 51 61 52 51 C65 62 71 75 67 88 C72 85 76 80 78 74 C85 86 85 98 80 108 C74 120 64 127 51 127 Z">
+            <animate attributeName="d" dur="2.9s" repeatCount="indefinite" calcMode="spline" keyTimes="0;0.5;1" keySplines=".45 0 .55 1;.45 0 .55 1" values="M51 127 C37 127 27 117 28 102 C29 91 36 84 42 75 C47 68 51 61 52 51 C65 62 71 75 67 88 C72 85 76 80 78 74 C85 86 85 98 80 108 C74 120 64 127 51 127 Z;M51 127 C36 127 27 116 29 101 C30 90 38 82 45 73 C51 65 55 58 58 48 C68 61 72 76 66 89 C73 86 77 82 80 76 C85 89 84 101 78 110 C71 121 63 127 51 127 Z;M51 127 C37 127 27 117 28 102 C29 91 36 84 42 75 C47 68 51 61 52 51 C65 62 71 75 67 88 C72 85 76 80 78 74 C85 86 85 98 80 108 C74 120 64 127 51 127 Z" />
+        </path>
+        <path class="flame-core" d="M52 124 C43 124 37 117 38 108 C39 99 46 94 50 87 C53 82 56 77 57 70 C65 79 68 90 64 99 C68 97 71 94 73 90 C76 101 73 113 66 119 C62 123 57 124 52 124 Z" />
+        <path class="flame-shine" d="M20 96 C21 81 29 68 39 55 C44 49 48 41 51 33 C49 48 42 60 36 72 C31 82 27 94 28 106 C23 104 20 101 20 96 Z" />
+        </g>
+        <g class="flame-embers" aria-hidden="true">
+            <circle cx="35" cy="29" r="3.1" />
+            <circle cx="73" cy="37" r="2.2" />
+            <circle cx="61" cy="17" r="1.7" />
+        </g>
+    `;
 
     flame.appendChild(
         mainFlame
@@ -599,7 +664,6 @@ function redirectUnnamedPlayer() {
 
     const publicPages = [
         "welcome.html",
-
         "about.html",
         "contact.html",
         "privacy.html",
@@ -900,7 +964,6 @@ function generatePersonalityResults() {
         selectedTraits
             .map(trait => {
                 return {
-
                     name: trait.name,
                     emoji: trait.emoji,
                     percentage:
@@ -1108,6 +1171,11 @@ function finishQuiz() {
 
     setResultsMode("personality");
 
+    sessionStorage.setItem(
+        "completionConfettiPending",
+        "true"
+    );
+
     goTo("results.html");
 }
 
@@ -1201,7 +1269,6 @@ function getSavedStreakDay() {
 
 function saveUnifiedStreakDay(streakDay) {
     const safeStreak =
-
         Math.max(
             0,
             Number.parseInt(
@@ -1502,7 +1569,6 @@ function prepareHomepageActions() {
         byId("takeTestAgainButton");
 
     if (takeTestAgainButton) {
-
         takeTestAgainButton.onclick = event => {
             event.preventDefault();
             retakePersonalityTest();
@@ -1677,8 +1743,8 @@ function updateResultsPageHeadings(mode) {
     if (title) {
         title.textContent =
             mode === "streak"
-                ? "Streak-ga Waa Dhammaystirtay 🔥"
-                : "Shakhsiyadaada";
+                ? "🎉 Streak-ga Waa Dhammaystirtay 🎉"
+                : "🎉 Shakhsiyadaada 🎉";
     }
 
     if (subtitle) {
@@ -1687,6 +1753,100 @@ function updateResultsPageHeadings(mode) {
                 ? "Maanta streak-gaaga waad sii wadatay."
                 : "Kuwani waa natiijooyinka personality-gaaga cusub.";
     }
+}
+
+function launchCompletionConfetti() {
+    if (
+        document.querySelector(
+            ".completion-confetti-layer"
+        )
+    ) {
+        return;
+    }
+
+    const layer =
+        document.createElement("div");
+
+    layer.className =
+        "completion-confetti-layer";
+
+    layer.setAttribute(
+        "aria-hidden",
+        "true"
+    );
+
+    const colors = [
+        "#ff72b6",
+        "#b875f2",
+        "#ffd166",
+        "#72d8b0",
+        "#73bfff",
+        "#ff806f"
+    ];
+
+    for (
+        let index = 0;
+        index < 90;
+        index += 1
+    ) {
+        const piece =
+            document.createElement("i");
+
+        const direction =
+            index % 2 === 0 ? -1 : 1;
+
+        piece.style.setProperty(
+            "--confetti-x",
+            `${direction * (12 + Math.random() * 48)}vw`
+        );
+
+        piece.style.setProperty(
+            "--confetti-y",
+            `${-46 + Math.random() * 98}vh`
+        );
+
+        piece.style.setProperty(
+            "--confetti-turn",
+            `${direction * (360 + Math.random() * 900)}deg`
+        );
+
+        piece.style.setProperty(
+            "--confetti-delay",
+            `${Math.random() * 180}ms`
+        );
+
+        piece.style.setProperty(
+            "--confetti-color",
+            colors[index % colors.length]
+        );
+
+        layer.appendChild(piece);
+    }
+
+    document.body.appendChild(layer);
+
+    window.setTimeout(
+        () => layer.remove(),
+        2900
+    );
+}
+
+function launchPendingCompletionConfetti() {
+    if (
+        sessionStorage.getItem(
+            "completionConfettiPending"
+        ) !== "true"
+    ) {
+        return;
+    }
+
+    sessionStorage.removeItem(
+        "completionConfettiPending"
+    );
+
+    window.requestAnimationFrame(
+        launchCompletionConfetti
+    );
 }
 
 function ensureGeneratedStreakResultCard() {
@@ -1802,7 +1962,6 @@ function prepareResultsPageMode() {
     ) {
         return;
     }
-
 
     const mode =
         getResultsMode();
@@ -2104,7 +2263,6 @@ function shareResultsOnWhatsApp() {
                 ) {
                     emoji = "🧠";
                 } else if (
-
                     normalizedName.includes("degan") ||
                     normalizedName.includes("dagan")
                 ) {
@@ -2405,7 +2563,6 @@ document.addEventListener(
     }
 );
 /* =========================================================
-
    COLORED FLAME STYLES
 ========================================================= */
 
@@ -2430,75 +2587,126 @@ function injectStreakFlameStyles() {
             vertical-align: middle;
             font-size: 1.3em;
             line-height: 1;
-            --flame-main: #ff7a18;
-            --flame-light: #ffd166;
-            --flame-glow: rgba(255, 106, 32, 0.62);
+            --flame-main: #ff8a4c;
+            --flame-light: #ffe3a6;
+            --flame-deep: #f25f5c;
+            --flame-inner: rgba(255, 247, 176, 0.94);
+            --flame-glow: rgba(255, 138, 76, 0.5);
             filter: drop-shadow(0 0 0.22em var(--flame-glow));
-            animation: flameBounce 0.8s ease-in-out infinite alternate;
+            transform-origin: 50% 100%;
+            animation: flameSway 2.8s ease-in-out infinite alternate;
         }
 
-        .streak-flame-main {
-            position: relative;
+        .streak-flame-svg {
             display: block;
             width: 1em;
             height: 1.42em;
-            overflow: hidden;
-            border-radius: 48% 52% 50% 50% / 62% 62% 38% 38%;
-            background: linear-gradient(180deg, var(--flame-light), var(--flame-main) 54%, #d92835);
-            clip-path: polygon(50% 0%, 68% 24%, 76% 12%, 91% 40%, 100% 64%, 91% 84%, 72% 98%, 50% 100%, 27% 97%, 8% 82%, 0% 62%, 12% 39%, 31% 18%, 34% 43%);
-            transform: none;
-            box-shadow: inset -0.12em -0.1em 0.2em rgba(152, 18, 24, 0.22);
+            overflow: visible;
+            transform-origin: 50% 100%;
+            animation: flameFlicker 2.4s ease-in-out infinite alternate;
         }
 
-        .streak-flame-main::after {
-            content: "";
-            position: absolute;
-            left: 50%;
-            bottom: -0.04em;
-            width: 0.48em;
-            height: 0.82em;
-            border-radius: 50% 50% 45% 45% / 68% 68% 32% 32%;
-            background: rgba(255, 247, 176, 0.94);
-            clip-path: polygon(50% 0%, 88% 47%, 100% 72%, 76% 100%, 24% 100%, 0 72%, 14% 44%);
-            transform: translateX(-50%);
+        .flame-outer {
+            fill: var(--flame-main);
+            stroke: color-mix(in srgb, var(--flame-deep) 42%, transparent);
+            stroke-width: 1.5;
+            stroke-linejoin: round;
+        }
+
+        .flame-soft-light {
+            fill: color-mix(in srgb, var(--flame-light) 78%, white);
+            opacity: 0.68;
+        }
+
+        .flame-inner {
+            fill: var(--flame-inner);
+            transform-origin: 50% 100%;
+            animation: innerFlameFlicker 1.9s ease-in-out infinite alternate;
+        }
+
+        .flame-shine {
+            fill: rgba(255,255,255,.48);
+            filter: blur(.35px);
+        }
+
+        .flame-core {
+            fill: rgba(255, 252, 220, 0.96);
+            transform-origin: 52% 100%;
+            animation: flameCoreGlow 2.15s ease-in-out infinite alternate;
+        }
+
+        .flame-embers circle {
+            fill: var(--flame-light);
+            filter: drop-shadow(0 0 2px var(--flame-glow));
+            transform-box: fill-box;
+            transform-origin: center;
+            animation: emberRise 3.6s ease-in-out infinite;
+        }
+
+        .flame-embers circle:nth-child(2) {
+            animation-delay: -1.2s;
+            animation-duration: 4.2s;
+        }
+
+        .flame-embers circle:nth-child(3) {
+            animation-delay: -2.4s;
+            animation-duration: 3.25s;
         }
 
         .flame-orange {
-            --flame-main: #ff681f;
-            --flame-light: #ffd05a;
-            --flame-glow: rgba(255, 104, 31, 0.68);
+            --flame-main: #ff914d;
+            --flame-light: #ffe5a9;
+            --flame-deep: #ff6f61;
+            --flame-glow: rgba(255, 145, 77, 0.5);
         }
 
         .flame-pink {
-            --flame-main: #ff3f91;
-            --flame-light: #ffb1d8;
-            --flame-glow: rgba(255, 63, 145, 0.72);
+            --flame-main: #ff78b7;
+            --flame-light: #ffd6ea;
+            --flame-deep: #f3579a;
+            --flame-glow: rgba(255, 120, 183, 0.54);
         }
 
         .flame-red {
             width: 1.5em;
             height: 1.95em;
-            --flame-main: #e91f35;
-            --flame-light: #ff8a68;
-            --flame-glow: rgba(233, 31, 53, 0.8);
+            --flame-main: #ff6675;
+            --flame-light: #ffc1b7;
+            --flame-deep: #e94f64;
+            --flame-glow: rgba(255, 102, 117, 0.56);
         }
 
         .flame-purple {
-            --flame-main: #9146ff;
-            --flame-light: #d7b4ff;
-            --flame-glow: rgba(145, 70, 255, 0.78);
+            --flame-main: #b879f2;
+            --flame-light: #ead9ff;
+            --flame-deep: #9961d8;
+            --flame-inner: #f6ecff;
+            --flame-glow: rgba(184, 121, 242, 0.52);
+        }
+
+        .flame-green {
+            width: 1.5em;
+            height: 1.95em;
+            --flame-main: #79d8a7;
+            --flame-light: #dcf8df;
+            --flame-deep: #55bd91;
+            --flame-inner: #f2ffd4;
+            --flame-glow: rgba(121, 216, 167, 0.54);
         }
 
         .flame-gold {
-            --flame-main: #ffb800;
-            --flame-light: #fff1a3;
-            --flame-glow: rgba(255, 184, 0, 0.82);
+            --flame-main: #ffc857;
+            --flame-light: #fff2b8;
+            --flame-deep: #f2a93b;
+            --flame-inner: #dff4c9;
+            --flame-glow: rgba(255, 200, 87, 0.54);
         }
 
         .flame-blue-crown {
-            --flame-main: #268dff;
-            --flame-light: #9de7ff;
-            --flame-glow: rgba(38, 141, 255, 0.82);
+            --flame-main: #6bbcff;
+            --flame-light: #d1f0ff;
+            --flame-deep: #4f98e8;
+            --flame-glow: rgba(107, 188, 255, 0.56);
         }
 
         .streak-flame-side {
@@ -2523,12 +2731,18 @@ function injectStreakFlameStyles() {
 
         .streak-flame-crown {
             position: absolute;
-            top: -0.75em;
+            top: -0.68em;
             left: 50%;
+            width: 0.82em;
+            height: 0.52em;
             transform: translateX(-50%);
-            font-size: 0.75em;
-            filter: none;
+            transform-origin: 50% 100%;
+            border-radius: 0 0 0.16em 0.16em;
+            background: linear-gradient(180deg, #fff6b6, #ffd96b 72%, #f1bb4b);
+            clip-path: polygon(0 18%, 25% 54%, 50% 0, 75% 54%, 100% 18%, 88% 100%, 12% 100%);
+            filter: drop-shadow(0 0.08em 0.08em rgba(202, 145, 37, 0.2));
             z-index: 3;
+            animation: crownWave 2.8s ease-in-out infinite alternate;
         }
 
         .leaderboard-flame {
@@ -2573,13 +2787,41 @@ function injectStreakFlameStyles() {
             gap: 14px;
         }
 
-        @keyframes flameBounce {
-            from {
-                transform: translateY(1px) scale(0.96);
-            }
+        @keyframes flameSway {
+            0% { transform: rotate(-2deg) translateX(-0.018em); }
+            12.5% { transform: rotate(-1.3deg) translateX(-0.012em); }
+            25% { transform: rotate(-0.5deg) translateX(-0.005em); }
+            37.5% { transform: rotate(0.25deg) translateX(0.002em); }
+            50% { transform: rotate(0.8deg) translateX(0.008em); }
+            62.5% { transform: rotate(1.45deg) translateX(0.014em); }
+            75% { transform: rotate(2deg) translateX(0.018em); }
+            87.5% { transform: rotate(1.2deg) translateX(0.011em); }
+            100% { transform: rotate(0.35deg) translateX(0.003em); }
+        }
 
-            to {
-                transform: translateY(-2px) scale(1.05);
+        @keyframes flameFlicker {
+            0% { transform: skewX(-1.6deg) rotate(-0.45deg) scaleX(.985); }
+            25% { transform: skewX(-.6deg) rotate(-0.15deg) scaleX(.995) scaleY(1.008); }
+            50% { transform: skewX(.8deg) rotate(.25deg) scaleX(1.008) scaleY(.995); }
+            75% { transform: skewX(1.7deg) rotate(.5deg) scaleX(1.015) scaleY(1.006); }
+            100% { transform: skewX(.35deg) rotate(.1deg) scaleX(1.002); }
+        }
+
+        @keyframes innerFlameFlicker {
+            0% {
+                transform: translateX(-1.2px) skewX(-1.5deg) scale(.98, 1.015);
+            }
+            25% {
+                transform: translateX(-.5px) skewX(-.6deg) scale(.99, 1.005);
+            }
+            50% {
+                transform: translateX(.4px) skewX(.5deg) scale(1.01, .995);
+            }
+            75% {
+                transform: translateX(1px) skewX(1.4deg) scale(1.015, 1.008);
+            }
+            100% {
+                transform: translateX(.3px) skewX(.4deg) scale(1, 1.012);
             }
         }
 
@@ -2590,6 +2832,25 @@ function injectStreakFlameStyles() {
             100% { transform: scale(1.08) rotate(360deg); }
         }
 
+        @keyframes crownWave {
+            0% { transform: translateX(-50%) rotate(1deg) translateY(0); }
+            50% { transform: translateX(-50%) rotate(-0.5deg) translateY(-0.025em); }
+            100% { transform: translateX(-50%) rotate(-1deg) translateY(0); }
+        }
+
+        @keyframes flameCoreGlow {
+            0% { transform: scale(.96, 1.01) translateY(.5px); opacity: .88; }
+            50% { transform: scale(1.025, .985) translateY(-.5px); opacity: 1; }
+            100% { transform: scale(.99, 1.025) translateY(-1px); opacity: .93; }
+        }
+
+        @keyframes emberRise {
+            0% { opacity: 0; transform: translate(0, 8px) scale(.45); }
+            22% { opacity: .72; }
+            68% { opacity: .38; }
+            100% { opacity: 0; transform: translate(4px, -15px) scale(.9); }
+        }
+
         @keyframes sparkBurst {
             0% { opacity: 0; transform: rotate(var(--spark-angle)) translateY(-.3em) scale(.2); }
             28% { opacity: 1; }
@@ -2598,6 +2859,11 @@ function injectStreakFlameStyles() {
 
         @media (prefers-reduced-motion: reduce) {
             .streak-flame,
+            .streak-flame-svg,
+            .flame-inner,
+            .flame-core,
+            .flame-embers circle,
+            .streak-flame-crown,
             .flame-spark {
                 animation: none;
             }
@@ -2706,7 +2972,6 @@ function initializeStreakGame() {
         remainingStagesText,
         missedOverlay,
         successScreen,
-
         finalStreakNumber,
         viewResultsButton
     ];
@@ -3008,7 +3273,6 @@ function initializeStreakGame() {
             "";
     }
 
-
     function restartRingAnimation(
         durationSeconds
     ) {
@@ -3308,7 +3572,6 @@ function initializeStreakGame() {
 
         overlayTimeout =
             window.setTimeout(() => {
-
                 stageCompleteOverlay.classList
                     .add("hidden");
 
@@ -3384,6 +3647,8 @@ function initializeStreakGame() {
         successScreen.classList.remove(
             "hidden"
         );
+
+        launchCompletionConfetti();
 
         setResultsMode("streak");
 
@@ -3609,7 +3874,6 @@ document.addEventListener(
     () => {
         injectStreakFlameStyles();
 
-
         if (redirectUnnamedPlayer()) {
             return;
         }
@@ -3633,6 +3897,7 @@ document.addEventListener(
 
         prepareHomepageActions();
         prepareResultsPageMode();
+        launchPendingCompletionConfetti();
 
         displayLeaderboard();
         displayPersonalityResults();
@@ -3672,4 +3937,3 @@ window.retakePersonalityTest =
 
 window.toggleInfoMenu =
     toggleInfoMenu;
-
