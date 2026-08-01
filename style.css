@@ -3672,3 +3672,65 @@ body.streak-game-page {
     border-radius: 22px;
   }
 }
+
+/* =========================================================
+   STREAK TIER PROGRESS, MUSEUM, AND UNLOCK EFFECTS
+========================================================= */
+.streak-tier-progress { width:min(100%,420px); margin:18px auto 0; padding:14px 16px; border-radius:18px; background:rgba(255,255,255,.62); box-shadow:inset 0 0 0 1px rgba(210,151,224,.28); }
+.streak-tier-progress p { margin:0 0 9px; color:#82458f; font-size:.86rem; font-weight:700; }
+.streak-tier-track { height:9px; overflow:hidden; border-radius:999px; background:#ead5f1; }
+.streak-tier-track i { display:block; width:0; height:100%; border-radius:inherit; background:linear-gradient(90deg,#c871d4,#ff8bb8,#ffd06b); transition:width .7s cubic-bezier(.2,.8,.2,1); }
+.streak-tier-progress.day-99 .streak-tier-track { animation:day99Pulse 1.8s ease-in-out infinite; }
+.day-99-message { display:block; margin-top:10px; color:#a15a36; font-size:.78rem; }
+
+.streak-museum { width:100%; margin:34px auto 10px; padding:22px 16px; border:1px solid rgba(255,255,255,.82); border-radius:26px; background:rgba(255,255,255,.46); }
+.streak-museum h2 { margin:4px 0 18px; text-align:center; }
+.streak-museum-grid { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:12px; }
+.streak-museum-card { position:relative; min-width:0; padding:13px 8px 12px; overflow:hidden; border:1px solid rgba(210,151,224,.35); border-radius:19px; background:rgba(255,255,255,.74); text-align:center; box-shadow:0 8px 20px rgba(126,62,148,.1); }
+.streak-museum-card.locked { filter:saturate(.35); opacity:.72; }
+.streak-museum-card.current { border-color:#d66fe3; box-shadow:0 0 0 3px rgba(214,111,227,.14),0 12px 24px rgba(126,62,148,.16); }
+.streak-museum-card.current::after { content:"HADDA"; position:absolute; top:8px; right:8px; padding:3px 6px; border-radius:999px; color:#fff; background:#b861cb; font-size:.55rem; font-weight:800; }
+.museum-flame-preview { display:flex; min-height:72px; align-items:center; justify-content:center; font-size:2.25rem; animation-delay:var(--museum-delay); }
+.museum-flame { animation-delay:var(--museum-delay); }
+.streak-museum-card h3 { margin:4px 0; color:#87479e; font-size:.95rem; }
+.streak-museum-card p,.streak-museum-card strong { display:block; margin:0; color:#86618d; font-size:.68rem; line-height:1.4; }
+.streak-museum-card strong { margin-top:4px; color:#a44baa; }
+
+.streak-sound-toggle { position:fixed; z-index:10020; left:14px; bottom:max(16px,env(safe-area-inset-bottom)); width:44px; min-height:44px; padding:0; border-radius:50%; background:rgba(255,255,255,.9); font-size:1.15rem; }
+.streak-plus-one { position:absolute; z-index:9; left:50%; top:16%; color:#fff; font-size:.48em; text-shadow:0 2px 10px #b542a6; animation:streakPlusOne 1.4s ease-out both; }
+.streak-unlock-message { position:absolute; z-index:10; left:50%; bottom:-1.8em; width:max-content; max-width:260px; padding:7px 12px; border-radius:999px; color:#fff; background:#7f3d93e8; font-size:.24em; font-weight:800; transform:translateX(-50%); animation:unlockMessage 2.2s ease both; }
+.streak-earned-day,.streak-tier-unlock { animation:streakEarned 1.45s cubic-bezier(.2,.8,.2,1) both; }
+.streak-tier-unlock::before { content:""; position:absolute; inset:-22%; z-index:-2; border-radius:50%; background:radial-gradient(circle,rgba(255,255,255,.85),var(--tier-aura),transparent 70%); animation:unlockRing 1.6s ease-out both; }
+.streak-tier-unlock.flame-blue-crown .flame-crown,
+.streak-tier-unlock.flame-rainbow .flame-crown { animation:crownUnlock 1.55s cubic-bezier(.2,.85,.3,1.2) both,crownFloat 2.65s ease-in-out 1.55s infinite alternate; }
+
+@keyframes streakEarned { 0%{transform:scale(1)} 16%{transform:scale(.7,.55)} 42%{transform:rotate(310deg) scale(.9);filter:brightness(2.8)} 68%{transform:rotate(360deg) scale(1.24)} 100%{transform:scale(1)} }
+@keyframes streakPlusOne { 0%{opacity:0;transform:translate(-50%,15px) scale(.5)} 30%{opacity:1} 100%{opacity:0;transform:translate(-50%,-60px) scale(1.2)} }
+@keyframes unlockRing { from{opacity:0;transform:scale(.25)} 42%{opacity:1} to{opacity:0;transform:scale(1.5)} }
+@keyframes unlockMessage { 0%,100%{opacity:0;transform:translate(-50%,8px)} 15%,78%{opacity:1;transform:translate(-50%,0)} }
+@keyframes day99Pulse { 50%{box-shadow:0 0 0 5px rgba(255,196,62,.18)} }
+@keyframes crownUnlock { 0%{opacity:0;transform:translateY(-70px) rotate(-10deg)} 62%{opacity:1;transform:translateY(5px) rotate(3deg)} 78%{transform:translateY(-4px) rotate(-2deg)} 100%{transform:translateY(0) rotate(0)} }
+
+@media (max-width:780px) { .streak-museum-grid { grid-template-columns:repeat(2,minmax(0,1fr)); } }
+@media (max-width:330px) { .streak-museum-grid { grid-template-columns:1fr; } }
+@media (prefers-reduced-motion:reduce) { .streak-tier-progress.day-99 .streak-tier-track,.museum-flame-preview,.streak-earned-day,.streak-tier-unlock,.streak-tier-unlock::before,.streak-plus-one,.streak-unlock-message { animation:none !important; } }
+
+.streak-not-started [data-streak-flame] { display:none; }
+.streak-not-started .home-streak-value { min-height:42px; }
+.streak-not-started .streak-day-label { font-size:1.05rem; }
+.leaderboard-sample-label,.museum-highest { margin:-8px 0 14px; text-align:center; color:#84618b; font-size:.78rem; font-weight:700; }
+.streak-museum-card.unlocked { cursor:pointer; transition:transform .2s ease,box-shadow .2s ease; }
+.streak-museum-card.unlocked:hover,.streak-museum-card.unlocked:focus-visible { transform:translateY(-3px); box-shadow:0 14px 28px rgba(126,62,148,.18); outline:2px solid rgba(184,97,203,.45); outline-offset:2px; }
+.streak-museum-card.unlocked:active { transform:translateY(1px) scale(.985); }
+.museum-preview-replay { animation:museumReplay .7s cubic-bezier(.2,.8,.2,1); }
+.streak-unlock-backdrop::before { content:"";position:fixed;inset:0;z-index:40;background:rgba(48,22,61,.28);animation:unlockBackdrop 2.1s ease both;pointer-events:none; }
+.streak-unlock-backdrop .home-streak-card,.streak-unlock-backdrop .results-streak-card,.streak-unlock-backdrop .streak-success-card { position:relative;z-index:41; }
+.streak-reward-spark { background:var(--tier-colour)!important;box-shadow:0 0 .22em var(--tier-colour)!important; }
+.flame-tap-bounce { animation:flameTapBounce .48s cubic-bezier(.2,.8,.2,1)!important; }
+.home-streak-card { transition:transform .2s ease,box-shadow .2s ease; }
+.home-streak-card:hover { transform:translateY(-2px); }
+@keyframes museumReplay { 0%{transform:scale(1)} 45%{transform:scale(1.16) rotate(-3deg)} 75%{transform:scale(.96) rotate(2deg)} 100%{transform:scale(1)} }
+@keyframes unlockBackdrop { 0%,100%{opacity:0} 16%,74%{opacity:1} }
+@keyframes flameTapBounce { 0%,100%{transform:translateY(0) scale(1)} 45%{transform:translateY(-5px) scale(1.07)} 72%{transform:translateY(1px) scale(.98)} }
+@media (hover:none) { .home-streak-card:hover,.streak-museum-card.unlocked:hover { transform:none; } }
+@media (prefers-reduced-motion:reduce) { .museum-preview-replay,.home-streak-card,.streak-museum-card.unlocked { animation:none!important;transition:none!important; } }
