@@ -513,8 +513,8 @@ function createStreakFlameElement(
     const lowerSideFlamesMarkup = tier.supports >= 2
         ? `
             <g class="flame-side-group" aria-hidden="true">
-                <path class="flame-side flame-side-left"${supportFill} d="M43 158 C25 155 19 140 25 125 C30 113 40 107 42 94 C55 106 59 121 53 134 C60 129 64 122 66 115 C72 133 63 153 43 158 Z" />
-                <path class="flame-side flame-side-right"${supportFill} d="M117 158 C135 154 141 139 135 124 C130 112 120 106 118 93 C105 105 101 120 107 133 C100 128 96 121 94 114 C88 132 97 152 117 158 Z" />
+                <path class="flame-side flame-side-left"${supportFill} d="M37 160 C17 157 7 142 13 125 C18 111 29 104 31 87 C47 101 52 118 45 133 C51 129 56 122 59 113 C65 134 57 155 37 160 Z" />
+                <path class="flame-side flame-side-right"${supportFill} d="M123 160 C143 157 153 142 147 125 C142 111 131 104 129 87 C113 101 108 118 115 133 C109 129 104 122 101 113 C95 134 103 155 123 160 Z" />
             </g>`
         : "";
 
@@ -4262,7 +4262,7 @@ function initializeStreakGame() {
         updateRemainingStagesMessage(startingStage - 1);
         stageCompleteOverlay.classList.remove("hidden");
         announce(
-            `Stage ${startingStage} waa diyaar. Hoos u rog oo Sii wad taabo.`
+            `Stage ${startingStage} waa diyaar. Hoos u soco oo Sii wad taabo.`
         );
     } else {
         window.setTimeout(
