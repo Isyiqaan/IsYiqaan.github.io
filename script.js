@@ -1171,6 +1171,11 @@ function finishQuiz() {
 
     setResultsMode("personality");
 
+    sessionStorage.setItem(
+        "completionConfettiPending",
+        "true"
+    );
+
     goTo("results.html");
 }
 
@@ -1738,8 +1743,8 @@ function updateResultsPageHeadings(mode) {
     if (title) {
         title.textContent =
             mode === "streak"
-                ? "Streak-ga Waa Dhammaystirtay 🔥"
-                : "Shakhsiyadaada";
+                ? "🎉 Streak-ga Waa Dhammaystirtay 🎉"
+                : "🎉 Shakhsiyadaada 🎉";
     }
 
     if (subtitle) {
@@ -1748,6 +1753,100 @@ function updateResultsPageHeadings(mode) {
                 ? "Maanta streak-gaaga waad sii wadatay."
                 : "Kuwani waa natiijooyinka personality-gaaga cusub.";
     }
+}
+
+function launchCompletionConfetti() {
+    if (
+        document.querySelector(
+            ".completion-confetti-layer"
+        )
+    ) {
+        return;
+    }
+
+    const layer =
+        document.createElement("div");
+
+    layer.className =
+        "completion-confetti-layer";
+
+    layer.setAttribute(
+        "aria-hidden",
+        "true"
+    );
+
+    const colors = [
+        "#ff72b6",
+        "#b875f2",
+        "#ffd166",
+        "#72d8b0",
+        "#73bfff",
+        "#ff806f"
+    ];
+
+    for (
+        let index = 0;
+        index < 90;
+        index += 1
+    ) {
+        const piece =
+            document.createElement("i");
+
+        const direction =
+            index % 2 === 0 ? -1 : 1;
+
+        piece.style.setProperty(
+            "--confetti-x",
+            `${direction * (12 + Math.random() * 48)}vw`
+        );
+
+        piece.style.setProperty(
+            "--confetti-y",
+            `${-46 + Math.random() * 98}vh`
+        );
+
+        piece.style.setProperty(
+            "--confetti-turn",
+            `${direction * (360 + Math.random() * 900)}deg`
+        );
+
+        piece.style.setProperty(
+            "--confetti-delay",
+            `${Math.random() * 180}ms`
+        );
+
+        piece.style.setProperty(
+            "--confetti-color",
+            colors[index % colors.length]
+        );
+
+        layer.appendChild(piece);
+    }
+
+    document.body.appendChild(layer);
+
+    window.setTimeout(
+        () => layer.remove(),
+        2900
+    );
+}
+
+function launchPendingCompletionConfetti() {
+    if (
+        sessionStorage.getItem(
+            "completionConfettiPending"
+        ) !== "true"
+    ) {
+        return;
+    }
+
+    sessionStorage.removeItem(
+        "completionConfettiPending"
+    );
+
+    window.requestAnimationFrame(
+        launchCompletionConfetti
+    );
 }
 
 function ensureGeneratedStreakResultCard() {
@@ -3549,6 +3648,8 @@ function initializeStreakGame() {
             "hidden"
         );
 
+        launchCompletionConfetti();
+
         setResultsMode("streak");
 
         announce(
@@ -3796,6 +3897,7 @@ document.addEventListener(
 
         prepareHomepageActions();
         prepareResultsPageMode();
+        launchPendingCompletionConfetti();
 
         displayLeaderboard();
         displayPersonalityResults();
