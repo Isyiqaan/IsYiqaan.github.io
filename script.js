@@ -190,6 +190,13 @@ const STORAGE_KEYS = {
 
     completedToday: "streakCompletedToday",
 
+    highestStreak: "highestStreakEver",
+    earnedAnimation: "streakEarnedAnimation",
+    playedAnimation: "streakPlayedAnimation",
+    soundMuted: "streakSoundMuted",
+    selectedAnswers: "personalitySelectedAnswers",
+    missedDaysProcessedThrough: "streakMissedDaysProcessedThrough",
+
     resultsMode: "resultsMode",
     alternateResultsMode: "resultMode"
 };
@@ -221,39 +228,6 @@ function getCurrentPageName() {
             .toLowerCase();
 
     return pathname || "index.html";
-}
-
-function randomNumber(minimum, maximum) {
-    return Math.floor(
-        Math.random() *
-        (maximum - minimum + 1)
-    ) + minimum;
-}
-
-function shuffleArray(array) {
-    const shuffled = [...array];
-
-    for (
-        let index = shuffled.length - 1;
-        index > 0;
-        index--
-    ) {
-        const randomIndex =
-            Math.floor(
-                Math.random() *
-                (index + 1)
-            );
-
-        [
-            shuffled[index],
-            shuffled[randomIndex]
-        ] = [
-            shuffled[randomIndex],
-            shuffled[index]
-        ];
-    }
-
-    return shuffled;
 }
 
 function findFirstElement(selectors) {
@@ -304,17 +278,6 @@ function getLocalDateKey(
     return `${year}-${month}-${day}`;
 }
 
-function getYesterdayDateKey() {
-    const yesterday =
-        new Date();
-
-    yesterday.setDate(
-        yesterday.getDate() - 1
-    );
-
-    return getLocalDateKey(yesterday);
-}
-
 function getDaysSince(dateText) {
     const [
         startYear,
@@ -359,76 +322,94 @@ function getDaysSince(dateText) {
    COLORED STREAK FLAMES
 ========================================================= */
 
+const STREAK_FLAME_TIERS = [
+    { minimum:150, next:null, key:"rainbow", name:"Rainbow", className:"flame-rainbow", colour:"#ff4fd8", aura:"rgba(142,77,255,.52)", supports:4, crown:true, particleFrequency:230,
+      outer:"M80 180C43 180 20 156 25 122C28 98 45 84 53 65C61 46 56 27 65 8C77 24 83 38 82 54C94 39 111 30 119 12C126 39 118 60 105 75C126 68 139 57 145 42C154 74 149 104 137 128C123 159 105 180 80 180Z",
+      middle:"M80 164C56 164 42 149 45 127C48 109 60 99 67 85C73 72 72 57 78 44C91 58 97 74 93 91C105 82 114 72 120 57C128 82 124 109 114 130C105 151 95 164 80 164Z",
+      inner:"M81 149C67 149 59 139 61 126C63 115 72 109 76 99C80 90 79 81 83 72C93 82 97 94 94 106C101 101 106 95 109 87C114 103 111 121 104 134C98 144 91 149 81 149Z" },
+    { minimum:100, next:150, key:"blue", name:"Blue", className:"flame-blue-crown", colour:"#38a7ff", aura:"rgba(46,149,255,.5)", supports:4, crown:true, particleFrequency:300,
+      outer:"M80 180C47 180 27 158 30 125C32 102 48 89 56 71C64 53 63 34 72 10C84 29 87 45 84 62C96 48 109 40 116 20C126 46 121 69 108 86C124 80 136 68 140 53C151 82 146 111 135 134C122 160 103 180 80 180Z",
+      middle:"M81 164C58 164 45 149 48 128C50 111 62 101 68 87C74 73 73 58 80 42C92 57 97 73 93 91C103 83 111 73 116 61C124 82 121 105 112 126C103 149 94 164 81 164Z",
+      inner:"M81 149C68 149 60 139 62 126C64 116 72 110 76 100C80 91 80 82 84 72C94 83 97 95 94 106C101 101 105 96 108 89C113 104 110 120 103 133C97 144 90 149 81 149Z" },
+    { minimum:75, next:100, key:"gold", name:"Gold", className:"flame-gold", colour:"#ffc928", aura:"rgba(255,195,44,.5)", supports:4, crown:false, particleFrequency:340,
+      outer:"M80 180C42 180 18 158 23 123C27 96 45 82 57 62C68 44 69 25 76 8C91 28 98 49 92 70C104 62 118 47 124 28C140 56 143 85 134 111C124 145 106 180 80 180Z",
+      middle:"M80 164C54 164 40 147 44 124C47 106 60 96 67 81C74 67 75 53 79 40C93 55 101 72 96 91C105 84 113 74 117 62C127 86 123 111 113 132C103 152 93 164 80 164Z",
+      inner:"M80 149C66 149 57 138 60 124C62 114 70 108 74 98C78 89 79 81 82 71C92 81 98 94 94 106C101 101 106 95 108 88C115 105 111 122 103 135C97 144 89 149 80 149Z" },
+    { minimum:50, next:75, key:"purple", name:"Purple", className:"flame-purple", colour:"#a95cff", aura:"rgba(157,79,255,.46)", supports:2, crown:false, particleFrequency:430,
+      outer:"M80 180C48 180 27 159 30 128C32 107 46 91 56 76C67 60 67 43 62 25C80 37 87 51 88 66C96 53 109 44 119 27C124 49 119 67 108 83C124 76 134 64 137 50C149 80 143 109 133 132C121 159 102 180 80 180Z",
+      middle:"M81 164C59 164 45 150 47 130C49 114 60 102 68 90C75 79 77 66 75 53C89 63 96 77 93 93C104 84 112 75 116 63C124 84 121 108 112 129C103 151 94 164 81 164Z",
+      inner:"M81 149C68 149 60 140 61 127C63 116 71 109 76 100C81 91 82 82 81 74C92 82 97 94 94 106C100 102 105 96 108 89C113 104 110 121 103 134C97 144 90 149 81 149Z" },
+    { minimum:35, next:50, key:"green", name:"Green", className:"flame-green", colour:"#42e77a", aura:"rgba(55,227,119,.42)", supports:2, crown:false, particleFrequency:480,
+      outer:"M80 180C50 180 30 160 32 131C34 108 49 94 58 79C68 62 66 45 67 25C83 39 91 57 87 74C97 65 108 53 113 35C129 57 133 84 125 108C116 139 101 180 80 180Z",
+      middle:"M80 164C60 164 47 150 49 131C51 115 61 105 68 93C75 81 76 69 74 56C88 67 95 80 91 95C100 88 108 78 112 67C121 87 118 109 110 130C102 151 93 164 80 164Z",
+      inner:"M80 149C68 149 61 140 62 128C64 118 71 111 75 102C79 94 80 85 80 76C90 85 94 96 92 107C98 103 103 97 105 91C111 105 108 121 102 134C96 144 89 149 80 149Z" },
+    { minimum:20, next:35, key:"red", name:"Red", className:"flame-red", colour:"#ff453a", aura:"rgba(255,69,58,.44)", supports:2, crown:false, particleFrequency:520,
+      outer:"M80 180C45 180 24 158 28 124C31 101 46 88 56 73C67 57 72 38 70 14C83 27 91 43 90 61C101 49 115 42 123 24C132 50 126 71 112 88C130 81 141 69 143 53C154 84 147 114 135 137C122 162 103 180 80 180Z",
+      middle:"M81 164C57 164 43 148 47 126C49 109 61 99 68 86C75 73 77 60 75 47C89 59 98 75 94 92C104 85 112 76 116 64C125 87 122 111 113 131C104 151 94 164 81 164Z",
+      inner:"M81 149C67 149 59 138 62 125C64 115 72 109 76 100C80 91 81 82 79 73C91 82 96 94 93 106C100 101 105 95 107 89C114 105 111 122 103 135C97 144 90 149 81 149Z" },
+    { minimum:10, next:20, key:"pink", name:"Pink", className:"flame-pink", colour:"#ff5da7", aura:"rgba(255,93,167,.4)", supports:0, crown:false, particleFrequency:680,
+      outer:"M80 180C53 180 35 161 36 134C37 113 50 99 60 83C70 67 72 49 68 27C86 40 94 59 90 78C102 69 111 58 116 42C130 64 132 91 124 114C115 143 99 180 80 180Z",
+      middle:"M80 164C62 164 50 151 51 133C53 117 62 106 69 94C76 82 77 70 75 58C88 68 94 81 91 96C100 89 106 81 110 71C119 91 116 112 109 131C101 151 92 164 80 164Z",
+      inner:"M80 149C69 149 62 140 63 129C64 119 71 112 75 103C79 95 80 87 80 78C89 86 93 97 91 107C97 103 101 98 104 92C109 106 107 121 101 134C95 144 88 149 80 149Z" },
+    { minimum:1, next:10, key:"orange", name:"Orange", className:"flame-orange", colour:"#ff8a32", aura:"rgba(255,138,50,.36)", supports:0, crown:false, particleFrequency:780,
+      outer:"M80 180C55 180 39 163 40 139C41 121 52 108 61 94C70 80 73 65 70 47C84 58 91 73 88 88C98 81 106 72 110 60C122 79 123 101 116 121C108 147 96 180 80 180Z",
+      middle:"M80 165C64 165 54 153 55 138C56 125 64 116 70 106C76 96 77 86 76 76C87 84 92 95 89 107C96 102 101 95 104 87C111 103 109 120 103 136C97 153 90 165 80 165Z",
+      inner:"M80 150C70 150 64 142 65 132C66 124 72 118 75 111C79 104 80 97 79 90C87 97 91 105 89 114C94 111 98 106 100 101C105 112 103 126 98 137C94 145 87 150 80 150Z" }
+];
+
 function getStreakFlameTier(streakDay) {
-    const streak =
-        Math.max(
-            1,
-            Number.parseInt(
-                streakDay,
-                10
-            ) || 1
-        );
+    const streak = Math.max(1, Number.parseInt(streakDay, 10) || 1);
+    return STREAK_FLAME_TIERS.find(tier => streak >= tier.minimum) || STREAK_FLAME_TIERS.at(-1);
+}
 
-    if (streak >= 100) {
-        return {
-            className: "flame-blue-crown",
-            label: "Olol buluug ah oo taaj leh",
-            shareEmoji: "Olol buluug",
-            sideFlames: true,
-            crown: true
-        };
+function getValidPlayerName() {
+    const rawName = localStorage.getItem(STORAGE_KEYS.playerName);
+    if (typeof rawName !== "string") return "";
+    const name = rawName.trim();
+    if (!name || name.toLowerCase() === "null" || name.toLowerCase() === "undefined") {
+        return "";
     }
-
-    if (streak >= 75) {
-        return {
-            className: "flame-gold",
-            label: "Olol dahabi ah",
-            shareEmoji: "Olol dahabi",
-            sideFlames: true,
-            crown: false
-        };
-    }
-
-    if (streak >= 50) {
-        return {
-            className: "flame-purple",
-            label: "Olol purple ah oo leh laba olol oo yaryar",
-            shareEmoji: "Olol purple",
-            sideFlames: true,
-            crown: false
-        };
-    }
-
-    if (streak >= 20) {
-        return {
-            className: "flame-red",
-            label: "Olol cas",
-            shareEmoji: "Olol cas",
-            sideFlames: true,
-            crown: false
-        };
-    }
-
-    if (streak >= 10) {
-        return {
-            className: "flame-pink",
-            label: "Olol basali ah",
-            shareEmoji: "Olol pink",
-            sideFlames: false,
-            crown: false
-        };
-    }
-
-    return {
-        className: "flame-orange",
-        label: "Olol oranji ah",
-        shareEmoji: "Olol oranji",
-        sideFlames: false,
-        crown: false
-    };
+    return name;
 }
 
 let streakFlameInstanceId = 0;
+
+function initializeFlameParticlePool(flame, tier) {
+    const layer = flame.querySelector(".flame-particle-layer");
+    if (!layer) return;
+
+    const amount = flame.classList.contains("leaderboard-flame") ? 3 : Math.min(12, 4 + tier.supports * 2 + (tier.crown ? 2 : 0));
+    for (let index = 0; index < amount; index += 1) {
+        const particle = document.createElement("i");
+        particle.className = "flame-idle-particle";
+        particle.style.setProperty("--particle-x", `${32 + ((index * 17) % 39)}%`);
+        particle.style.setProperty("--particle-drift", `${-22 + ((index * 29) % 45)}px`);
+        particle.style.setProperty("--particle-rise", `${-45 - ((index * 23) % 62)}px`);
+        particle.style.setProperty("--particle-size", `${2 + (index % 4)}px`);
+        particle.style.setProperty("--particle-duration", `${1.65 + (index % 5) * .37}s`);
+        particle.style.setProperty("--particle-delay", `${-(index * .43)}s`);
+        layer.appendChild(particle);
+    }
+
+    if (typeof IntersectionObserver === "function") {
+        const observer = new IntersectionObserver(entries => {
+            entries.forEach(entry => flame.classList.toggle("flame-offscreen", !entry.isIntersecting));
+        }, { rootMargin: "80px" });
+        observer.observe(flame);
+    }
+}
+
+function createFlameMorphVariant(pathData, seed) {
+    let numberIndex = 0;
+    return pathData.replace(/-?\d+(?:\.\d+)?/g, token => {
+        const value = Number(token);
+        const index = numberIndex++;
+        if (value >= 155 || index < 2) return token;
+        const direction = ((index + seed) % 2 === 0) ? 1 : -1;
+        const amount = 1 + ((index * 3 + seed) % 3);
+        return String(Math.max(0, value + direction * amount));
+    });
+}
 
 function createStreakFlameElement(
     streakDay,
@@ -448,6 +429,10 @@ function createStreakFlameElement(
         `streak-flame ${tier.className} ${extraClassName}`
             .trim();
 
+    flame.dataset.streakTier = tier.key;
+    flame.style.setProperty("--tier-colour", tier.colour);
+    flame.style.setProperty("--tier-aura", tier.aura);
+
     flame.setAttribute(
         "role",
         "img"
@@ -455,8 +440,28 @@ function createStreakFlameElement(
 
     flame.setAttribute(
         "aria-label",
-        tier.label
+        `Streakga maalinta ${Math.max(1, Number.parseInt(streakDay, 10) || 1)}, heerka ${tier.name}`
     );
+    if (!extraClassName.includes("leaderboard-flame") && !extraClassName.includes("museum-flame")) {
+        flame.tabIndex = 0;
+        const bounce = () => {
+            flame.classList.remove("flame-tap-bounce");
+            void flame.offsetWidth;
+            flame.classList.add("flame-tap-bounce");
+        };
+        flame.addEventListener("click", bounce);
+        flame.addEventListener("keydown", event => {
+            if (event.key === "Enter" || event.key === " ") {
+                event.preventDefault();
+                bounce();
+            }
+        });
+    }
+
+    const aura = document.createElement("span");
+    aura.className = "flame-aura";
+    aura.setAttribute("aria-hidden", "true");
+    flame.appendChild(aura);
 
     const svgNamespace =
         "http://www.w3.org/2000/svg";
@@ -473,7 +478,7 @@ function createStreakFlameElement(
 
     mainFlame.setAttribute(
         "viewBox",
-        "0 0 100 140"
+        "0 0 160 190"
     );
 
     mainFlame.setAttribute(
@@ -489,22 +494,45 @@ function createStreakFlameElement(
     const middleGradientId =
         `flameMiddleGradient${streakFlameInstanceId}`;
 
-    const sideFlamesMarkup = tier.sideFlames
+    const rainbowGradientId =
+        `flameRainbowGradient${streakFlameInstanceId}`;
+
+    const outerFillId = tier.key === "rainbow" ? rainbowGradientId : outerGradientId;
+    const outerMorph = createFlameMorphVariant(tier.outer, tier.minimum);
+    const middleMorph = createFlameMorphVariant(tier.middle, tier.minimum + 3);
+    const innerMorph = createFlameMorphVariant(tier.inner, tier.minimum + 7);
+    const motionAllowed = !window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const outerAnimate = motionAllowed ? `<animate attributeName="d" values="${tier.outer};${outerMorph};${tier.outer}" dur="3.17s" repeatCount="indefinite" />` : "";
+    const middleAnimate = motionAllowed ? `<animate attributeName="d" values="${tier.middle};${middleMorph};${tier.middle}" dur="2.61s" repeatCount="indefinite" />` : "";
+    const innerAnimate = motionAllowed ? `<animate attributeName="d" values="${tier.inner};${innerMorph};${tier.inner}" dur="2.09s" repeatCount="indefinite" />` : "";
+    const rainbowAnimate = motionAllowed
+        ? '<animate attributeName="x1" values="-80;80;-80" dur="7.3s" repeatCount="indefinite" /><animate attributeName="x2" values="80;240;80" dur="7.3s" repeatCount="indefinite" />'
+        : "";
+    const supportFill = tier.key === "rainbow" ? ` style="fill:url(#${rainbowGradientId})"` : "";
+
+    const lowerSideFlamesMarkup = tier.supports >= 2
         ? `
             <g class="flame-side-group" aria-hidden="true">
-                <path class="flame-side flame-side-left" d="M22 122 C12 122 7 114 9 104 C11 95 17 90 18 81 C27 89 30 99 26 107 C30 105 33 102 35 98 C38 110 33 122 22 122 Z" />
-                <path class="flame-side flame-side-right" d="M78 122 C68 122 63 114 65 104 C67 95 73 90 74 81 C83 89 86 99 82 107 C86 105 89 102 91 98 C94 110 89 122 78 122 Z" />
+                <path class="flame-side flame-side-left"${supportFill} d="M43 158 C25 155 19 140 25 125 C30 113 40 107 42 94 C55 106 59 121 53 134 C60 129 64 122 66 115 C72 133 63 153 43 158 Z" />
+                <path class="flame-side flame-side-right"${supportFill} d="M117 158 C135 154 141 139 135 124 C130 112 120 106 118 93 C105 105 101 120 107 133 C100 128 96 121 94 114 C88 132 97 152 117 158 Z" />
+            </g>`
+        : "";
+
+    const shoulderFlamesMarkup = tier.supports >= 4
+        ? `
+            <g class="flame-shoulder-group" aria-hidden="true">
+                <path class="flame-side flame-shoulder-left"${supportFill} d="M55 117 C43 109 42 96 49 86 C55 78 61 72 62 61 C71 72 73 84 68 94 C73 91 77 86 79 81 C82 96 72 112 55 117 Z" />
+                <path class="flame-side flame-shoulder-right"${supportFill} d="M105 116 C117 108 118 95 111 85 C105 77 99 71 98 60 C89 71 87 83 92 93 C87 90 83 85 81 80 C78 95 88 111 105 116 Z" />
             </g>`
         : "";
 
     const crownMarkup = tier.crown
         ? `
             <g class="flame-crown" aria-hidden="true">
-                <path d="M31 24 L28 7 L43 16 L50 2 L58 16 L73 7 L69 25 Z" />
-                <path class="flame-crown-band" d="M31 24 Q50 30 69 24 L67 32 Q50 37 33 32 Z" />
-                <circle cx="29" cy="7" r="3" />
-                <circle cx="50" cy="2" r="3" />
-                <circle cx="73" cy="7" r="3" />
+                <path d="M53 34 L49 9 L70 23 L80 2 L91 23 L112 9 L107 35 Z" />
+                <path class="flame-crown-band" d="M53 34 Q80 43 107 35 L104 47 Q80 54 56 47 Z" />
+                <circle cx="49" cy="9" r="4" /><circle cx="80" cy="2" r="4" /><circle cx="112" cy="9" r="4" />
+                <path class="flame-crown-shine" d="M61 31 L73 22 L69 37 Z" />
             </g>`
         : "";
 
@@ -520,17 +548,24 @@ function createStreakFlameElement(
                 <stop offset="0.62" stop-color="var(--flame-light)" />
                 <stop offset="1" stop-color="rgba(255,255,255,.96)" />
             </linearGradient>
+            <linearGradient id="${rainbowGradientId}" x1="0" y1="180" x2="160" y2="0" gradientUnits="userSpaceOnUse">
+                <stop offset="0" stop-color="#ff4f81"/><stop offset=".2" stop-color="#ffb83f"/><stop offset=".4" stop-color="#fff36a"/><stop offset=".6" stop-color="#53e88b"/><stop offset=".8" stop-color="#58b8ff"/><stop offset="1" stop-color="#b75cff"/>
+                ${rainbowAnimate}
+            </linearGradient>
         </defs>
         ${crownMarkup}
-        ${sideFlamesMarkup}
+        ${lowerSideFlamesMarkup}
+        ${shoulderFlamesMarkup}
         <g class="flame-outer-group">
-            <path class="flame-outer" style="fill:url(#${outerGradientId})" d="M50 137 C25 137 8 121 8 96 C8 76 20 62 31 48 C42 35 45 20 43 6 C62 18 72 37 68 56 C76 53 83 45 87 34 C98 52 100 72 94 91 C87 120 72 137 50 137 Z" />
-            <path class="flame-soft-light" d="M22 111 C17 88 31 70 42 55 C49 46 54 36 55 26 C65 42 66 58 59 73 C51 90 45 104 49 122 C38 108 29 105 22 111 Z" />
-            <path class="flame-shine" d="M20 99 C20 82 29 69 39 56 C45 48 49 40 52 31 C50 48 43 61 36 74 C30 86 27 98 29 110 C23 108 20 104 20 99 Z" />
+            <path class="flame-outer" style="fill:url(#${outerFillId})" d="${tier.outer}">${outerAnimate}</path>
+            <path class="flame-tip flame-tip-left" d="M70 86 C61 67 62 47 70 23 C76 45 80 64 76 83 Z" />
+            <path class="flame-tip flame-tip-right" d="M101 101 C108 78 120 63 124 39 C131 68 122 92 105 109 Z" />
+        </g>
+        <g class="flame-middle-group">
+            <path class="flame-middle" style="fill:url(#${middleGradientId})" d="${tier.middle}">${middleAnimate}</path>
         </g>
         <g class="flame-inner-group">
-            <path class="flame-inner" style="fill:url(#${middleGradientId})" d="M51 128 C37 128 27 118 28 103 C29 91 37 83 43 74 C49 66 52 57 52 48 C65 60 71 74 67 88 C73 85 77 80 79 73 C86 87 85 100 79 111 C72 122 63 128 51 128 Z" />
-            <path class="flame-core" d="M52 124 C43 124 37 117 38 108 C39 99 46 94 50 87 C54 81 56 76 57 69 C65 78 68 89 64 99 C68 97 71 94 73 90 C76 101 73 113 66 119 C62 123 57 124 52 124 Z" />
+            <path class="flame-inner" d="${tier.inner}">${innerAnimate}</path>
         </g>
         <g class="flame-embers" aria-hidden="true">
             <circle cx="35" cy="29" r="3.1" />
@@ -542,6 +577,13 @@ function createStreakFlameElement(
     flame.appendChild(
         mainFlame
     );
+
+    const particleLayer = document.createElement("span");
+    particleLayer.className = "flame-particle-layer";
+    particleLayer.setAttribute("aria-hidden", "true");
+    flame.appendChild(particleLayer);
+
+    initializeFlameParticlePool(flame, tier);
 
     return flame;
 }
@@ -556,6 +598,7 @@ function renderStreakFlame(
     }
 
     container.innerHTML = "";
+    container.removeAttribute("aria-hidden");
 
     container.appendChild(
         createStreakFlameElement(
@@ -565,18 +608,14 @@ function renderStreakFlame(
     );
 }
 
-function getShareFlame(streakDay) {
-    return getStreakFlameTier(
-        streakDay
-    ).shareEmoji;
-}
-
 function updateStreakFlameDisplays() {
-    const streakDay =
-        Math.max(
-            1,
-            getSavedStreakDay()
-        );
+    const streakDay = getSavedStreakDay();
+
+    if (streakDay < 1) {
+        queryAll("#streakFlame, #mainStreakFlame, #finalStreakFlame, [data-streak-flame]")
+            .forEach(container => { container.innerHTML = ""; });
+        return;
+    }
 
     queryAll(
         "#streakFlame, " +
@@ -589,6 +628,150 @@ function updateStreakFlameDisplays() {
             streakDay
         );
     });
+}
+
+function updateAllStreakProgressDisplays() {
+    const streak = getSavedStreakDay();
+    if (streak < 1) return;
+    const tier = getStreakFlameTier(streak);
+    queryAll(".home-streak-card, .results-streak-badge, #streakMainCard, .streak-success-card").forEach(host => {
+        let panel = host.querySelector(".streak-tier-progress");
+        if (!panel) {
+            panel = document.createElement("div");
+            panel.className = "streak-tier-progress";
+            panel.innerHTML = '<p></p><div class="streak-tier-track"><i></i></div><strong class="day-99-message" hidden></strong>';
+            const flameHost = host.querySelector("[data-streak-flame], [data-final-streak-flame]");
+            const insertionTarget = host.classList.contains("results-streak-badge")
+                ? host
+                : flameHost?.closest(".home-streak-value") || flameHost;
+            if (insertionTarget) insertionTarget.insertAdjacentElement("afterend", panel);
+            else host.appendChild(panel);
+        }
+        const remaining = tier.next ? tier.next - streak : 0;
+        panel.querySelector("p").textContent = !tier.next
+            ? "Streakga ugu sareeya waad furtay!"
+            : remaining === 1
+                ? "1 maalin ayaa kaaga harsan streakga cusub!"
+                : `${remaining} maalmood ayaa kaaga harsan streakga cusub!`;
+        panel.querySelector("i").style.width = !tier.next
+            ? "100%"
+            : `${Math.max(0, Math.min(100, ((streak - tier.minimum) / (tier.next - tier.minimum)) * 100))}%`;
+        const special = panel.querySelector("strong");
+        special.hidden = streak !== 99;
+        special.textContent = "Hal maalin oo keliya! Streakga buluugga ah ayaa berri furmaya!";
+        panel.classList.toggle("day-99", streak === 99);
+    });
+}
+
+function initializeStreakMuseum() {
+    const leaderboard = byId("leaderboard");
+    if (!leaderboard || byId("streakMuseum")) return;
+    const current = Math.max(1, getSavedStreakDay());
+    const highest = Math.max(current, Number.parseInt(localStorage.getItem(STORAGE_KEYS.highestStreak), 10) || 0);
+    localStorage.setItem(STORAGE_KEYS.highestStreak, String(highest));
+    const section = document.createElement("section");
+    section.id = "streakMuseum";
+    section.className = "streak-museum";
+    section.innerHTML = `<p class="question-label">Ururinta Streakga</p><h2>Streak Museum</h2><p class="museum-highest">Ugu sarreeyay: Maalinta ${highest}</p><div class="streak-museum-grid"></div>`;
+    const grid = section.querySelector(".streak-museum-grid");
+    [...STREAK_FLAME_TIERS].reverse().forEach((tier, index) => {
+        const unlocked = highest >= tier.minimum;
+        const active = current >= tier.minimum && (!tier.next || current < tier.next);
+        const card = document.createElement("article");
+        card.className = `streak-museum-card${unlocked ? " unlocked" : " locked"}${active ? " current" : ""}`;
+        card.tabIndex = unlocked ? 0 : -1;
+        card.style.setProperty("--museum-delay", `${-(index * .23)}s`);
+        const preview = document.createElement("div");
+        preview.className = "museum-flame-preview";
+        preview.appendChild(createStreakFlameElement(tier.minimum, "museum-flame"));
+        const state = unlocked
+            ? `Furmay Maalinta ${tier.minimum}`
+            : `Furmaya Maalinta ${tier.minimum}`;
+        const remaining = unlocked ? "Waa furan yahay" : `${tier.minimum - highest} maalmood ayaa kaaga harsan`;
+        card.append(preview);
+        card.insertAdjacentHTML("beforeend", `<h3>${tier.name}</h3><p>${state}</p><strong>${active ? "Streakga hadda" : remaining}</strong>`);
+        card.setAttribute("aria-label", `${tier.name}. ${unlocked ? "Furan" : "Qufulan"}. ${state}.`);
+        if (unlocked) {
+            const replay = () => {
+                preview.classList.remove("museum-preview-replay");
+                void preview.offsetWidth;
+                preview.classList.add("museum-preview-replay");
+            };
+            card.addEventListener("click", replay);
+            card.addEventListener("keydown", event => {
+                if (event.key === "Enter" || event.key === " ") {
+                    event.preventDefault();
+                    replay();
+                }
+            });
+        }
+        grid.appendChild(card);
+    });
+    leaderboard.insertAdjacentElement("afterend", section);
+}
+
+function playPendingStreakAnimation() {
+    const raw = localStorage.getItem(STORAGE_KEYS.earnedAnimation);
+    if (!raw || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    try {
+        const earned = JSON.parse(raw);
+        const marker = `${earned.date}:${earned.value}`;
+        if (localStorage.getItem(STORAGE_KEYS.playedAnimation) === marker) return;
+        const target = query("#streakFlame .streak-flame, #finalStreakFlame .streak-flame, #mainStreakFlame .streak-flame");
+        if (!target) return;
+        localStorage.setItem(STORAGE_KEYS.playedAnimation, marker);
+        const oldTier = getStreakFlameTier(earned.previous || 1);
+        const newTier = getStreakFlameTier(earned.value);
+        const unlocked = oldTier.key !== newTier.key;
+        target.classList.add(unlocked ? "streak-tier-unlock" : "streak-earned-day");
+        if (unlocked) document.body.classList.add("streak-unlock-backdrop");
+        const dayNumber = query("[data-streak-day]");
+        if (dayNumber && Number.isFinite(Number(earned.previous))) {
+            dayNumber.textContent = String(Math.max(0, Number(earned.previous)));
+            window.setTimeout(() => { dayNumber.textContent = String(earned.value); }, 620);
+        }
+        const plus = document.createElement("b");
+        plus.className = "streak-plus-one";
+        plus.textContent = "+1";
+        target.appendChild(plus);
+        for (let index = 0; index < 12; index += 1) {
+            const spark = document.createElement("i");
+            spark.className = "flame-spark streak-reward-spark";
+            spark.style.setProperty("--spark-angle", `${index * 30}deg`);
+            target.appendChild(spark);
+        }
+        if (unlocked) {
+            const message = document.createElement("span");
+            message.className = "streak-unlock-message";
+            message.textContent = "Streak cusub ayaa furmay!";
+            target.appendChild(message);
+        }
+        playPopSound();
+        window.setTimeout(() => document.body.classList.remove("streak-unlock-backdrop"), 2100);
+    } catch (error) {
+        console.warn("Streak animation marker could not be read:", error);
+    }
+}
+
+function initializeStreakSoundToggle() {
+    if (byId("streakSoundToggle")) return;
+    const button = document.createElement("button");
+    button.id = "streakSoundToggle";
+    button.className = "streak-sound-toggle";
+    button.type = "button";
+    const update = () => {
+        const muted = localStorage.getItem(STORAGE_KEYS.soundMuted) === "true";
+        button.textContent = muted ? "🔇" : "🔊";
+        button.setAttribute("aria-label", muted ? "Daar codka" : "Demi codka");
+        button.setAttribute("aria-pressed", String(muted));
+    };
+    button.addEventListener("click", () => {
+        const muted = localStorage.getItem(STORAGE_KEYS.soundMuted) === "true";
+        localStorage.setItem(STORAGE_KEYS.soundMuted, String(!muted));
+        update();
+    });
+    update();
+    document.body.appendChild(button);
 }
 
 
@@ -617,6 +800,7 @@ function goTo(page) {
 }
 
 function answerAndContinue(nextPage) {
+    recordCurrentAnswer();
     goTo(nextPage);
 }
 
@@ -629,10 +813,7 @@ function redirectUnnamedPlayer() {
     const currentPage =
         getCurrentPageName();
 
-    const playerName =
-        localStorage.getItem(
-            STORAGE_KEYS.playerName
-        );
+    const playerName = getValidPlayerName();
 
     const publicPages = [
         "welcome.html",
@@ -661,10 +842,7 @@ function redirectReturningPlayer() {
     const currentPage =
         getCurrentPageName();
 
-    const playerName =
-        localStorage.getItem(
-            STORAGE_KEYS.playerName
-        );
+    const playerName = getValidPlayerName();
 
     if (
         currentPage === "welcome.html" &&
@@ -806,15 +984,13 @@ function startQuiz() {
 ========================================================= */
 
 function fillPlayerNameElements() {
-    const playerName =
-        localStorage.getItem(
-            STORAGE_KEYS.playerName
-        ) || "Ciyaaryahan";
+    const playerName = getValidPlayerName();
 
     queryAll("[data-player-name]")
         .forEach(element => {
-            element.textContent =
-                playerName;
+            element.textContent = playerName;
+            const wrapper = element.closest(".player-name");
+            if (wrapper) wrapper.hidden = !playerName;
         });
 }
 
@@ -926,30 +1102,69 @@ function updateProgressBar() {
    PERSONALITY RESULTS
 ========================================================= */
 
-function generatePersonalityResults() {
-    const selectedTraits =
-        shuffleArray(
-            personalityTraits
-        ).slice(0, 8);
+const ANSWER_TRAIT_MAP = [
+    [["Safar-jacayl",3],["Xiiso",2]], [["Xiiso",3],["Hal-abuur",2]], [["Madax-bannaani",3],["Kalsooni",2]], [["Degganaan",2],["Safar-jacayl",2]],
+    [["Daacadnimo",3],["Kalsooni",2]], [["Xaraabaad",3],["Jees-jees",2]], [["Degganaan",3],["Fikir-badan",2]], [["Firfircooni",3],["Xaraabaad",2]],
+    [["Daacadnimo",2],["Dulqaad",2]], [["Madax-bannaani",3],["Hami",2]], [["Daacadnimo",4],["Jacayl",2]],
+    [["Maskax",4],["Madax-bannaani",2]], [["Jacayl",4],["Rajo",2]], [["Daacadnimo",3],["Jacayl",2]], [["Dulqaad",4],["Fikir-badan",2]],
+    [["Rajo",3],["Firfircooni",2]], [["Kalsooni",3],["Firfircooni",2]], [["Degganaan",4],["Fikir-badan",2]], [["Hal-abuur",3],["Hurdoole",2]],
+    [["Rajo",2]], [["Kalsooni",2]], [["Daacadnimo",2]], [["Madax-bannaani",2]],
+    [["Xiiso",3],["Xaraabaad",2]], [["Tartame",3],["Hal-abuur",2]], [["Hurdoole",4],["Degganaan",2]], [["Madax-bannaani",3],["Fikir-badan",2]],
+    [["Jacayl",2],["Xiiso",2]], [["Maskax",4],["Xiiso",2]], [["Daacadnimo",3],["Jacayl",2]], [["Madax-bannaani",2],["Jees-jees",2]],
+    [["Maskax",4],["Xiiso",2]], [["Hal-abuur",3],["Safar-jacayl",2]], [["Kalsooni",3],["Firfircooni",2]], [["Jees-jees",3],["Xaraabaad",2]],
+    [["Jacayl",3],["Dulqaad",2]], [["Kalsooni",4],["Firfircooni",2]], [["Daacadnimo",3],["Dulqaad",2]], [["Hami",3],["Tartame",2]]
+];
 
-    const results =
-        selectedTraits
-            .map(trait => {
-                return {
-                    name: trait.name,
-                    emoji: trait.emoji,
-                    percentage:
-                        randomNumber(
-                            trait.min,
-                            trait.max
-                        )
-                };
-            })
-            .sort(
-                (resultA, resultB) =>
-                    resultB.percentage -
-                    resultA.percentage
-            );
+const QUESTION_ANSWER_TRAITS = [
+    [ [["Safar-jacayl",3],["Xiiso",2]], [["Xiiso",3],["Hal-abuur",2]], [["Madax-bannaani",3],["Kalsooni",2]], [["Degganaan",2],["Safar-jacayl",2]] ],
+    [ [["Daacadnimo",3],["Kalsooni",2]], [["Xaraabaad",3],["Jees-jees",2]], [["Degganaan",3],["Fikir-badan",2]], [["Firfircooni",3],["Xaraabaad",2]] ],
+    [ [["Daacadnimo",2],["Dulqaad",2]], [["Madax-bannaani",3],["Hami",2]], [["Daacadnimo",4],["Jacayl",2]] ],
+    [ [["Maskax",4],["Madax-bannaani",2]], [["Jacayl",4],["Rajo",2]], [["Daacadnimo",3],["Jacayl",2]], [["Dulqaad",4],["Fikir-badan",2]] ],
+    [ [["Rajo",3],["Firfircooni",2]], [["Kalsooni",3],["Firfircooni",2]], [["Degganaan",4],["Fikir-badan",2]], [["Hal-abuur",3],["Hurdoole",2]] ],
+    [ [["Rajo",2]], [["Kalsooni",2]], [["Daacadnimo",2]], [["Madax-bannaani",2]] ],
+    [ [["Xiiso",3],["Xaraabaad",2]], [["Tartame",3],["Hal-abuur",2]], [["Hurdoole",4],["Degganaan",2]], [["Madax-bannaani",3],["Fikir-badan",2]] ],
+    [ [["Jacayl",2],["Xiiso",2]], [["Maskax",4],["Xiiso",2]], [["Daacadnimo",3],["Jacayl",2]], [["Madax-bannaani",2],["Jees-jees",2]] ],
+    [ [["Maskax",4],["Xiiso",2]], [["Hal-abuur",3],["Safar-jacayl",2]], [["Kalsooni",3],["Firfircooni",2]], [["Jees-jees",3],["Xaraabaad",2]] ],
+    [ [["Jacayl",3],["Dulqaad",2]], [["Kalsooni",4],["Firfircooni",2]], [["Daacadnimo",3],["Dulqaad",2]], [["Hami",3],["Tartame",2]] ]
+];
+
+function getSelectedAnswers() {
+    try {
+        const answers = JSON.parse(sessionStorage.getItem(STORAGE_KEYS.selectedAnswers) || "[]");
+        return Array.isArray(answers) ? answers.slice(0, TOTAL_QUESTIONS) : [];
+    } catch (_) {
+        return [];
+    }
+}
+
+function recordCurrentAnswer() {
+    const match = getCurrentPageName().match(/^question(\d+)\.html$/);
+    const activeButton = document.activeElement?.closest?.("button.answer");
+    if (!match || !activeButton) return;
+    const buttons = queryAll("button.answer");
+    const answerIndex = buttons.indexOf(activeButton);
+    if (answerIndex < 0) return;
+    const answers = getSelectedAnswers();
+    answers[Number(match[1]) - 1] = answerIndex;
+    sessionStorage.setItem(STORAGE_KEYS.selectedAnswers, JSON.stringify(answers));
+}
+
+function generatePersonalityResults() {
+    const answers = getSelectedAnswers();
+    const scores = Object.fromEntries(personalityTraits.map(trait => [trait.name, 2]));
+    answers.forEach((answerIndex, questionIndex) => {
+        const mapping = QUESTION_ANSWER_TRAITS[questionIndex]?.[Math.max(0, Number(answerIndex) || 0)] || [];
+        mapping.forEach(([name, points]) => { scores[name] = (scores[name] || 0) + points; });
+    });
+    const maximumScore = Math.max(...Object.values(scores), 1);
+    const results = personalityTraits
+        .map(trait => ({
+            name: trait.name,
+            emoji: trait.emoji,
+            percentage: Math.round(38 + (scores[trait.name] / maximumScore) * 59)
+        }))
+        .sort((a, b) => b.percentage - a.percentage || a.name.localeCompare(b.name))
+        .slice(0, 8);
 
     localStorage.setItem(
         STORAGE_KEYS.personalityResults,
@@ -997,7 +1212,7 @@ function getPersonalityResults() {
         }
     }
 
-    return generatePersonalityResults();
+    return [];
 }
 
 function displayPersonalityResults() {
@@ -1118,6 +1333,7 @@ function displayPersonalityResults() {
 ========================================================= */
 
 function retakePersonalityTest() {
+    sessionStorage.removeItem(STORAGE_KEYS.selectedAnswers);
     setResultsMode("personality");
     goTo("question1.html");
 }
@@ -1132,6 +1348,12 @@ function finishQuiz() {
             STORAGE_KEYS.personalityResults
         );
 
+    recordCurrentAnswer();
+    const completedAnswers = getSelectedAnswers();
+    if (completedAnswers.length !== TOTAL_QUESTIONS || !completedAnswers.every(Number.isInteger)) {
+        console.warn("Personality answers were incomplete; results were not replaced.");
+        return;
+    }
     generatePersonalityResults();
 
     if (isFirstPersonalityTest) {
@@ -1144,6 +1366,9 @@ function finishQuiz() {
             STORAGE_KEYS.completedToday,
             "true"
         );
+        localStorage.setItem(STORAGE_KEYS.highestStreak, "1");
+        localStorage.setItem(STORAGE_KEYS.missedDaysProcessedThrough, getLocalDateKey());
+        localStorage.setItem(STORAGE_KEYS.earnedAnimation, JSON.stringify({ value: 1, previous: 0, date: getLocalDateKey() }));
 
         sessionStorage.setItem(
             "firstPersonalityDayResult",
@@ -1370,12 +1595,44 @@ function hasCompletedStreakToday() {
     );
 }
 
+function getDaysBetweenLocalDates(startKey, endKey) {
+    const parse = key => {
+        const parts = key.split("-").map(Number);
+        return Date.UTC(parts[0], parts[1] - 1, parts[2]);
+    };
+    const difference = Math.floor((parse(endKey) - parse(startKey)) / 86400000);
+    return Number.isFinite(difference) ? Math.max(0, difference) : 0;
+}
+
+function processMissedStreakDays() {
+    const currentStreak = getSavedStreakDay();
+    const lastCompleted = getLastCompletedDate();
+    if (currentStreak < 1 || !lastCompleted || lastCompleted === getLocalDateKey()) return currentStreak;
+    const yesterdayDate = new Date();
+    yesterdayDate.setDate(yesterdayDate.getDate() - 1);
+    const yesterday = getLocalDateKey(yesterdayDate);
+    const rawMarker = localStorage.getItem(STORAGE_KEYS.missedDaysProcessedThrough);
+    const marker = /^\d{4}-\d{2}-\d{2}$/.test(rawMarker || "") && rawMarker > lastCompleted ? rawMarker : lastCompleted;
+    if (marker >= yesterday) return currentStreak;
+    const missedDays = getDaysBetweenLocalDates(marker, yesterday);
+    if (missedDays < 1) return currentStreak;
+    localStorage.setItem(STORAGE_KEYS.missedDaysProcessedThrough, yesterday);
+    const reduced = Math.max(0, currentStreak - missedDays);
+    saveUnifiedStreakDay(reduced);
+    localStorage.setItem(STORAGE_KEYS.missedDaysProcessedThrough, yesterday);
+    return reduced;
+}
+
+async function processMissedStreakDaysSafely() {
+    if (navigator.locks?.request) {
+        return navigator.locks.request("personality-site-missed-streak", { mode: "exclusive" }, () => processMissedStreakDays());
+    }
+    return processMissedStreakDays();
+}
+
 function completeDailyStreak() {
     const today =
         getLocalDateKey();
-
-    const yesterday =
-        getYesterdayDateKey();
 
     const previousDate =
         getLastCompletedDate();
@@ -1383,25 +1640,18 @@ function completeDailyStreak() {
     let currentStreak =
         getSavedStreakDay();
 
+    const previousStreak = currentStreak;
+
     if (previousDate === today) {
         localStorage.setItem(
             STORAGE_KEYS.completedToday,
             "true"
         );
 
-        return Math.max(
-            1,
-            currentStreak
-        );
+        return currentStreak;
     }
 
-    if (previousDate === yesterday) {
-        currentStreak += 1;
-    } else if (!previousDate && currentStreak > 0) {
-        /*
-          Older versions saved the streak number without a completion date.
-          Preserve that real progress during migration instead of resetting it.
-        */
+    if (currentStreak > 0) {
         currentStreak += 1;
     } else {
         currentStreak = 1;
@@ -1412,21 +1662,35 @@ function completeDailyStreak() {
     );
 
     saveLastCompletedDate(today);
+    localStorage.setItem(STORAGE_KEYS.missedDaysProcessedThrough, today);
 
     localStorage.setItem(
         STORAGE_KEYS.completedToday,
         "true"
     );
 
+    const highestStreak = Math.max(
+        currentStreak,
+        Number.parseInt(localStorage.getItem(STORAGE_KEYS.highestStreak), 10) || 0
+    );
+    localStorage.setItem(STORAGE_KEYS.highestStreak, String(highestStreak));
+    localStorage.setItem(
+        STORAGE_KEYS.earnedAnimation,
+        JSON.stringify({ value: currentStreak, previous: previousStreak, date: today })
+    );
+
     return currentStreak;
 }
 
+async function awardDailyStreakSafely() {
+    if (navigator.locks?.request) {
+        return navigator.locks.request("personality-site-daily-streak", { mode: "exclusive" }, () => completeDailyStreak());
+    }
+    return completeDailyStreak();
+}
+
 function displayStreakDay() {
-    const displayedStreak =
-        Math.max(
-            1,
-            getSavedStreakDay()
-        );
+    const displayedStreak = getSavedStreakDay();
 
     queryAll(
         "#streakDay, " +
@@ -1495,7 +1759,7 @@ function initializeScrollDownGuide() {
 
 function showAlreadyCompletedMessage() {
     const message =
-        "Maanta streak gaaga waad sii wadatay! Berri soo noqo si aanu streak gaagu u go'in. 🔥";
+        "Maanta streakgaaga waad sii wadatay! Berri soo noqo si aanu streakgaagu u go'in.";
 
     const messageElement =
         byId(
@@ -1672,7 +1936,7 @@ function prepareHomepageActions() {
     if (completedToday) {
         if (mainMessage) {
             mainMessage.textContent =
-                "Maanta streak gaaga waad sii wadatay! Berri soo noqo si aad mar kale u sii wadato.";
+                "Maanta streakgaaga waad sii wadatay! Berri soo noqo si aad mar kale u sii wadato.";
         }
 
         if (continueButton) {
@@ -1689,7 +1953,7 @@ function prepareHomepageActions() {
 
         if (completedMessage) {
             completedMessage.textContent =
-                "Maanta streak gaaga waad sii wadatay! Berri soo noqo si aanu streak gaagu u go'in. 🔥";
+                "Maanta streakgaaga waad sii wadatay! Berri soo noqo si aanu streakgaagu u go'in.";
 
             setElementVisibility(
                 completedMessage,
@@ -1705,12 +1969,12 @@ function prepareHomepageActions() {
     */
     if (mainMessage) {
         mainMessage.textContent =
-            "Maanta waa fursaddaada inaad streak gaaga sii wadato!";
+            "Maanta waa fursaddaada inaad streakgaaga sii wadato!";
     }
 
     if (continueButton) {
         continueButton.textContent =
-            "Sii wad streak gaaga";
+            "Sii wad Streakga";
 
         continueButton.onclick =
             event => {
@@ -1726,6 +1990,93 @@ function prepareHomepageActions() {
     );
 }
 
+
+function prepareReliableHomepageState() {
+    if (getCurrentPageName() !== "index.html") return;
+    const mainMessage = byId("homeMainMessage");
+    const streakCard = query(".home-streak-card");
+    const continueButton = byId("continueStreakButton");
+    const oldResultsButton = byId("retakeTestButton");
+    const retakeButton = byId("takeTestAgainButton");
+    const completedMessage = byId("streakAlreadyCompletedMessage");
+    const hasResults = getPersonalityResults().length > 0;
+
+    if (!hasResults) {
+        streakCard?.classList.add("streak-not-started");
+        setElementVisibility(streakCard, true);
+        setElementVisibility(oldResultsButton, false);
+        setElementVisibility(retakeButton, false);
+        setElementVisibility(completedMessage, false);
+        const dayLabel = streakCard?.querySelector(".streak-day-label");
+        const description = streakCard?.querySelector(".home-streak-description");
+        if (dayLabel) dayLabel.textContent = "Bilow streakgaaga";
+        if (description) description.hidden = true;
+        if (continueButton) {
+            setElementVisibility(continueButton, true);
+            continueButton.textContent = "Bilow Tartanka";
+            continueButton.onclick = event => {
+                event.preventDefault();
+                sessionStorage.removeItem(STORAGE_KEYS.selectedAnswers);
+                goTo("question1.html");
+            };
+        }
+        return;
+    }
+
+    streakCard?.classList.remove("streak-not-started");
+    const returningDescription = streakCard?.querySelector(".home-streak-description");
+    if (returningDescription) returningDescription.hidden = false;
+    setElementVisibility(streakCard, true);
+    setElementVisibility(oldResultsButton, true);
+    setElementVisibility(retakeButton, true);
+    if (oldResultsButton) {
+        oldResultsButton.textContent = "Eeg Natiijadii Hore";
+        oldResultsButton.onclick = event => { event.preventDefault(); setResultsMode("personality"); goTo("results.html"); };
+    }
+    if (retakeButton) {
+        retakeButton.textContent = "Dib u Qaado Tartanka";
+        retakeButton.onclick = event => { event.preventDefault(); retakePersonalityTest(); };
+    }
+    const streak = getSavedStreakDay();
+    const tier = streak > 0 ? getStreakFlameTier(streak) : null;
+    const messages = ["Soo laabasho wanaagsan!", "Maanta mar kale ayaad soo noqotay!", "Streakgaaga sii wad!", "Diyaar ma tahay?", "Maanta waa maalin cusub!"];
+    const visitMessage = streak === 99 ? "Maalinta 100aad way kuu dhowdahay!" : tier?.next - streak === 1 ? "Hal maalin ayaa kuu harsan!" : messages[Math.floor(Math.random() * messages.length)];
+    if (mainMessage) mainMessage.textContent = visitMessage;
+
+    if (hasCompletedStreakToday()) {
+        if (continueButton) {
+            continueButton.textContent = "Berri Soo Noqo";
+            continueButton.onclick = event => { event.preventDefault(); showAlreadyCompletedMessage(); };
+        }
+        if (completedMessage) {
+            completedMessage.textContent = "Maanta streakgaaga waad sii wadatay! Berri soo noqo si aanu streakgaagu u go'in.";
+            setElementVisibility(completedMessage, true);
+        }
+        return;
+    }
+    if (continueButton) {
+        continueButton.textContent = "Sii wad Streakga";
+        continueButton.onclick = event => { event.preventDefault(); continueDailyStreak(); };
+    }
+    setElementVisibility(completedMessage, false);
+}
+
+function loadReturningHomepageAds() {
+    if (getCurrentPageName() !== "index.html" || getPersonalityResults().length === 0) return;
+    const host = byId("homepageAds");
+    if (!host) return;
+    host.hidden = false;
+    host.innerHTML = '<aside class="page-native-ad" aria-label="Advertisement"><div id="container-de0a31b62be16fbc9bd0ff721c7826ab"></div></aside><aside class="page-banner-ad" aria-label="Advertisement"></aside>';
+    const nativeScript = document.createElement("script");
+    nativeScript.async = true;
+    nativeScript.dataset.cfasync = "false";
+    nativeScript.src = "https://hystericallikingdowntown.com/de0a31b62be16fbc9bd0ff721c7826ab/invoke.js";
+    host.querySelector(".page-native-ad").prepend(nativeScript);
+    window.atOptions = { key: "8a204881cd2d5d7ae3ff7e30232fc0b3", format: "iframe", height: 250, width: 300, params: {} };
+    const bannerScript = document.createElement("script");
+    bannerScript.src = "https://hystericallikingdowntown.com/8a204881cd2d5d7ae3ff7e30232fc0b3/invoke.js";
+    host.querySelector(".page-banner-ad").appendChild(bannerScript);
+}
 
 /* =========================================================
    RESULTS PAGE
@@ -1745,14 +2096,14 @@ function updateResultsPageHeadings(mode) {
     if (title) {
         title.textContent =
             mode === "streak"
-                ? "🎉 streak gaaga Waa Dhammaystirtay 🎉"
+                ? "🎉 streakgaaga Waa Dhammaystirtay 🎉"
                 : "🎉 Shakhsiyadaada 🎉";
     }
 
     if (subtitle) {
         subtitle.textContent =
             mode === "streak"
-                ? "Maanta streak gaaga waad sii wadatay."
+                ? "Maanta streakgaaga waad sii wadatay."
                 : "Kuwani waa natiijooyinka personality-gaaga cusub.";
     }
 }
@@ -1886,7 +2237,7 @@ function ensureGeneratedStreakResultCard() {
         "result-label";
 
     label.textContent =
-        "streak gaaga";
+        "streakgaaga";
 
     const flameContainer =
         document.createElement(
@@ -1919,7 +2270,7 @@ function ensureGeneratedStreakResultCard() {
         document.createElement("p");
 
     description.textContent =
-        "Maanta streak gaaga si guul leh ayaad u sii wadatay.";
+        "Maanta streakgaaga si guul leh ayaad u sii wadatay.";
 
     card.append(
         label,
@@ -2062,7 +2413,7 @@ function prepareResultsPageMode() {
         button.textContent =
             hasCompletedStreakToday()
                 ? "🌙 Berri Soo Noqo"
-                : "Sii Wad streak gaaga";
+                : "Sii Wad Streakga";
 
         button.onclick =
             event => {
@@ -2249,7 +2600,7 @@ function shareResultsOnWhatsApp() {
         "",
         ...sharedTraits,
         "",
-        `🔥 Maalinta ${streakDay}aad ee streak gaaga waa dhammaatay`,
+        `Maalinta ${streakDay}aad ee streakgaaga waa dhammaatay`,
         "",
         "Kaalay adiguna is tijaabi",
         WEBSITE_LINK
@@ -2385,6 +2736,10 @@ let popAudioContext = null;
 let lastPopSoundAt = 0;
 
 function playPopSound() {
+    if (localStorage.getItem(STORAGE_KEYS.soundMuted) === "true") {
+        return;
+    }
+
     const now = Date.now();
 
     if (now - lastPopSoundAt < 80) {
@@ -2551,6 +2906,7 @@ function injectStreakFlameStyles() {
             --flame-deep: #f25f5c;
             --flame-inner: rgba(255, 247, 176, 0.94);
             --flame-glow: rgba(255, 138, 76, 0.5);
+            isolation: isolate;
             filter:
                 drop-shadow(0 0 0.18em var(--flame-glow))
                 drop-shadow(0 0.12em 0.28em rgba(126, 61, 155, 0.22));
@@ -2566,6 +2922,7 @@ function injectStreakFlameStyles() {
         }
 
         .flame-outer-group,
+        .flame-middle-group,
         .flame-inner-group,
         .flame-side,
         .flame-crown {
@@ -2581,6 +2938,12 @@ function injectStreakFlameStyles() {
             transform-origin: 50% 91%;
             animation: innerFlameDance 1.85s cubic-bezier(.42,0,.58,1) infinite alternate;
         }
+
+        .flame-middle-group { transform-box:fill-box; transform-origin:50% 94%; animation:middleFlameDance 1.47s ease-in-out infinite alternate; }
+        .flame-tip { fill:var(--flame-main); transform-box:fill-box; transform-origin:50% 100%; }
+        .flame-tip-left { animation:leftTipDance 1.29s ease-in-out infinite alternate; }
+        .flame-tip-right { animation:rightTipDance 1.73s ease-in-out infinite alternate-reverse; }
+        .flame-middle { fill:var(--flame-light); }
 
         .flame-outer {
             fill: var(--flame-main);
@@ -2658,6 +3021,13 @@ function injectStreakFlameStyles() {
             --flame-glow: rgba(184, 121, 242, 0.52);
         }
 
+        .flame-green {
+            width: 1.5em; height: 1.95em;
+            --flame-main: #42e77a; --flame-light: #d7ffe2;
+            --flame-deep: #20b95a; --flame-inner: #f1ffb8;
+            --flame-glow: rgba(55, 227, 119, 0.5);
+        }
+
         .flame-gold {
             --flame-main: #ffc857;
             --flame-light: #fff2b8;
@@ -2671,6 +3041,13 @@ function injectStreakFlameStyles() {
             --flame-light: #d1f0ff;
             --flame-deep: #4f98e8;
             --flame-glow: rgba(107, 188, 255, 0.56);
+        }
+
+        .flame-rainbow {
+            width: 1.58em; height: 2.05em;
+            --flame-main: #ff4fd8; --flame-light: #fff3a8;
+            --flame-deep: #765cff; --flame-inner: #9fffe3;
+            --flame-glow: rgba(142, 77, 255, 0.58);
         }
 
         .flame-side {
@@ -2689,6 +3066,9 @@ function injectStreakFlameStyles() {
             animation: sideFlameRight 1.95s ease-in-out infinite alternate;
         }
 
+        .flame-shoulder-left { animation: shoulderLeft 1.57s ease-in-out -.31s infinite alternate; }
+        .flame-shoulder-right { animation: shoulderRight 2.41s ease-in-out -.73s infinite alternate; }
+
         .flame-crown {
             fill: #ffe58f;
             stroke: #eab84d;
@@ -2701,6 +3081,14 @@ function injectStreakFlameStyles() {
         .flame-crown-band {
             fill: #ffc95c;
         }
+
+        .flame-crown-shine { fill:rgba(255,255,255,.82); animation:crownShine 3.8s ease-in-out infinite; }
+        .flame-aura { position:absolute;z-index:-1;width:86%;height:72%;bottom:4%;border-radius:50%;background:radial-gradient(circle,var(--tier-aura) 0%,transparent 72%);filter:blur(.16em);animation:flameAuraBreath 2.73s ease-in-out infinite alternate;pointer-events:none; }
+        .flame-particle-layer { position:absolute;inset:0;pointer-events:none;z-index:4; }
+        .flame-idle-particle { position:absolute;left:var(--particle-x);bottom:22%;width:var(--particle-size);height:var(--particle-size);border-radius:50%;background:var(--tier-colour);box-shadow:0 0 .12em var(--tier-colour);opacity:0;animation:flameParticleRise var(--particle-duration) ease-out var(--particle-delay) infinite; }
+        .flame-offscreen .flame-idle-particle,
+        .flame-offscreen .flame-aura,
+        .flame-offscreen svg * { animation-play-state:paused !important; }
 
         .leaderboard-flame {
             font-size: 1rem;
@@ -2756,6 +3144,10 @@ function injectStreakFlameStyles() {
             100% { transform: translate(1.7px, .3px) rotate(-3deg) scale(.98, 1.045); }
         }
 
+        @keyframes middleFlameDance { 0%{transform:translateX(-1px) scale(.96,1.07) rotate(-1deg)} 50%{transform:translateX(2px) scale(1.03,.96) rotate(1.5deg)} 100%{transform:translateX(-1px) scale(.99,1.04) rotate(-.5deg)} }
+        @keyframes leftTipDance { from{transform:rotate(-6deg) scaleY(.93) translateX(-1px)} to{transform:rotate(5deg) scaleY(1.1) translateX(2px)} }
+        @keyframes rightTipDance { from{transform:rotate(5deg) scaleY(1.08)} to{transform:rotate(-7deg) scaleY(.92) translateX(-2px)} }
+
         @keyframes flameBrightness {
             0% { filter: brightness(.98) saturate(.98); }
             100% { filter: brightness(1.08) saturate(1.05); }
@@ -2770,6 +3162,12 @@ function injectStreakFlameStyles() {
             from { transform: rotate(5deg) scale(1.03, .96); }
             to { transform: rotate(-5deg) scale(.95, 1.04); }
         }
+
+        @keyframes shoulderLeft { from{transform:rotate(-7deg) scale(.91,1.06);opacity:.88} to{transform:rotate(4deg) scale(1.08,.94);opacity:1} }
+        @keyframes shoulderRight { from{transform:rotate(6deg) scale(1.04,.93);opacity:1} to{transform:rotate(-5deg) scale(.92,1.1);opacity:.84} }
+        @keyframes flameAuraBreath { from{opacity:.42;transform:scale(.86);filter:blur(.13em)} to{opacity:.78;transform:scale(1.08);filter:blur(.2em)} }
+        @keyframes flameParticleRise { 0%{opacity:0;transform:translate(0,0) scale(.35)} 14%{opacity:1} 72%{opacity:.65} 100%{opacity:0;transform:translate(var(--particle-drift),var(--particle-rise)) scale(0) rotate(150deg)} }
+        @keyframes crownShine { 0%,70%,100%{opacity:.15;transform:translateX(-3px)} 82%{opacity:1;transform:translateX(7px)} }
 
         @keyframes flameVictory {
             0% { transform: scale(.35) rotate(-24deg); opacity: 0; }
@@ -2806,11 +3204,17 @@ function injectStreakFlameStyles() {
             .streak-flame,
             .streak-flame-svg,
             .flame-outer-group,
+            .flame-outer,
+            .flame-middle-group,
+            .flame-middle,
             .flame-inner-group,
+            .flame-tip,
             .flame-core,
             .flame-embers circle,
             .flame-side,
             .flame-crown,
+            .flame-aura,
+            .flame-idle-particle,
             .flame-spark {
                 animation: none;
             }
@@ -3574,7 +3978,7 @@ function initializeStreakGame() {
        FINAL SUCCESS
     ===================================================== */
 
-    function finishEntireGame() {
+    async function finishEntireGame() {
         if (gameHasFinished) {
             return;
         }
@@ -3586,8 +3990,7 @@ function initializeStreakGame() {
         clearAllGameTimers();
         hideTarget();
 
-        const updatedStreak =
-            completeDailyStreak();
+        const updatedStreak = await awardDailyStreakSafely();
 
         finalStreakNumber.textContent =
             String(updatedStreak);
@@ -3615,6 +4018,8 @@ function initializeStreakGame() {
                 );
                 finalFlameContainer.appendChild(spark);
             }
+
+            requestAnimationFrame(playPendingStreakAnimation);
         }
 
         gameScreen.classList.add(
@@ -3630,7 +4035,7 @@ function initializeStreakGame() {
         setResultsMode("streak");
 
         announce(
-            `Hambalyo. streak gaaga hadda waa ${updatedStreak} maalmood.`
+            `Hambalyo. streakgaaga hadda waa ${updatedStreak} maalmood.`
         );
     }
 
@@ -3874,7 +4279,7 @@ function initializeStreakGame() {
 
 document.addEventListener(
     "DOMContentLoaded",
-    () => {
+    async () => {
         if ("scrollRestoration" in history) {
             history.scrollRestoration = "manual";
         }
@@ -3892,6 +4297,7 @@ document.addEventListener(
         }
 
         synchronizeStreakStorage();
+        await processMissedStreakDaysSafely();
 
         requestAnimationFrame(() => {
             document.body.classList.add(
@@ -3904,7 +4310,8 @@ document.addEventListener(
         updateWelcomeMessage();
         updateProgressBar();
 
-        prepareHomepageActions();
+        prepareReliableHomepageState();
+        loadReturningHomepageAds();
         prepareResultsPageMode();
         launchPendingCompletionConfetti();
 
@@ -3912,6 +4319,11 @@ document.addEventListener(
         displayPersonalityResults();
         displayStreakDay();
         updateStreakFlameDisplays();
+        updateAllStreakProgressDisplays();
+        initializeStreakMuseum();
+        initializeStreakSoundToggle();
+
+        requestAnimationFrame(playPendingStreakAnimation);
 
         initializeStreakGame();
         initializeScrollDownGuide();
