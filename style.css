@@ -37,6 +37,57 @@
     backdrop-filter: blur(10px);
 }
 
+.completion-confetti-layer {
+    position: fixed;
+    inset: 0;
+    z-index: 10050;
+    overflow: hidden;
+    pointer-events: none;
+}
+
+.completion-confetti-layer i {
+    position: absolute;
+    left: 50%;
+    top: 42%;
+    width: 10px;
+    height: 18px;
+    border-radius: 3px;
+    background: var(--confetti-color);
+    box-shadow: 0 0 8px color-mix(in srgb, var(--confetti-color) 58%, transparent);
+    opacity: 0;
+    animation: completionConfettiBurst 2.65s cubic-bezier(.12,.72,.23,1) var(--confetti-delay) both;
+}
+
+.completion-confetti-layer i:nth-child(3n) {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+}
+
+.completion-confetti-layer i:nth-child(4n) {
+    width: 8px;
+    height: 20px;
+}
+
+@keyframes completionConfettiBurst {
+    0% {
+        opacity: 0;
+        transform: translate(-50%, -50%) scale(.15) rotate(0deg);
+    }
+    8% { opacity: 1; }
+    72% { opacity: .98; }
+    100% {
+        opacity: 0;
+        transform: translate(calc(-50% + var(--confetti-x)), calc(-50% + var(--confetti-y))) scale(1) rotate(var(--confetti-turn));
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .completion-confetti-layer {
+        display: none;
+    }
+}
+
 .scroll-down-guide.show {
     opacity: 1;
     pointer-events: auto;
@@ -70,6 +121,45 @@
 body.question-page-with-ad {
     flex-direction: column;
     gap: 20px;
+}
+
+.page-ad-grid {
+    position: relative;
+    z-index: 4;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 300px;
+    align-items: center;
+    gap: 14px;
+    width: min(100%, 680px);
+    margin: 0 auto 18px;
+}
+
+.page-native-ad,
+.page-banner-ad {
+    width: 100%;
+    min-width: 0;
+    overflow: hidden;
+    border: 1px solid rgba(255, 255, 255, 0.82);
+    border-radius: 20px;
+    background: rgba(255, 255, 255, 0.66);
+    box-shadow: 0 14px 36px rgba(117, 62, 134, 0.14);
+}
+
+.page-native-ad {
+    min-height: 100px;
+    padding: 8px;
+}
+
+.page-banner-ad {
+    width: 300px;
+    min-height: 250px;
+}
+
+.page-banner-ad iframe {
+    display: block;
+    width: 300px;
+    height: 250px;
+    border: 0;
 }
 
 .quiz-ad-slot {
@@ -113,6 +203,18 @@ body.question-page-with-ad {
     .quiz-ad-slot {
         width: min(320px, 100%);
         flex: 0 0 auto;
+    }
+
+    .page-ad-grid {
+        grid-template-columns: 1fr;
+        width: min(100%, 320px);
+        margin-bottom: 14px;
+    }
+
+    .page-native-ad,
+    .page-banner-ad {
+        width: min(100%, 300px);
+        margin-inline: auto;
     }
 }
 
@@ -3232,6 +3334,7 @@ body.results-personality-mode #previousPersonalityCard { display: none; }
 
 /* Match the personality-test pink/purple theme */
 body.streak-game-page {
+    flex-direction: column;
     color: #704579;
 
     background:
@@ -3257,6 +3360,12 @@ body.streak-game-page {
     animation: backgroundAnimation 14s ease-in-out infinite;
 
     overscroll-behavior: none;
+}
+
+.streak-game-page > .page-ad-grid {
+    width: min(100%, 680px);
+    flex: 0 0 auto;
+    margin: 20px auto 24px;
 }
 
 /* Intro card */
