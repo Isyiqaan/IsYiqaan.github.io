@@ -1001,7 +1001,21 @@ function getPersonalityResults() {
                 Array.isArray(parsedResults) &&
                 parsedResults.length > 0
             ) {
-                return parsedResults;
+                return parsedResults.map(result => {
+                    const canonicalTrait =
+                        personalityTraits.find(
+                            trait =>
+                                trait.name === result.name
+                        );
+
+                    return {
+                        ...result,
+                        emoji:
+                            canonicalTrait?.emoji ||
+                            result.emoji ||
+                            "✨"
+                    };
+                });
             }
         } catch (error) {
             console.warn(
@@ -1411,6 +1425,12 @@ function completeDailyStreak() {
 
     if (previousDate === yesterday) {
         currentStreak += 1;
+    } else if (!previousDate && currentStreak > 0) {
+        /*
+          Older versions saved the streak number without a completion date.
+          Preserve that real progress during migration instead of resetting it.
+        */
+        currentStreak += 1;
     } else {
         currentStreak = 1;
     }
@@ -1503,7 +1523,7 @@ function initializeScrollDownGuide() {
 
 function showAlreadyCompletedMessage() {
     const message =
-        "Maanta streak-gaaga waad sii wadatay! Berri soo noqo si aanu streak-gaagu u go'in. 🔥";
+        "Maanta streak gaaga waad sii wadatay! Berri soo noqo si aanu streak gaagu u go'in. 🔥";
 
     const messageElement =
         byId(
@@ -1607,6 +1627,11 @@ function prepareHomepageActions() {
         );
 
         setElementVisibility(
+            takeTestAgainButton,
+            false
+        );
+
+        setElementVisibility(
             completedMessage,
             false
         );
@@ -1646,6 +1671,11 @@ function prepareHomepageActions() {
         true
     );
 
+    setElementVisibility(
+        takeTestAgainButton,
+        true
+    );
+
     if (retakeButton) {
         retakeButton.textContent =
             "Shakhsiyadaada eeg";
@@ -1670,7 +1700,7 @@ function prepareHomepageActions() {
     if (completedToday) {
         if (mainMessage) {
             mainMessage.textContent =
-                "Maanta streak-gaaga waad sii wadatay! Berri soo noqo si aad mar kale u sii wadato.";
+                "Maanta streak gaaga waad sii wadatay! Berri soo noqo si aad mar kale u sii wadato.";
         }
 
         if (continueButton) {
@@ -1687,7 +1717,7 @@ function prepareHomepageActions() {
 
         if (completedMessage) {
             completedMessage.textContent =
-                "Maanta streak-gaaga waad sii wadatay! Berri soo noqo si aanu streak-gaagu u go'in. 🔥";
+                "Maanta streak gaaga waad sii wadatay! Berri soo noqo si aanu streak gaagu u go'in. 🔥";
 
             setElementVisibility(
                 completedMessage,
@@ -1703,12 +1733,12 @@ function prepareHomepageActions() {
     */
     if (mainMessage) {
         mainMessage.textContent =
-            "Maanta waa fursaddaada inaad streak-gaaga sii wadato!";
+            "Maanta waa fursaddaada inaad streak gaaga sii wadato!";
     }
 
     if (continueButton) {
         continueButton.textContent =
-            "Sii wad streak-ga";
+            "Sii wad streak gaaga";
 
         continueButton.onclick =
             event => {
@@ -1743,14 +1773,14 @@ function updateResultsPageHeadings(mode) {
     if (title) {
         title.textContent =
             mode === "streak"
-                ? "🎉 Streak-ga Waa Dhammaystirtay 🎉"
+                ? "🎉 streak gaaga Waa Dhammaystirtay 🎉"
                 : "🎉 Shakhsiyadaada 🎉";
     }
 
     if (subtitle) {
         subtitle.textContent =
             mode === "streak"
-                ? "Maanta streak-gaaga waad sii wadatay."
+                ? "Maanta streak gaaga waad sii wadatay."
                 : "Kuwani waa natiijooyinka personality-gaaga cusub.";
     }
 }
@@ -1884,7 +1914,7 @@ function ensureGeneratedStreakResultCard() {
         "result-label";
 
     label.textContent =
-        "Streak-gaaga";
+        "streak gaaga";
 
     const flameContainer =
         document.createElement(
@@ -1917,7 +1947,7 @@ function ensureGeneratedStreakResultCard() {
         document.createElement("p");
 
     description.textContent =
-        "Maanta streak-gaaga si guul leh ayaad u sii wadatay.";
+        "Maanta streak gaaga si guul leh ayaad u sii wadatay.";
 
     card.append(
         label,
@@ -2060,7 +2090,7 @@ function prepareResultsPageMode() {
         button.textContent =
             hasCompletedStreakToday()
                 ? "🌙 Berri Soo Noqo"
-                : "Sii Wad Streak-ga";
+                : "Sii Wad streak gaaga";
 
         button.onclick =
             event => {
@@ -2224,73 +2254,30 @@ function shareResultsOnWhatsApp() {
       Shows the top 5 personality traits.
       Change 5 to another number if needed.
     */
-    const personalityTraits =
+    const sharedTraits =
         getPersonalityResults()
             .slice(0, 5)
             .map(result => {
-                const traitName =
-                    result.name;
+                const canonicalTrait =
+                    personalityTraits.find(
+                        trait =>
+                            trait.name === result.name
+                    );
 
-                const normalizedName =
-                    traitName
-                        .toLowerCase()
-                        .trim();
+                const emoji =
+                    canonicalTrait?.emoji ||
+                    result.emoji ||
+                    "✨";
 
-                let emoji = "✨";
-
-                if (
-                    normalizedName.includes("qurux")
-                ) {
-                    emoji = "✨";
-                } else if (
-                    normalizedName.includes("jees")
-                ) {
-                    emoji = "😏";
-                } else if (
-                    normalizedName.includes("firfir")
-                ) {
-                    emoji = "⚡";
-                } else if (
-                    normalizedName.includes("daryeel")
-                ) {
-                    emoji = "❤️";
-                } else if (
-                    normalizedName.includes("madax")
-                ) {
-                    emoji = "🦅";
-                } else if (
-                    normalizedName.includes("maskax")
-                ) {
-                    emoji = "🧠";
-                } else if (
-                    normalizedName.includes("degan") ||
-                    normalizedName.includes("dagan")
-                ) {
-                    emoji = "🌙";
-                } else if (
-                    normalizedName.includes("Xaraabaad")
-                ) {
-                    emoji = "😂";
-                } else if (
-                    normalizedName.includes("kalsooni")
-                ) {
-                    emoji = "💪";
-                } else if (
-                    normalizedName.includes("hal-abuur") ||
-                    normalizedName.includes("hal abuur")
-                ) {
-                    emoji = "🎨";
-                }
-
-                return `${emoji} ${traitName} — ${result.percentage}%`;
+                return `${emoji} ${result.name} — ${result.percentage}%`;
             });
 
     const message = [
         `✨ *${playerName}* shakhsiyadooda ✨`,
         "",
-        ...personalityTraits,
+        ...sharedTraits,
         "",
-        `🔥 Maalinta ${streakDay}aad ee streak-ga waa dhammaatay`,
+        `🔥 Maalinta ${streakDay}aad ee streak gaaga waa dhammaatay`,
         "",
         "Kaalay adiguna is tijaabi",
         WEBSITE_LINK
@@ -3653,7 +3640,7 @@ function initializeStreakGame() {
         setResultsMode("streak");
 
         announce(
-            `Hambalyo. Streak-gaagu hadda waa ${updatedStreak} maalmood.`
+            `Hambalyo. streak gaaga hadda waa ${updatedStreak} maalmood.`
         );
     }
 
