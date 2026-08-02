@@ -639,7 +639,7 @@ function updateAllStreakProgressDisplays() {
         if (!panel) {
             panel = document.createElement("div");
             panel.className = "streak-tier-progress";
-            panel.innerHTML = '<p></p><div class="streak-tier-track"><i></i></div><strong class="day-99-message" hidden></strong>';
+            panel.innerHTML = '<p></p><div class="streak-tier-track"><i></i></div>';
             const flameHost = host.querySelector("[data-streak-flame], [data-final-streak-flame]");
             const insertionTarget = host.classList.contains("results-streak-badge")
                 ? host
@@ -656,10 +656,6 @@ function updateAllStreakProgressDisplays() {
         panel.querySelector("i").style.width = !tier.next
             ? "100%"
             : `${Math.max(0, Math.min(100, ((streak - tier.minimum) / (tier.next - tier.minimum)) * 100))}%`;
-        const special = panel.querySelector("strong");
-        special.hidden = streak !== 99;
-        special.textContent = "Hal maalin oo keliya! Streakga buluugga ah ayaa berri furmaya!";
-        panel.classList.toggle("day-99", streak === 99);
     });
 }
 
@@ -4265,6 +4261,8 @@ function initializeStreakGame() {
             `Stage ${startingStage} waa diyaar. Hoos u soco oo Sii wad taabo.`
         );
     } else {
+        introScreen.hidden = false;
+        introScreen.classList.remove("hidden");
         window.setTimeout(
             unlockBeginButton,
             TUTORIAL_DURATION
