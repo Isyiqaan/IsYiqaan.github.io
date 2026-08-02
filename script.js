@@ -1749,15 +1749,9 @@ function displayStreakDay() {
 ========================================================= */
 
 function initializeScrollDownGuide() {
-    if (getCurrentPageName() === "results.html") {
-        return;
-    }
-
     if (document.querySelector(".scroll-down-guide")) {
         return;
     }
-
-    let guideWasDismissed = false;
 
     const findMainTarget = () => {
         const candidates = queryAll(
@@ -1774,23 +1768,6 @@ function initializeScrollDownGuide() {
     document.body.appendChild(guide);
 
     const update = () => {
-        if (guideWasDismissed) {
-            guide.classList.remove("show");
-            return;
-        }
-
-        const target = findMainTarget();
-        const targetRect = target?.getBoundingClientRect();
-
-        if (
-            targetRect &&
-            targetRect.top <= window.innerHeight * 0.82
-        ) {
-            guideWasDismissed = true;
-            guide.classList.remove("show");
-            return;
-        }
-
         const pageBottom = Math.max(
             document.body.scrollHeight,
             document.documentElement.scrollHeight
