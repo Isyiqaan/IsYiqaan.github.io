@@ -358,8 +358,9 @@ const STREAK_FLAME_TIERS = [
 ];
 
 function getStreakFlameTier(streakDay) {
-    const streak = Math.max(1, Number.parseInt(streakDay, 10) || 1);
-    return STREAK_FLAME_TIERS.find(tier => streak >= tier.minimum) || STREAK_FLAME_TIERS.at(-1);
+    const streak = Math.max(0, Number.parseInt(streakDay, 10) || 0);
+    if (streak < 1) return null;
+    return STREAK_FLAME_TIERS.find(tier => streak >= tier.minimum) || null;
 }
 
 function getValidPlayerName() {
@@ -395,6 +396,7 @@ function initializeFlameParticlePool(flame, tier) {
         const observer = new IntersectionObserver(entries => {
             entries.forEach(entry => flame.classList.toggle("flame-offscreen", !entry.isIntersecting));
         }, { rootMargin: "80px" });
+        flame._flameIntersectionObserver = observer;
         observer.observe(flame);
     }
 }
@@ -419,6 +421,13 @@ function createStreakFlameElement(
         getStreakFlameTier(
             streakDay
         );
+
+    if (!tier) {
+        const emptyFlame = document.createElement("span");
+        emptyFlame.className = "streak-flame streak-flame-empty";
+        emptyFlame.setAttribute("aria-hidden", "true");
+        return emptyFlame;
+    }
 
     const flame =
         document.createElement(
@@ -513,8 +522,8 @@ function createStreakFlameElement(
     const lowerSideFlamesMarkup = tier.supports >= 2
         ? `
             <g class="flame-side-group" aria-hidden="true">
-                <path class="flame-side flame-side-left"${supportFill} d="M37 160 C17 157 7 142 13 125 C18 111 29 104 31 87 C47 101 52 118 45 133 C51 129 56 122 59 113 C65 134 57 155 37 160 Z" />
-                <path class="flame-side flame-side-right"${supportFill} d="M123 160 C143 157 153 142 147 125 C142 111 131 104 129 87 C113 101 108 118 115 133 C109 129 104 122 101 113 C95 134 103 155 123 160 Z" />
+                <path class="flame-side flame-side-left"${supportFill} d="M29 162 C8 159 -4 143 4 124 C10 109 20 99 23 79 C41 96 47 116 39 133 C46 128 51 120 54 110 C62 134 53 157 29 162 Z" />
+                <path class="flame-side flame-side-right"${supportFill} d="M131 162 C152 159 164 143 156 124 C150 109 140 99 137 79 C119 96 113 116 121 133 C114 128 109 120 106 110 C98 134 107 157 131 162 Z" />
             </g>`
         : "";
 
@@ -553,7 +562,6 @@ function createStreakFlameElement(
                 ${rainbowAnimate}
             </linearGradient>
         </defs>
-        ${crownMarkup}
         ${lowerSideFlamesMarkup}
         ${shoulderFlamesMarkup}
         <g class="flame-outer-group">
@@ -567,6 +575,7 @@ function createStreakFlameElement(
         <g class="flame-inner-group">
             <path class="flame-inner" d="${tier.inner}">${innerAnimate}</path>
         </g>
+        ${crownMarkup}
         <g class="flame-embers" aria-hidden="true">
             <circle cx="35" cy="29" r="3.1" />
             <circle cx="73" cy="37" r="2.2" />
@@ -597,6 +606,9 @@ function renderStreakFlame(
         return;
     }
 
+    container.querySelectorAll(".streak-flame").forEach(existingFlame => {
+        existingFlame._flameIntersectionObserver?.disconnect();
+    });
     container.innerHTML = "";
     container.removeAttribute("aria-hidden");
 
@@ -613,7 +625,12 @@ function updateStreakFlameDisplays() {
 
     if (streakDay < 1) {
         queryAll("#streakFlame, #mainStreakFlame, #finalStreakFlame, [data-streak-flame]")
-            .forEach(container => { container.innerHTML = ""; });
+            .forEach(container => {
+                container.querySelectorAll(".streak-flame").forEach(existingFlame => {
+                    existingFlame._flameIntersectionObserver?.disconnect();
+                });
+                container.innerHTML = "";
+            });
         return;
     }
 
@@ -639,13 +656,16 @@ function updateAllStreakProgressDisplays() {
         if (!panel) {
             panel = document.createElement("div");
             panel.className = "streak-tier-progress";
-            panel.innerHTML = '<p></p><div class="streak-tier-track"><i></i></div><strong class="day-99-message" hidden></strong>';
+            panel.innerHTML = '<p></p><div class="streak-tier-track"><i></i></div>';
             const flameHost = host.querySelector("[data-streak-flame], [data-final-streak-flame]");
-            const insertionTarget = host.classList.contains("results-streak-badge")
-                ? host
-                : flameHost?.closest(".home-streak-value") || flameHost;
-            if (insertionTarget) insertionTarget.insertAdjacentElement("afterend", panel);
-            else host.appendChild(panel);
+            if (host.classList.contains("results-streak-badge")) {
+                host.appendChild(panel);
+            } else {
+                const insertionTarget =
+                    flameHost?.closest(".home-streak-value") || flameHost;
+                if (insertionTarget) insertionTarget.insertAdjacentElement("afterend", panel);
+                else host.appendChild(panel);
+            }
         }
         const remaining = tier.next ? tier.next - streak : 0;
         panel.querySelector("p").textContent = !tier.next
@@ -656,17 +676,13 @@ function updateAllStreakProgressDisplays() {
         panel.querySelector("i").style.width = !tier.next
             ? "100%"
             : `${Math.max(0, Math.min(100, ((streak - tier.minimum) / (tier.next - tier.minimum)) * 100))}%`;
-        const special = panel.querySelector("strong");
-        special.hidden = streak !== 99;
-        special.textContent = "Hal maalin oo keliya! Streakga buluugga ah ayaa berri furmaya!";
-        panel.classList.toggle("day-99", streak === 99);
     });
 }
 
 function initializeStreakMuseum() {
     const leaderboard = byId("leaderboard");
     if (!leaderboard || byId("streakMuseum")) return;
-    const current = Math.max(1, getSavedStreakDay());
+    const current = Math.max(0, getSavedStreakDay());
     const highest = Math.max(current, Number.parseInt(localStorage.getItem(STORAGE_KEYS.highestStreak), 10) || 0);
     localStorage.setItem(STORAGE_KEYS.highestStreak, String(highest));
     const section = document.createElement("section");
@@ -712,18 +728,35 @@ function initializeStreakMuseum() {
 
 function playPendingStreakAnimation() {
     const raw = localStorage.getItem(STORAGE_KEYS.earnedAnimation);
-    if (!raw || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    if (!raw) return;
     try {
         const earned = JSON.parse(raw);
         const marker = `${earned.date}:${earned.value}`;
         if (localStorage.getItem(STORAGE_KEYS.playedAnimation) === marker) return;
+        if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+            localStorage.setItem(STORAGE_KEYS.playedAnimation, marker);
+            return;
+        }
         const target = query("#streakFlame .streak-flame, #finalStreakFlame .streak-flame, #mainStreakFlame .streak-flame");
         if (!target) return;
-        localStorage.setItem(STORAGE_KEYS.playedAnimation, marker);
-        const oldTier = getStreakFlameTier(earned.previous || 1);
+        const oldTier = getStreakFlameTier(earned.previous);
         const newTier = getStreakFlameTier(earned.value);
-        const unlocked = oldTier.key !== newTier.key;
+        if (!newTier) return;
+        const unlocked = oldTier?.key !== newTier.key;
         target.classList.add(unlocked ? "streak-tier-unlock" : "streak-earned-day");
+        let animationWasRecorded = false;
+        const recordPlayedAnimation = () => {
+            if (animationWasRecorded) return;
+            animationWasRecorded = true;
+            localStorage.setItem(STORAGE_KEYS.playedAnimation, marker);
+        };
+        const handleAnimationEnd = event => {
+            if (event.target !== target) return;
+            target.removeEventListener("animationend", handleAnimationEnd);
+            recordPlayedAnimation();
+        };
+        target.addEventListener("animationend", handleAnimationEnd);
+        window.setTimeout(recordPlayedAnimation, 2400);
         if (unlocked) document.body.classList.add("streak-unlock-backdrop");
         const dayNumber = query("[data-streak-day]");
         if (dayNumber && Number.isFinite(Number(earned.previous))) {
@@ -799,8 +832,11 @@ function goTo(page) {
     }, PAGE_TRANSITION_TIME);
 }
 
-function answerAndContinue(nextPage) {
-    recordCurrentAnswer();
+function answerAndContinue(answerIndex, nextPage) {
+    if (!recordAnswer(answerIndex)) {
+        console.warn("The selected personality answer could not be recorded.");
+        return;
+    }
     goTo(nextPage);
 }
 
@@ -1102,19 +1138,6 @@ function updateProgressBar() {
    PERSONALITY RESULTS
 ========================================================= */
 
-const ANSWER_TRAIT_MAP = [
-    [["Safar-jacayl",3],["Xiiso",2]], [["Xiiso",3],["Hal-abuur",2]], [["Madax-bannaani",3],["Kalsooni",2]], [["Degganaan",2],["Safar-jacayl",2]],
-    [["Daacadnimo",3],["Kalsooni",2]], [["Xaraabaad",3],["Jees-jees",2]], [["Degganaan",3],["Fikir-badan",2]], [["Firfircooni",3],["Xaraabaad",2]],
-    [["Daacadnimo",2],["Dulqaad",2]], [["Madax-bannaani",3],["Hami",2]], [["Daacadnimo",4],["Jacayl",2]],
-    [["Maskax",4],["Madax-bannaani",2]], [["Jacayl",4],["Rajo",2]], [["Daacadnimo",3],["Jacayl",2]], [["Dulqaad",4],["Fikir-badan",2]],
-    [["Rajo",3],["Firfircooni",2]], [["Kalsooni",3],["Firfircooni",2]], [["Degganaan",4],["Fikir-badan",2]], [["Hal-abuur",3],["Hurdoole",2]],
-    [["Rajo",2]], [["Kalsooni",2]], [["Daacadnimo",2]], [["Madax-bannaani",2]],
-    [["Xiiso",3],["Xaraabaad",2]], [["Tartame",3],["Hal-abuur",2]], [["Hurdoole",4],["Degganaan",2]], [["Madax-bannaani",3],["Fikir-badan",2]],
-    [["Jacayl",2],["Xiiso",2]], [["Maskax",4],["Xiiso",2]], [["Daacadnimo",3],["Jacayl",2]], [["Madax-bannaani",2],["Jees-jees",2]],
-    [["Maskax",4],["Xiiso",2]], [["Hal-abuur",3],["Safar-jacayl",2]], [["Kalsooni",3],["Firfircooni",2]], [["Jees-jees",3],["Xaraabaad",2]],
-    [["Jacayl",3],["Dulqaad",2]], [["Kalsooni",4],["Firfircooni",2]], [["Daacadnimo",3],["Dulqaad",2]], [["Hami",3],["Tartame",2]]
-];
-
 const QUESTION_ANSWER_TRAITS = [
     [ [["Safar-jacayl",3],["Xiiso",2]], [["Xiiso",3],["Hal-abuur",2]], [["Madax-bannaani",3],["Kalsooni",2]], [["Degganaan",2],["Safar-jacayl",2]] ],
     [ [["Daacadnimo",3],["Kalsooni",2]], [["Xaraabaad",3],["Jees-jees",2]], [["Degganaan",3],["Fikir-badan",2]], [["Firfircooni",3],["Xaraabaad",2]] ],
@@ -1137,16 +1160,16 @@ function getSelectedAnswers() {
     }
 }
 
-function recordCurrentAnswer() {
+function recordAnswer(answerIndex) {
     const match = getCurrentPageName().match(/^question(\d+)\.html$/);
-    const activeButton = document.activeElement?.closest?.("button.answer");
-    if (!match || !activeButton) return;
-    const buttons = queryAll("button.answer");
-    const answerIndex = buttons.indexOf(activeButton);
-    if (answerIndex < 0) return;
+    if (!match || !Number.isInteger(answerIndex)) return false;
+    const questionIndex = Number(match[1]) - 1;
+    const answerCount = QUESTION_ANSWER_TRAITS[questionIndex]?.length || 0;
+    if (answerIndex < 0 || answerIndex >= answerCount) return false;
     const answers = getSelectedAnswers();
-    answers[Number(match[1]) - 1] = answerIndex;
+    answers[questionIndex] = answerIndex;
     sessionStorage.setItem(STORAGE_KEYS.selectedAnswers, JSON.stringify(answers));
+    return true;
 }
 
 function generatePersonalityResults() {
@@ -1338,25 +1361,39 @@ function retakePersonalityTest() {
     goTo("question1.html");
 }
 
-function finishQuiz() {
+function finishQuiz(answerIndex) {
     if (isNavigating) {
         return;
     }
 
-    const isFirstPersonalityTest =
-        !localStorage.getItem(
-            STORAGE_KEYS.personalityResults
-        );
+    const existingStreak =
+        getSavedStreakDay();
 
-    recordCurrentAnswer();
+    const isFirstPersonalityTest =
+        getPersonalityResults().length === 0 &&
+        existingStreak === 0;
+
+    if (!recordAnswer(answerIndex)) {
+        console.warn("The final personality answer could not be recorded.");
+        return;
+    }
     const completedAnswers = getSelectedAnswers();
-    if (completedAnswers.length !== TOTAL_QUESTIONS || !completedAnswers.every(Number.isInteger)) {
+    const hasAllAnswers =
+        completedAnswers.length === TOTAL_QUESTIONS &&
+        Array.from(
+            { length: TOTAL_QUESTIONS },
+            (_, index) => Number.isInteger(completedAnswers[index])
+        ).every(Boolean);
+    if (!hasAllAnswers) {
         console.warn("Personality answers were incomplete; results were not replaced.");
         return;
     }
     generatePersonalityResults();
 
-    if (isFirstPersonalityTest) {
+    if (
+        isFirstPersonalityTest &&
+        getSavedStreakDay() === 0
+    ) {
         saveUnifiedStreakDay(1);
         saveLastCompletedDate(
             getLocalDateKey()
@@ -1448,10 +1485,16 @@ function getResultsMode() {
 ========================================================= */
 
 function getSavedStreakDay() {
-    const possibleValues = [
-        localStorage.getItem(
-            STORAGE_KEYS.streak
-        ),
+    const primary = Number.parseInt(
+        localStorage.getItem(STORAGE_KEYS.streak),
+        10
+    );
+
+    if (Number.isFinite(primary) && primary >= 0) {
+        return primary;
+    }
+
+    const fallbackValues = [
         localStorage.getItem(
             STORAGE_KEYS.alternateStreak
         ),
@@ -1464,18 +1507,16 @@ function getSavedStreakDay() {
         const backup = JSON.parse(
             localStorage.getItem(STORAGE_KEYS.streakBackup) || "{}"
         );
-        possibleValues.push(backup.streak);
+        fallbackValues.push(backup.streak);
     } catch (error) {
         console.warn("Streak backup could not be read.", error);
     }
 
-    const validValues = possibleValues
+    const validFallback = fallbackValues
         .map(value => Number.parseInt(value, 10))
-        .filter(value => Number.isFinite(value) && value >= 0);
+        .find(value => Number.isFinite(value) && value >= 0);
 
-    return validValues.length
-        ? Math.max(...validValues)
-        : 0;
+    return validFallback ?? 0;
 }
 
 function saveUnifiedStreakDay(streakDay) {
@@ -1708,6 +1749,10 @@ function displayStreakDay() {
 ========================================================= */
 
 function initializeScrollDownGuide() {
+    if (document.querySelector(".scroll-down-guide")) {
+        return;
+    }
+
     const findMainTarget = () => {
         const candidates = queryAll(
             "main.content, main.container, .streak-screen:not(.hidden)"
@@ -1718,27 +1763,30 @@ function initializeScrollDownGuide() {
     const guide = document.createElement("button");
     guide.type = "button";
     guide.className = "scroll-down-guide";
-    guide.setAttribute("aria-label", "Scroll down to the main content");
-    guide.innerHTML = '<span>Scroll down</span><i aria-hidden="true"></i>';
+    guide.setAttribute("aria-label", "Hoos u soco bogga");
+    guide.innerHTML = '<span>Hoos u soco</span><i aria-hidden="true"></i>';
     document.body.appendChild(guide);
 
     const update = () => {
-        const target = findMainTarget();
-        if (!target) {
-            guide.classList.remove("show");
-            return;
-        }
-        const rect = target.getBoundingClientRect();
-        const mainIsVisible = rect.top < window.innerHeight * 0.72 && rect.bottom > 90;
-        guide.classList.toggle("show", !mainIsVisible && rect.top > 0);
-        guide.dataset.targetTop = String(Math.round(rect.top + window.scrollY));
+        const pageBottom = Math.max(
+            document.body.scrollHeight,
+            document.documentElement.scrollHeight
+        );
+        const remainingDistance = pageBottom - (window.scrollY + window.innerHeight);
+        guide.classList.toggle("show", remainingDistance > 56);
     };
 
     guide.addEventListener("click", () => {
         const target = findMainTarget();
-        if (target) {
+        const targetRect = target?.getBoundingClientRect();
+        if (targetRect && targetRect.top > window.innerHeight * 0.55) {
             target.scrollIntoView({ behavior: "smooth", block: "start" });
+            return;
         }
+        window.scrollBy({
+            top: Math.max(240, window.innerHeight * 0.72),
+            behavior: "smooth"
+        });
     });
 
     window.addEventListener("scroll", update, { passive: true });
@@ -1800,196 +1848,6 @@ function continueDailyStreak() {
 
     goTo("streak-game.html");
 }
-
-function prepareHomepageActions() {
-    if (
-        getCurrentPageName() !==
-        "index.html"
-    ) {
-        return;
-    }
-
-    const mainMessage =
-        byId("homeMainMessage");
-
-    const streakCard =
-        query(".home-streak-card");
-
-    const continueButton =
-        byId("continueStreakButton");
-
-    const retakeButton =
-        byId("retakeTestButton");
-
-    const takeTestAgainButton =
-        byId("takeTestAgainButton");
-
-    if (takeTestAgainButton) {
-        takeTestAgainButton.onclick = event => {
-            event.preventDefault();
-            retakePersonalityTest();
-        };
-    }
-
-    const completedMessage =
-        byId(
-            "streakAlreadyCompletedMessage"
-        );
-
-    const hasPersonalityResults =
-        Boolean(
-            localStorage.getItem(
-                STORAGE_KEYS.personalityResults
-            )
-        );
-
-    /*
-      FIRST-TIME PLAYER
-    */
-    if (!hasPersonalityResults) {
-        if (mainMessage) {
-            mainMessage.textContent =
-                "Ku soo dhowow imtixaanka shakhsiyadda! Waxaad ka jawaabi doontaa su’aalo fudud oo kaa caawinaya inaad ogaato shakhsiyaddaada, oo streak furatid! Badhanka hoose taabo si aad u bilowdid.";
-        }
-
-        setElementVisibility(
-            streakCard,
-            false
-        );
-
-        setElementVisibility(
-            retakeButton,
-            false
-        );
-
-        setElementVisibility(
-            takeTestAgainButton,
-            false
-        );
-
-        setElementVisibility(
-            completedMessage,
-            false
-        );
-
-        if (continueButton) {
-            setElementVisibility(
-                continueButton,
-                true
-            );
-
-            continueButton.textContent =
-                "Bilow Imtixaanka ✨";
-
-            continueButton.onclick =
-                event => {
-                    event.preventDefault();
-
-                    goTo(
-                        "question1.html"
-                    );
-                };
-        }
-
-        return;
-    }
-
-    /*
-      RETURNING PLAYER
-    */
-    setElementVisibility(
-        streakCard,
-        true
-    );
-
-    setElementVisibility(
-        retakeButton,
-        true
-    );
-
-    setElementVisibility(
-        takeTestAgainButton,
-        true
-    );
-
-    if (retakeButton) {
-        retakeButton.textContent =
-            "Shakhsiyadaada eeg";
-
-        retakeButton.onclick =
-            event => {
-                event.preventDefault();
-
-                setResultsMode(
-                    "personality"
-                );
-
-                goTo(
-                    "results.html"
-                );
-            };
-    }
-
-    const completedToday =
-        hasCompletedStreakToday();
-
-    if (completedToday) {
-        if (mainMessage) {
-            mainMessage.textContent =
-                "Maanta streakgaaga waad sii wadatay! Berri soo noqo si aad mar kale u sii wadato.";
-        }
-
-        if (continueButton) {
-            continueButton.textContent =
-                "🌙 Berri Soo Noqo";
-
-            continueButton.onclick =
-                event => {
-                    event.preventDefault();
-
-                    showAlreadyCompletedMessage();
-                };
-        }
-
-        if (completedMessage) {
-            completedMessage.textContent =
-                "Maanta streakgaaga waad sii wadatay! Berri soo noqo si aanu streakgaagu u go'in.";
-
-            setElementVisibility(
-                completedMessage,
-                true
-            );
-        }
-
-        return;
-    }
-
-    /*
-      RETURNING PLAYER WHO CAN PLAY TODAY
-    */
-    if (mainMessage) {
-        mainMessage.textContent =
-            "Maanta waa fursaddaada inaad streakgaaga sii wadato!";
-    }
-
-    if (continueButton) {
-        continueButton.textContent =
-            "Sii wad Streakga";
-
-        continueButton.onclick =
-            event => {
-                event.preventDefault();
-
-                continueDailyStreak();
-            };
-    }
-
-    setElementVisibility(
-        completedMessage,
-        false
-    );
-}
-
 
 function prepareReliableHomepageState() {
     if (getCurrentPageName() !== "index.html") return;
@@ -2329,6 +2187,14 @@ function prepareResultsPageMode() {
         mode;
 
     updateResultsPageHeadings(mode);
+
+    const resultsStreakBadge =
+        query(".results-streak-badge");
+
+    setElementVisibility(
+        resultsStreakBadge,
+        mode === "personality"
+    );
 
     const streakMainCard =
         byId("streakMainCard") ||
@@ -3022,7 +2888,7 @@ function injectStreakFlameStyles() {
         }
 
         .flame-green {
-            width: 1.5em; height: 1.95em;
+            width: 1.7em; height: 1.95em;
             --flame-main: #42e77a; --flame-light: #d7ffe2;
             --flame-deep: #20b95a; --flame-inner: #f1ffb8;
             --flame-glow: rgba(55, 227, 119, 0.5);
@@ -3177,8 +3043,8 @@ function injectStreakFlameStyles() {
         }
 
         @keyframes crownFloat {
-            0% { transform: translateY(0) rotate(-1.5deg); }
-            100% { transform: translateY(-2px) rotate(1.5deg); }
+            0% { transform: translateY(-7px) rotate(-1.5deg); }
+            100% { transform: translateY(-10px) rotate(1.5deg); }
         }
 
         @keyframes flameCoreGlow {
@@ -4265,6 +4131,8 @@ function initializeStreakGame() {
             `Stage ${startingStage} waa diyaar. Hoos u soco oo Sii wad taabo.`
         );
     } else {
+        introScreen.hidden = false;
+        introScreen.classList.remove("hidden");
         window.setTimeout(
             unlockBeginButton,
             TUTORIAL_DURATION
@@ -4318,7 +4186,6 @@ document.addEventListener(
         displayLeaderboard();
         displayPersonalityResults();
         displayStreakDay();
-        updateStreakFlameDisplays();
         updateAllStreakProgressDisplays();
         initializeStreakMuseum();
         initializeStreakSoundToggle();
