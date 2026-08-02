@@ -3694,8 +3694,6 @@ body.streak-game-page {
 .streak-tier-progress p { margin:0 0 9px; color:#82458f; font-size:.86rem; font-weight:700; }
 .streak-tier-track { height:9px; overflow:hidden; border-radius:999px; background:#ead5f1; }
 .streak-tier-track i { display:block; width:0; height:100%; border-radius:inherit; background:linear-gradient(90deg,#c871d4,#ff8bb8,#ffd06b); transition:width .7s cubic-bezier(.2,.8,.2,1); }
-.streak-tier-progress.day-99 .streak-tier-track { animation:day99Pulse 1.8s ease-in-out infinite; }
-.day-99-message { display:block; margin-top:10px; color:#a15a36; font-size:.78rem; }
 
 .streak-museum { width:100%; margin:34px auto 10px; padding:22px 16px; border:1px solid rgba(255,255,255,.82); border-radius:26px; background:rgba(255,255,255,.46); }
 .streak-museum h2 { margin:4px 0 18px; text-align:center; }
@@ -3727,7 +3725,7 @@ body.streak-game-page {
 
 @media (max-width:780px) { .streak-museum-grid { grid-template-columns:repeat(2,minmax(0,1fr)); } }
 @media (max-width:330px) { .streak-museum-grid { grid-template-columns:1fr; } }
-@media (prefers-reduced-motion:reduce) { .streak-tier-progress.day-99 .streak-tier-track,.museum-flame-preview,.streak-earned-day,.streak-tier-unlock,.streak-tier-unlock::before,.streak-plus-one,.streak-unlock-message { animation:none !important; } }
+@media (prefers-reduced-motion:reduce) { .museum-flame-preview,.streak-earned-day,.streak-tier-unlock,.streak-tier-unlock::before,.streak-plus-one,.streak-unlock-message { animation:none !important; } }
 
 .streak-not-started [data-streak-flame] { display:none; }
 .streak-not-started .home-streak-value { min-height:42px; }
