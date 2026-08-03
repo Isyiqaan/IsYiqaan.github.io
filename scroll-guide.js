@@ -10,13 +10,31 @@ function initializeStandaloneScrollGuide() {
     guide.innerHTML = '<span>Hoos u soco</span><i aria-hidden="true"></i>';
     document.body.appendChild(guide);
 
+    let hasBeenShown = false;
+    let dismissedAtBottom = false;
+
     const update = () => {
+        if (dismissedAtBottom) {
+            return;
+        }
+
         const pageBottom = Math.max(
             document.body.scrollHeight,
             document.documentElement.scrollHeight
         );
         const remainingDistance = pageBottom - (window.scrollY + window.innerHeight);
-        guide.classList.toggle("show", remainingDistance > 56);
+
+        if (remainingDistance > 56) {
+            hasBeenShown = true;
+            guide.classList.add("show");
+            return;
+        }
+
+        guide.classList.remove("show");
+
+        if (hasBeenShown) {
+            dismissedAtBottom = true;
+        }
     };
 
     guide.addEventListener("click", () => {
