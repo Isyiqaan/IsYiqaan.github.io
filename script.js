@@ -1749,15 +1749,9 @@ function displayStreakDay() {
 ========================================================= */
 
 function initializeScrollDownGuide() {
-    if (getCurrentPageName() === "results.html") {
-        return;
-    }
-
     if (document.querySelector(".scroll-down-guide")) {
         return;
     }
-
-    let guideWasDismissed = false;
 
     const findMainTarget = () => {
         const candidates = queryAll(
@@ -1774,23 +1768,6 @@ function initializeScrollDownGuide() {
     document.body.appendChild(guide);
 
     const update = () => {
-        if (guideWasDismissed) {
-            guide.classList.remove("show");
-            return;
-        }
-
-        const target = findMainTarget();
-        const targetRect = target?.getBoundingClientRect();
-
-        if (
-            targetRect &&
-            targetRect.top <= window.innerHeight * 0.82
-        ) {
-            guideWasDismissed = true;
-            guide.classList.remove("show");
-            return;
-        }
-
         const pageBottom = Math.max(
             document.body.scrollHeight,
             document.documentElement.scrollHeight
@@ -1955,7 +1932,6 @@ function loadReturningHomepageAds() {
     host.querySelector(".page-native-ad").prepend(nativeScript);
     window.atOptions = { key: "8a204881cd2d5d7ae3ff7e30232fc0b3", format: "iframe", height: 250, width: 300, params: {} };
     const bannerScript = document.createElement("script");
-    bannerScript.async = true;
     bannerScript.src = "https://hystericallikingdowntown.com/8a204881cd2d5d7ae3ff7e30232fc0b3/invoke.js";
     host.querySelector(".page-banner-ad").appendChild(bannerScript);
 }
