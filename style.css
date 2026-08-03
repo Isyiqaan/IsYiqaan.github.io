@@ -3473,9 +3473,9 @@ body.streak-game-page {
     backdrop-filter: blur(16px);
     -webkit-backdrop-filter: blur(16px);
 
-    /* Stops scrolling and zoom gestures while playing */
-    touch-action: none;
-    overscroll-behavior: contain;
+    /* Keep vertical page scrolling available during active rounds. */
+    touch-action: pan-y;
+    overscroll-behavior-y: auto;
     -webkit-user-select: none;
     user-select: none;
 }
@@ -3518,7 +3518,7 @@ body.streak-game-page {
     z-index: 20 !important;
 
     pointer-events: auto !important;
-    touch-action: none !important;
+    touch-action: manipulation !important;
 
     cursor: pointer;
 
