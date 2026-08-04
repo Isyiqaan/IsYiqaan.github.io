@@ -2044,12 +2044,44 @@ function prepareReliableHomepageState() {
 }
 
 function loadReturningHomepageAds() {
-    const host = byId("homepageAds");
-    if (host) {
-        host.hidden = true;
-        host.replaceChildren();
+    if (
+        getCurrentPageName() !== "index.html" ||
+        getPersonalityResults().length === 0
+    ) {
+        return;
     }
+
+    const host = byId("homepageAds");
+    if (!host) return;
+
+    host.hidden = false;
+    host.innerHTML =
+        '<aside class="page-native-ad" aria-label="Advertisement">' +
+        '<div id="container-de0a31b62be16fbc9bd0ff721c7826ab"></div>' +
+        '</aside>' +
+        '<aside class="page-banner-ad" aria-label="Advertisement"></aside>';
+
+    const nativeScript = document.createElement("script");
+    nativeScript.async = true;
+    nativeScript.dataset.cfasync = "false";
+    nativeScript.src =
+        "https://hystericallikingdowntown.com/de0a31b62be16fbc9bd0ff721c7826ab/invoke.js";
+    host.querySelector(".page-native-ad").prepend(nativeScript);
+
+    window.atOptions = {
+        key: "8a204881cd2d5d7ae3ff7e30232fc0b3",
+        format: "iframe",
+        height: 250,
+        width: 300,
+        params: {}
+    };
+
+    const bannerScript = document.createElement("script");
+    bannerScript.src =
+        "https://hystericallikingdowntown.com/8a204881cd2d5d7ae3ff7e30232fc0b3/invoke.js";
+    host.querySelector(".page-banner-ad").appendChild(bannerScript);
 }
+
 
 /* =========================================================
    RESULTS PAGE
