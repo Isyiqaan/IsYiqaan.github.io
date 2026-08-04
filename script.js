@@ -2615,7 +2615,7 @@ function shareResultsOnWhatsApp() {
         "",
         ...sharedTraits,
         "",
-        "Kaalay adiguna is tijaabi",
+        "Kaalay adiguna is tijaabi oo ka qayb qaado jaaisooyinka!",
         WEBSITE_LINK
     ].join("\n");
 
