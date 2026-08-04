@@ -1984,7 +1984,7 @@ function prepareReliableHomepageState() {
         return;
     }
     if (continueButton) {
-        continueButton.textContent = "Sii wad Streakga";
+        continueButton.textContent = "🔥 Sii wad Streakga";
         continueButton.onclick = event => { event.preventDefault(); continueDailyStreak(); };
     }
     setElementVisibility(completedMessage, false);
@@ -2341,7 +2341,7 @@ function prepareResultsPageMode() {
         button.textContent =
             hasCompletedStreakToday()
                 ? "🌙 Berri Soo Noqo"
-                : "Sii Wad Streakga";
+                : "🔥 Sii Wad Streakga";
 
         button.onclick =
             event => {
@@ -2356,7 +2356,7 @@ function prepareResultsPageMode() {
         "[data-action='retake-test']"
     ).forEach(button => {
         button.textContent =
-            "Mar Kale Qaado";
+            "🔄 Mar Kale Qaado";
 
         button.onclick =
             event => {
