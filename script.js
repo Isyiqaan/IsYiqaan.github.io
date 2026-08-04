@@ -1981,11 +1981,13 @@ function prepareReliableHomepageState() {
     const oldResultsButton = byId("retakeTestButton");
     const retakeButton = byId("takeTestAgainButton");
     const completedMessage = byId("streakAlreadyCompletedMessage");
+    const newPlayerStreakMini = byId("newPlayerStreakMini");
     const hasResults = getPersonalityResults().length > 0;
 
     if (!hasResults) {
         streakCard?.classList.add("streak-not-started");
-        setElementVisibility(streakCard, true);
+        setElementVisibility(streakCard, false);
+        setElementVisibility(newPlayerStreakMini, true);
         setElementVisibility(oldResultsButton, false);
         setElementVisibility(retakeButton, false);
         setElementVisibility(completedMessage, false);
@@ -2006,6 +2008,7 @@ function prepareReliableHomepageState() {
     }
 
     streakCard?.classList.remove("streak-not-started");
+    setElementVisibility(newPlayerStreakMini, false);
     const returningDescription = streakCard?.querySelector(".home-streak-description");
     if (returningDescription) returningDescription.hidden = false;
     setElementVisibility(streakCard, true);
