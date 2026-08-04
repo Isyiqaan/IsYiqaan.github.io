@@ -13,7 +13,7 @@
 const TOTAL_QUESTIONS = 10;
 const PAGE_TRANSITION_TIME = 380;
 
-const LEADERBOARD_START_DATE = "2026-07-26";
+const LEADERBOARD_START_DATE = "2026-08-04";
 
 const WEBSITE_LINK =
     "https://isyiqaan.github.io/";
@@ -2483,8 +2483,7 @@ function displayLeaderboard() {
                         player.name,
 
                     streak:
-                        player.startingStreak +
-                        addedDays
+                        player.startingStreak + (addedDays * 3)
                 };
             })
             .sort(
