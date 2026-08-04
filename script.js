@@ -195,6 +195,8 @@ const STORAGE_KEYS = {
     playedAnimation: "streakPlayedAnimation",
     soundMuted: "streakSoundMuted",
     selectedAnswers: "personalitySelectedAnswers",
+    quizRewardDate: "quizRewardDate",
+    minigameRewardDate: "minigameRewardDate",
     missedDaysProcessedThrough: "streakMissedDaysProcessedThrough",
 
     resultsMode: "resultsMode",
@@ -1361,7 +1363,7 @@ function retakePersonalityTest() {
     goTo("question1.html");
 }
 
-function finishQuiz(answerIndex) {
+async function finishQuiz(answerIndex) {
     if (isNavigating) {
         return;
     }
@@ -1390,23 +1392,9 @@ function finishQuiz(answerIndex) {
     }
     generatePersonalityResults();
 
-    if (
-        isFirstPersonalityTest &&
-        getSavedStreakDay() === 0
-    ) {
-        saveUnifiedStreakDay(1);
-        saveLastCompletedDate(
-            getLocalDateKey()
-        );
+    await awardActivityStreakRewardSafely("quiz", 1);
 
-        localStorage.setItem(
-            STORAGE_KEYS.completedToday,
-            "true"
-        );
-        localStorage.setItem(STORAGE_KEYS.highestStreak, "1");
-        localStorage.setItem(STORAGE_KEYS.missedDaysProcessedThrough, getLocalDateKey());
-        localStorage.setItem(STORAGE_KEYS.earnedAnimation, JSON.stringify({ value: 1, previous: 0, date: getLocalDateKey() }));
-
+    if (isFirstPersonalityTest) {
         sessionStorage.setItem(
             "firstPersonalityDayResult",
             "true"
@@ -1629,11 +1617,21 @@ function synchronizeStreakStorage() {
     }
 }
 
-function hasCompletedStreakToday() {
+function getActivityRewardStorageKey(activity) {
+    return activity === "quiz"
+        ? STORAGE_KEYS.quizRewardDate
+        : STORAGE_KEYS.minigameRewardDate;
+}
+
+function hasClaimedActivityReward(activity) {
     return (
-        getLastCompletedDate() ===
+        localStorage.getItem(getActivityRewardStorageKey(activity)) ===
         getLocalDateKey()
     );
+}
+
+function hasCompletedStreakToday() {
+    return hasClaimedActivityReward("minigame");
 }
 
 function getDaysBetweenLocalDates(startKey, endKey) {
@@ -1728,6 +1726,57 @@ async function awardDailyStreakSafely() {
         return navigator.locks.request("personality-site-daily-streak", { mode: "exclusive" }, () => completeDailyStreak());
     }
     return completeDailyStreak();
+}
+
+function completeActivityStreakReward(activity, amount) {
+    const today = getLocalDateKey();
+    const rewardKey = getActivityRewardStorageKey(activity);
+    let currentStreak = getSavedStreakDay();
+
+    if (localStorage.getItem(rewardKey) === today) {
+        return currentStreak;
+    }
+
+    const previousStreak = currentStreak;
+    currentStreak += amount;
+
+    saveUnifiedStreakDay(currentStreak);
+    saveLastCompletedDate(today);
+    localStorage.setItem(STORAGE_KEYS.missedDaysProcessedThrough, today);
+    localStorage.setItem(STORAGE_KEYS.completedToday, "true");
+    localStorage.setItem(rewardKey, today);
+
+    const highestStreak = Math.max(
+        currentStreak,
+        Number.parseInt(localStorage.getItem(STORAGE_KEYS.highestStreak), 10) || 0
+    );
+    localStorage.setItem(STORAGE_KEYS.highestStreak, String(highestStreak));
+    localStorage.setItem(
+        STORAGE_KEYS.earnedAnimation,
+        JSON.stringify({
+            value: currentStreak,
+            previous: previousStreak,
+            amount,
+            activity,
+            date: today
+        })
+    );
+
+    return currentStreak;
+}
+
+async function awardActivityStreakRewardSafely(activity, amount) {
+    const award = () => completeActivityStreakReward(activity, amount);
+
+    if (navigator.locks?.request) {
+        return navigator.locks.request(
+            "personality-site-activity-streak",
+            { mode: "exclusive" },
+            award
+        );
+    }
+
+    return award();
 }
 
 function displayStreakDay() {
@@ -3869,7 +3918,7 @@ function initializeStreakGame() {
         clearAllGameTimers();
         hideTarget();
 
-        const updatedStreak = await awardDailyStreakSafely();
+        const updatedStreak = await awardActivityStreakRewardSafely("minigame", 2);
 
         finalStreakNumber.textContent =
             String(updatedStreak);
