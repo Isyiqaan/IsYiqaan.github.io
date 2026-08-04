@@ -729,64 +729,82 @@ function initializeStreakMuseum() {
 }
 
 function playPendingStreakAnimation() {
-    const raw = localStorage.getItem(STORAGE_KEYS.earnedAnimation);
-    if (!raw) return;
-    try {
-        const earned = JSON.parse(raw);
-        const marker = `${earned.date}:${earned.value}`;
-        if (localStorage.getItem(STORAGE_KEYS.playedAnimation) === marker) return;
-        if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
-            localStorage.setItem(STORAGE_KEYS.playedAnimation, marker);
-            return;
-        }
-        const target = query("#streakFlame .streak-flame, #finalStreakFlame .streak-flame, #mainStreakFlame .streak-flame");
-        if (!target) return;
-        const oldTier = getStreakFlameTier(earned.previous);
-        const newTier = getStreakFlameTier(earned.value);
-        if (!newTier) return;
-        const unlocked = oldTier?.key !== newTier.key;
-        target.classList.add(unlocked ? "streak-tier-unlock" : "streak-earned-day");
-        let animationWasRecorded = false;
-        const recordPlayedAnimation = () => {
-            if (animationWasRecorded) return;
-            animationWasRecorded = true;
-            localStorage.setItem(STORAGE_KEYS.playedAnimation, marker);
-        };
-        const handleAnimationEnd = event => {
-            if (event.target !== target) return;
-            target.removeEventListener("animationend", handleAnimationEnd);
-            recordPlayedAnimation();
-        };
-        target.addEventListener("animationend", handleAnimationEnd);
-        window.setTimeout(recordPlayedAnimation, 2400);
-        if (unlocked) document.body.classList.add("streak-unlock-backdrop");
-        const dayNumber = query("[data-streak-day]");
-        if (dayNumber && Number.isFinite(Number(earned.previous))) {
-            dayNumber.textContent = String(Math.max(0, Number(earned.previous)));
-            window.setTimeout(() => { dayNumber.textContent = String(earned.value); }, 620);
-        }
-        const plus = document.createElement("b");
-        plus.className = "streak-plus-one";
-        plus.textContent = "+1";
-        target.appendChild(plus);
-        for (let index = 0; index < 12; index += 1) {
-            const spark = document.createElement("i");
-            spark.className = "flame-spark streak-reward-spark";
-            spark.style.setProperty("--spark-angle", `${index * 30}deg`);
-            target.appendChild(spark);
-        }
-        if (unlocked) {
-            const message = document.createElement("span");
-            message.className = "streak-unlock-message";
-            message.textContent = "Streak cusub ayaa furmay!";
-            target.appendChild(message);
-        }
-        playPopSound();
-        window.setTimeout(() => document.body.classList.remove("streak-unlock-backdrop"), 2100);
-    } catch (error) {
-        console.warn("Streak animation marker could not be read:", error);
+    const earned = getPendingStreakAnimation();
+    if (!earned) return;
+
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+        localStorage.setItem(STORAGE_KEYS.playedAnimation, earned.marker);
+        return;
     }
+
+    const target = query(
+        "#streakFlame .streak-flame, " +
+        "#finalStreakFlame .streak-flame, " +
+        "#mainStreakFlame .streak-flame"
+    );
+    if (!target) return;
+
+    const oldTier = getStreakFlameTier(earned.previous);
+    const newTier = getStreakFlameTier(earned.value);
+    if (!newTier) return;
+
+    const unlocked = oldTier?.key !== newTier.key;
+    target.classList.add(
+        unlocked ? "streak-tier-unlock" : "streak-earned-day"
+    );
+
+    const dayNumbers = queryAll(
+        "#streakDay, [data-streak-day], #finalStreakNumber"
+    );
+    dayNumbers.forEach(element => {
+        element.textContent = String(earned.previous);
+    });
+
+    const plus = document.createElement("b");
+    plus.className = "streak-plus-one";
+    plus.textContent = `+${earned.amount}`;
+    target.appendChild(plus);
+
+    for (let index = 0; index < 12; index += 1) {
+        const spark = document.createElement("i");
+        spark.className = "flame-spark streak-reward-spark";
+        spark.style.setProperty("--spark-angle", `${index * 30}deg`);
+        target.appendChild(spark);
+    }
+
+    if (unlocked) {
+        document.body.classList.add("streak-unlock-backdrop");
+        const message = document.createElement("span");
+        message.className = "streak-unlock-message";
+        message.textContent = "Streak cusub ayaa furmay!";
+        target.appendChild(message);
+    }
+
+    const firstStepDelay = 1100;
+    const stepDelay = 650;
+
+    for (let step = 1; step <= earned.amount; step += 1) {
+        window.setTimeout(() => {
+            const displayedValue = Math.min(
+                earned.value,
+                earned.previous + step
+            );
+            dayNumbers.forEach(element => {
+                element.textContent = String(displayedValue);
+            });
+            playPopSound();
+        }, firstStepDelay + ((step - 1) * stepDelay));
+    }
+
+    window.setTimeout(() => {
+        localStorage.setItem(
+            STORAGE_KEYS.playedAnimation,
+            earned.marker
+        );
+        document.body.classList.remove("streak-unlock-backdrop");
+    }, firstStepDelay + (earned.amount * stepDelay) + 900);
 }
+
 
 function initializeStreakSoundToggle() {
     if (byId("streakSoundToggle")) return;
@@ -1779,8 +1797,42 @@ async function awardActivityStreakRewardSafely(activity, amount) {
     return award();
 }
 
+function getPendingStreakAnimation() {
+    const raw = localStorage.getItem(STORAGE_KEYS.earnedAnimation);
+    if (!raw) return null;
+
+    try {
+        const earned = JSON.parse(raw);
+        const marker = `${earned.date}:${earned.value}`;
+        const previous = Number(earned.previous);
+        const value = Number(earned.value);
+
+        if (
+            localStorage.getItem(STORAGE_KEYS.playedAnimation) === marker ||
+            !Number.isFinite(previous) ||
+            !Number.isFinite(value) ||
+            value <= previous
+        ) {
+            return null;
+        }
+
+        return {
+            ...earned,
+            marker,
+            previous: Math.max(0, previous),
+            value,
+            amount: Math.max(1, Number(earned.amount) || value - previous)
+        };
+    } catch {
+        return null;
+    }
+}
+
 function displayStreakDay() {
-    const displayedStreak = getSavedStreakDay();
+    const pendingReward = getPendingStreakAnimation();
+    const displayedStreak = pendingReward
+        ? pendingReward.previous
+        : getSavedStreakDay();
 
     queryAll(
         "#streakDay, " +
@@ -1792,6 +1844,7 @@ function displayStreakDay() {
 
     updateStreakFlameDisplays();
 }
+
 
 /* =========================================================
    SCROLL-DOWN GUIDE
@@ -3920,8 +3973,14 @@ function initializeStreakGame() {
 
         const updatedStreak = await awardActivityStreakRewardSafely("minigame", 2);
 
+        const pendingReward = getPendingStreakAnimation();
+
         finalStreakNumber.textContent =
-            String(updatedStreak);
+            String(
+                pendingReward
+                    ? pendingReward.previous
+                    : updatedStreak
+            );
 
         updateStreakFlameDisplays();
 
