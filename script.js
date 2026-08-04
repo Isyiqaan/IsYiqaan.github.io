@@ -2615,8 +2615,6 @@ function shareResultsOnWhatsApp() {
         "",
         ...sharedTraits,
         "",
-        `Maalinta ${streakDay}aad ee streakgaaga waa dhammaatay`,
-        "",
         "Kaalay adiguna is tijaabi",
         WEBSITE_LINK
     ].join("\n");
