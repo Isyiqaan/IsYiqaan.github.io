@@ -3750,3 +3750,33 @@ body.streak-game-page {
 @keyframes flameTapBounce { 0%,100%{transform:translateY(0) scale(1)} 45%{transform:translateY(-5px) scale(1.07)} 72%{transform:translateY(1px) scale(.98)} }
 @media (hover:none) { .home-streak-card:hover,.streak-museum-card.unlocked:hover { transform:none; } }
 @media (prefers-reduced-motion:reduce) { .museum-preview-replay,.home-streak-card,.streak-museum-card.unlocked { animation:none!important;transition:none!important; } }
+
+
+/* Tiny new-player streak indicator below the homepage card */
+.new-player-streak-mini {
+    position: relative;
+    z-index: 3;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1px;
+    width: min(100%, 650px);
+    margin: 9px auto 0;
+    color: #8d6994;
+    font-size: 0.58rem;
+    font-weight: 700;
+    line-height: 1.05;
+    text-align: center;
+    letter-spacing: 0.01em;
+    opacity: 0.76;
+}
+
+.new-player-streak-mini strong {
+    color: #7d5188;
+    font-size: 0.78rem;
+    font-weight: 800;
+}
+
+.new-player-streak-mini[hidden] {
+    display: none;
+}
