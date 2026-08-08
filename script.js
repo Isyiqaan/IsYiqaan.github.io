@@ -2519,10 +2519,12 @@ function prepareResultsPageMode() {
         "#continueStreakResultButton, " +
         "[data-action='continue-streak']"
     ).forEach(button => {
+        const rewardUnavailable = hasCompletedStreakToday();
         button.textContent =
-            hasCompletedStreakToday()
+            rewardUnavailable
                 ? "🌙 Berri Soo Noqo"
                 : "🔥 Sii Wad Streakga";
+        button.classList.toggle("reward-unavailable", rewardUnavailable);
 
         button.onclick =
             event => {
