@@ -3916,3 +3916,8 @@ body.has-top-adsterra > .container {
   flex: none;
   width: min(100%, 680px);
 }
+
+.continue-streak-result-hero.reward-unavailable::after {
+  content: none;
+  display: none;
+}
