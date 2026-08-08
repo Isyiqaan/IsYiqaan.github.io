@@ -3374,7 +3374,7 @@ function initializeStreakGame() {
 
     const TOTAL_STAGES = 10;
     const BALLS_PER_STAGE = 5;
-    const FIRST_BALL_DELAY = 1250;
+    const FIRST_BALL_DELAY = 1000;
     const STAGE_TIMES = [2.0, 1.95, 1.9, 1.85, 1.8, 1.75, 1.7, 1.65, 1.6, 1.55];
     const requestedStage = Number.parseInt(new URLSearchParams(location.search).get("stage"), 10);
     let currentStage = Number.isFinite(requestedStage)
@@ -3507,7 +3507,7 @@ function initializeStreakGame() {
         }, { passive: false });
 
         if (spawnedBalls < BALLS_PER_STAGE) {
-            schedule(() => spawnBall(token), Math.round(lifetime * 0.52));
+            schedule(() => spawnBall(token), Math.round(lifetime * 0.32));
         }
     }
 
@@ -3583,11 +3583,11 @@ function initializeStreakGame() {
     continueStageButton.addEventListener("click", () => {
         continueStageButton.classList.remove("stage-ready");
         stageCompleteOverlay.classList.add("hidden");
-        if (currentStage >= TOTAL_STAGES) finishEntireGame();
-        else {
-            currentStage += 1;
-            startCurrentStage();
+        if (currentStage >= TOTAL_STAGES) {
+            finishEntireGame();
+            return;
         }
+        goTo(`streak-game.html?stage=${currentStage + 1}`);
     });
     retryStageButton.addEventListener("click", startCurrentStage);
     beginButton.addEventListener("click", beginGame);
@@ -3600,17 +3600,29 @@ function initializeStreakGame() {
     });
 
     targetTemplate.classList.add("hidden");
-    beginButton.disabled = true;
-    beginButton.classList.add("hidden");
-    introScreen.hidden = false;
-    introScreen.classList.remove("hidden");
     updateDisplay();
-    window.setTimeout(() => {
-        beginButton.disabled = false;
-        beginButton.classList.remove("hidden");
-        requestAnimationFrame(() => beginButton.classList.add("show"));
-        tutorialStatus.textContent = "Diyaar ma tahay?";
-    }, 1200);
+
+    if (startingStage > 1) {
+        introScreen.hidden = true;
+        introScreen.classList.add("hidden");
+        beginButton.disabled = true;
+        beginButton.classList.add("hidden");
+        gameScreen.classList.remove("hidden");
+        successScreen.classList.add("hidden");
+        gameIsRunning = true;
+        startCurrentStage();
+    } else {
+        beginButton.disabled = true;
+        beginButton.classList.add("hidden");
+        introScreen.hidden = false;
+        introScreen.classList.remove("hidden");
+        window.setTimeout(() => {
+            beginButton.disabled = false;
+            beginButton.classList.remove("hidden");
+            requestAnimationFrame(() => beginButton.classList.add("show"));
+            tutorialStatus.textContent = "Diyaar ma tahay?";
+        }, 1200);
+    }
 }
 
 
