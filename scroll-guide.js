@@ -3,30 +3,57 @@
 (function () {
     function initializeAds() {
         if (document.getElementById("siteAdsterraAds")) return;
+    
+        const createAdFrame = (title, source, height, className) => {
+            const frame = document.createElement("iframe");
+            frame.title = title;
+            frame.className = className;
+            frame.width = "300";
+            frame.height = String(height);
+            frame.loading = "lazy";
+            frame.referrerPolicy = "no-referrer-when-downgrade";
+            frame.setAttribute("sandbox", "allow-scripts allow-popups allow-popups-to-escape-sandbox");
+            frame.srcdoc = source;
+            return frame;
+        };
+    
         const host = document.createElement("section");
         host.id = "siteAdsterraAds";
         host.className = "site-adsterra-ads";
         host.setAttribute("aria-label", "Advertisement");
-        host.innerHTML = '<aside class="page-native-ad"><p class="stage-ad-label">XAYSIIS</p><div id="container-de0a31b62be16fbc9bd0ff721c7826ab"></div></aside><aside class="page-banner-ad"><p class="stage-ad-label">XAYSIIS</p></aside>';
+        const nativeHost = document.createElement("aside");
+        nativeHost.className = "page-native-ad";
+        const bannerHost = document.createElement("aside");
+        bannerHost.className = "page-banner-ad";
+        nativeHost.innerHTML = '<p class="stage-ad-label">XAYSIIS</p>';
+        bannerHost.innerHTML = '<p class="stage-ad-label">XAYSIIS</p>';
+    
+        nativeHost.appendChild(createAdFrame(
+            "Advertisement",
+            '<!doctype html><html><body style="margin:0"><script async="async" data-cfasync="false" src="https://hystericallikingdowntown.com/de0a31b62be16fbc9bd0ff721c7826ab/invoke.js"><\\/script><div id="container-de0a31b62be16fbc9bd0ff721c7826ab"></div></body></html>',
+            300,
+            "adsterra-native-frame"
+        ));
+        bannerHost.appendChild(createAdFrame(
+            "Advertisement",
+            '<!doctype html><html><body style="margin:0"><script>atOptions={key:"8a204881cd2d5d7ae3ff7e30232fc0b3",format:"iframe",height:250,width:300,params:{}};<\\/script><script src="https://hystericallikingdowntown.com/8a204881cd2d5d7ae3ff7e30232fc0b3/invoke.js"><\\/script></body></html>',
+            250,
+            "adsterra-banner-frame"
+        ));
+        host.append(nativeHost, bannerHost);
+    
         const footer = document.querySelector(".site-footer-nav, footer");
         if (footer?.parentNode) footer.parentNode.insertBefore(host, footer);
         else document.body.appendChild(host);
-
-        const nativeScript = document.createElement("script");
-        nativeScript.async = true;
-        nativeScript.dataset.cfasync = "false";
-        nativeScript.src = "https://hystericallikingdowntown.com/de0a31b62be16fbc9bd0ff721c7826ab/invoke.js";
-        host.querySelector(".page-native-ad").prepend(nativeScript);
-
-        window.atOptions = { key: "8a204881cd2d5d7ae3ff7e30232fc0b3", format: "iframe", height: 250, width: 300, params: {} };
-        const bannerScript = document.createElement("script");
-        bannerScript.src = "https://hystericallikingdowntown.com/8a204881cd2d5d7ae3ff7e30232fc0b3/invoke.js";
-        host.querySelector(".page-banner-ad").appendChild(bannerScript);
-
-        const socialScript = document.createElement("script");
-        socialScript.async = true;
-        socialScript.src = "https://hystericallikingdowntown.com/fe/53/30/fe53304fec9f06f8ed97fe7f2861d78a.js";
-        document.body.appendChild(socialScript);
+    
+        const socialFrame = createAdFrame(
+            "Advertisement",
+            '<!doctype html><html><body style="margin:0;overflow:hidden"><script src="https://hystericallikingdowntown.com/fe/53/30/fe53304fec9f06f8ed97fe7f2861d78a.js"><\\/script></body></html>',
+            90,
+            "adsterra-social-frame"
+        );
+        socialFrame.width = "100%";
+        document.body.appendChild(socialFrame);
     }
 
     function initializeGuide() {
