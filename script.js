@@ -13,7 +13,7 @@
 const TOTAL_QUESTIONS = 10;
 const PAGE_TRANSITION_TIME = 380;
 
-const LEADERBOARD_START_DATE = "2026-08-04";
+const LEADERBOARD_START_DATE = "2026-08-08";
 
 const WEBSITE_LINK =
     "https://isyiqaan.github.io/";
@@ -649,8 +649,11 @@ function updateStreakFlameDisplays() {
     });
 }
 
-function updateAllStreakProgressDisplays() {
-    const streak = getSavedStreakDay();
+function updateAllStreakProgressDisplays(streakOverride = null) {
+    const requestedStreak = Number(streakOverride);
+    const streak = Number.isFinite(requestedStreak) && requestedStreak >= 0
+        ? requestedStreak
+        : getSavedStreakDay();
     if (streak < 1) return;
     const tier = getStreakFlameTier(streak);
     queryAll(".home-streak-card, .results-streak-badge, #streakMainCard, .streak-success-card").forEach(host => {
@@ -759,6 +762,7 @@ function playPendingStreakAnimation() {
     dayNumbers.forEach(element => {
         element.textContent = String(earned.previous);
     });
+    updateAllStreakProgressDisplays(earned.previous);
 
     const plus = document.createElement("b");
     plus.className = "streak-plus-one";
@@ -792,6 +796,8 @@ function playPendingStreakAnimation() {
             dayNumbers.forEach(element => {
                 element.textContent = String(displayedValue);
             });
+            updateAllStreakProgressDisplays(displayedValue);
+            updateStreakFlameDisplays();
             playPopSound();
         }, firstStepDelay + ((step - 1) * stepDelay));
     }
@@ -847,9 +853,17 @@ function goTo(page) {
         "fade-out"
     );
 
+    const startingUrl = window.location.href;
     window.setTimeout(() => {
         window.location.href = page;
     }, PAGE_TRANSITION_TIME);
+
+    window.setTimeout(() => {
+        if (window.location.href === startingUrl) {
+            isNavigating = false;
+            document.body.classList.remove("fade-out");
+        }
+    }, 2400);
 }
 
 function answerAndContinue(answerIndex, nextPage) {
@@ -1681,9 +1695,6 @@ function processMissedStreakDays() {
 }
 
 async function processMissedStreakDaysSafely() {
-    if (navigator.locks?.request) {
-        return navigator.locks.request("personality-site-missed-streak", { mode: "exclusive" }, () => processMissedStreakDays());
-    }
     return processMissedStreakDays();
 }
 
@@ -1784,17 +1795,7 @@ function completeActivityStreakReward(activity, amount) {
 }
 
 async function awardActivityStreakRewardSafely(activity, amount) {
-    const award = () => completeActivityStreakReward(activity, amount);
-
-    if (navigator.locks?.request) {
-        return navigator.locks.request(
-            "personality-site-activity-streak",
-            { mode: "exclusive" },
-            award
-        );
-    }
-
-    return award();
+    return completeActivityStreakReward(activity, amount);
 }
 
 function getPendingStreakAnimation() {
@@ -2085,6 +2086,49 @@ function loadReturningHomepageAds() {
     host.querySelector(".page-banner-ad").appendChild(bannerScript);
 }
 
+
+/* =========================================================
+   ADSTERRA ADS
+========================================================= */
+
+function initializeAdsterraAds() {
+    if (document.getElementById("siteAdsterraAds")) return;
+
+    const host = document.createElement("section");
+    host.id = "siteAdsterraAds";
+    host.className = "site-adsterra-ads";
+    host.setAttribute("aria-label", "Advertisement");
+    host.innerHTML =
+        '<aside class="page-native-ad"><p class="stage-ad-label">XAYSIIS</p>' +
+        '<div id="container-de0a31b62be16fbc9bd0ff721c7826ab"></div></aside>' +
+        '<aside class="page-banner-ad"><p class="stage-ad-label">XAYSIIS</p></aside>';
+
+    const footer = document.querySelector(".site-footer-nav, footer");
+    if (footer?.parentNode) footer.parentNode.insertBefore(host, footer);
+    else document.body.appendChild(host);
+
+    const nativeScript = document.createElement("script");
+    nativeScript.async = true;
+    nativeScript.dataset.cfasync = "false";
+    nativeScript.src = "https://hystericallikingdowntown.com/de0a31b62be16fbc9bd0ff721c7826ab/invoke.js";
+    host.querySelector(".page-native-ad").prepend(nativeScript);
+
+    window.atOptions = {
+        key: "8a204881cd2d5d7ae3ff7e30232fc0b3",
+        format: "iframe",
+        height: 250,
+        width: 300,
+        params: {}
+    };
+    const bannerScript = document.createElement("script");
+    bannerScript.src = "https://hystericallikingdowntown.com/8a204881cd2d5d7ae3ff7e30232fc0b3/invoke.js";
+    host.querySelector(".page-banner-ad").appendChild(bannerScript);
+
+    const socialScript = document.createElement("script");
+    socialScript.async = true;
+    socialScript.src = "https://hystericallikingdowntown.com/fe/53/30/fe53304fec9f06f8ed97fe7f2861d78a.js";
+    document.body.appendChild(socialScript);
+}
 
 /* =========================================================
    RESULTS PAGE
@@ -3243,1054 +3287,281 @@ function injectStreakFlameStyles() {
 ========================================================= */
 
 function initializeStreakGame() {
-    if (
-        !document.body.classList.contains(
-            "streak-game-page"
-        )
-    ) {
+    if (!document.body.classList.contains("streak-game-page")) return;
+
+    const introScreen = byId("streakIntro");
+    const beginButton = byId("beginStreakButton");
+    const tutorialStatus = byId("tutorialStatus");
+    const gameScreen = byId("streakGame");
+    const gameArea = byId("gameArea");
+    const gameMessage = byId("gameMessage");
+    const targetTemplate = byId("targetButton");
+    const currentStageDisplay = byId("currentStage");
+    const currentCircleDisplay = byId("currentCircle");
+    const stageTimerDisplay = byId("stageTimerValue");
+    const stageProgressFill = byId("stageProgressFill");
+    const stageCompleteOverlay = byId("stageCompleteOverlay");
+    const completedStageNumber = byId("completedStageNumber");
+    const remainingStagesText = byId("remainingStagesText");
+    const continueStageButton = byId("continueStageButton");
+    const missedOverlay = byId("missedOverlay");
+    const retryStageButton = byId("retryStageButton");
+    const successScreen = byId("streakSuccessScreen");
+    const finalStreakNumber = byId("finalStreakNumber");
+    const viewResultsButton = byId("viewResultsButton");
+    const gameAnnouncement = byId("gameAnnouncement");
+    const stageBoxes = queryAll(".stage-box");
+
+    const required = [introScreen, beginButton, tutorialStatus, gameScreen, gameArea,
+        gameMessage, targetTemplate, currentStageDisplay, currentCircleDisplay,
+        stageTimerDisplay, stageProgressFill, stageCompleteOverlay,
+        completedStageNumber, remainingStagesText, continueStageButton,
+        missedOverlay, retryStageButton, successScreen, finalStreakNumber,
+        viewResultsButton];
+    if (required.some(element => !element)) {
+        console.error("Ciyaarta streak-ga: qayb HTML ah ayaa maqan.");
         return;
     }
-
-    const introScreen =
-        byId("streakIntro");
-
-    const beginButton =
-        byId("beginStreakButton");
-
-    const tutorialStatus =
-        byId("tutorialStatus");
-
-    const gameScreen =
-        byId("streakGame");
-
-    const gameArea =
-        byId("gameArea");
-
-    const gameMessage =
-        byId("gameMessage");
-
-    const targetButton =
-        byId("targetButton");
-
-    const targetRing =
-        byId("targetRing");
-
-    const missAnimation =
-        byId("missAnimation");
-
-    const currentStageDisplay =
-        byId("currentStage");
-
-    const currentCircleDisplay =
-        byId("currentCircle");
-
-    const stageTimerDisplay =
-        byId("stageTimerValue");
-
-    const stageProgressFill =
-        byId("stageProgressFill");
-
-    const stageCompleteOverlay =
-        byId("stageCompleteOverlay");
-
-    const completedStageNumber =
-        byId("completedStageNumber");
-
-    const remainingStagesText =
-        byId("remainingStagesText");
-
-    const continueStageButton =
-        byId("continueStageButton");
-
-    const missedOverlay =
-        byId("missedOverlay");
-
-    const retryStageButton =
-        byId("retryStageButton");
-
-    const successScreen =
-        byId("streakSuccessScreen");
-
-    const finalStreakNumber =
-        byId("finalStreakNumber");
-
-    const viewResultsButton =
-        byId("viewResultsButton");
-
-    const gameAnnouncement =
-        byId("gameAnnouncement");
-
-    const stageBoxes =
-        queryAll(".stage-box");
-
-    const requiredElements = [
-        introScreen,
-        beginButton,
-        tutorialStatus,
-        gameScreen,
-        gameArea,
-        gameMessage,
-        targetButton,
-        targetRing,
-        missAnimation,
-        currentStageDisplay,
-        currentCircleDisplay,
-        stageTimerDisplay,
-        stageProgressFill,
-        stageCompleteOverlay,
-        completedStageNumber,
-        remainingStagesText,
-        continueStageButton,
-        missedOverlay,
-        retryStageButton,
-        successScreen,
-        finalStreakNumber,
-        viewResultsButton
-    ];
-
-    if (
-        requiredElements.some(
-            element => !element
-        )
-    ) {
-        console.error(
-            "Ciyaarta streak-ga ma bilaaban karto sababtoo ah qaar ka mid ah qaybaha HTML-ka ayaa maqan."
-        );
-
-        return;
-    }
-
-
-    /* =====================================================
-       GAME SETTINGS
-    ===================================================== */
 
     const TOTAL_STAGES = 10;
-    const CIRCLES_PER_STAGE = 3;
-
-    const TUTORIAL_DURATION = 5000;
-    const CIRCLE_PAUSE_DURATION = 500;
-    const STAGE_READY_DURATION = 700;
-    const MISS_ANIMATION_DURATION = 700;
-
-    const STAGE_TIMES = [
-        1.0,
-        0.9,
-        0.85,
-        0.84,
-        0.81,
-        0.8,
-        0.79,
-        0.75,
-        0.73,
-        0.69
-    ];
-
-
-    /* =====================================================
-       GAME STATE
-    ===================================================== */
-
-    const requestedStage =
-        Number.parseInt(
-            new URLSearchParams(
-                window.location.search
-            ).get("stage"),
-            10
-        );
-
-    const startingStage =
-        Number.isFinite(requestedStage)
-            ? Math.min(
-                TOTAL_STAGES,
-                Math.max(1, requestedStage)
-            )
-            : 1;
-
-    let currentStage = startingStage;
-    let currentCircle = 1;
-
-    let targetTimeout = null;
-    let actionTimeout = null;
-    let overlayTimeout = null;
-
-    let targetIsActive = false;
+    const BALLS_PER_STAGE = 5;
+    const FIRST_BALL_DELAY = 1250;
+    const STAGE_TIMES = [2.0, 1.95, 1.9, 1.85, 1.8, 1.75, 1.7, 1.65, 1.6, 1.55];
+    const requestedStage = Number.parseInt(new URLSearchParams(location.search).get("stage"), 10);
+    let currentStage = Number.isFinite(requestedStage)
+        ? Math.min(TOTAL_STAGES, Math.max(1, requestedStage))
+        : 1;
     let gameIsRunning = false;
-    let inputIsLocked = true;
     let gameHasFinished = false;
-    let completedStageAwaitingContinue = 0;
-    let awaitingStageStart = startingStage > 1;
+    let stageIsActive = false;
+    let spawnedBalls = 0;
+    let hitBalls = 0;
+    let stageToken = 0;
+    const timers = new Set();
+    const activeTargets = new Set();
+    let visibilityObserver = null;
 
+    const announce = message => {
+        if (!gameAnnouncement) return;
+        gameAnnouncement.textContent = "";
+        window.setTimeout(() => { gameAnnouncement.textContent = message; }, 20);
+    };
+    const schedule = (callback, delay) => {
+        const timer = window.setTimeout(() => {
+            timers.delete(timer);
+            callback();
+        }, delay);
+        timers.add(timer);
+        return timer;
+    };
+    const clearStage = () => {
+        timers.forEach(timer => window.clearTimeout(timer));
+        timers.clear();
+        activeTargets.forEach(target => target.remove());
+        activeTargets.clear();
+        targetTemplate.classList.add("hidden");
+        visibilityObserver?.disconnect();
+        visibilityObserver = null;
+        stageIsActive = false;
+        stageToken += 1;
+    };
+    const updateStageBoxes = completed => {
+        stageBoxes.forEach((box, index) => {
+            box.classList.toggle("completed", index < completed);
+            box.classList.toggle("next-stage", index === completed && completed < TOTAL_STAGES);
+        });
+    };
+    const updateDisplay = () => {
+        currentStageDisplay.textContent = String(currentStage);
+        currentCircleDisplay.textContent = String(Math.min(BALLS_PER_STAGE, Math.max(1, spawnedBalls)));
+        stageTimerDisplay.textContent = STAGE_TIMES[currentStage - 1].toFixed(2).replace(/0$/, "");
+        stageProgressFill.style.width = `${((currentStage - 1) / TOTAL_STAGES) * 100}%`;
+        updateStageBoxes(currentStage - 1);
+    };
+    const placeTarget = target => {
+        const width = target.offsetWidth || 118;
+        const height = target.offsetHeight || 118;
+        const maxX = Math.max(18, gameArea.clientWidth - width - 18);
+        const maxY = Math.max(78, gameArea.clientHeight - height - 18);
+        target.style.left = `${Math.round(18 + Math.random() * Math.max(0, maxX - 18))}px`;
+        target.style.top = `${Math.round(72 + Math.random() * Math.max(0, maxY - 72))}px`;
+    };
 
-    /* =====================================================
-       TIMER HELPERS
-    ===================================================== */
+    function showMissed() {
+        if (!stageIsActive) return;
+        clearStage();
+        gameMessage.textContent = "Waad seegtay.";
+        missedOverlay.classList.remove("hidden");
+        retryStageButton.classList.add("stage-ready");
+        announce("Waad seegtay. Mar kale isku day.");
+    }
 
-    function clearTimer(timer) {
-        if (timer !== null) {
-            window.clearTimeout(timer);
+    function completeStage() {
+        clearStage();
+        completedStageNumber.textContent = String(currentStage);
+        const remaining = TOTAL_STAGES - currentStage;
+        remainingStagesText.textContent = remaining === 0
+            ? "Dhammaan marxaladaha waad dhammaystirtay."
+            : remaining === 1
+                ? "Hal marxalad ayaa kuu hadhay."
+                : `${remaining} marxaladood ayaa kuu hadhay.`;
+        stageProgressFill.style.width = `${(currentStage / TOTAL_STAGES) * 100}%`;
+        updateStageBoxes(currentStage);
+        stageCompleteOverlay.classList.remove("hidden");
+        continueStageButton.classList.remove("stage-ready");
+        requestAnimationFrame(() => continueStageButton.classList.add("stage-ready"));
+        announce(`Marxaladda ${currentStage} waa la dhammaystiray. Hoos u soco oo Sii wad taabo.`);
+    }
+
+    function spawnBall(token) {
+        if (!stageIsActive || token !== stageToken || spawnedBalls >= BALLS_PER_STAGE) return;
+        spawnedBalls += 1;
+        currentCircleDisplay.textContent = String(spawnedBalls);
+
+        const target = targetTemplate.cloneNode(true);
+        target.removeAttribute("id");
+        target.querySelectorAll("[id]").forEach(element => element.removeAttribute("id"));
+        target.classList.remove("hidden", "target-hit");
+        target.classList.add("live-game-target");
+        target.setAttribute("aria-label", `Riix kubbadda ${spawnedBalls} ee 5`);
+        gameArea.appendChild(target);
+        placeTarget(target);
+        activeTargets.add(target);
+
+        const ring = target.querySelector(".target-ring");
+        const lifetime = STAGE_TIMES[currentStage - 1] * 1000;
+        if (ring) {
+            ring.style.animationDuration = `${STAGE_TIMES[currentStage - 1]}s`;
+            ring.classList.remove("ring-shrinking");
+            void ring.offsetWidth;
+            ring.classList.add("ring-shrinking");
+        }
+        gameMessage.textContent = "Hadda riix!";
+        announce(`Kubbadda ${spawnedBalls} ee shanta ah.`);
+
+        let resolved = false;
+        const missTimer = schedule(() => {
+            if (!resolved && activeTargets.has(target)) showMissed();
+        }, lifetime);
+        target.addEventListener("pointerdown", event => {
+            event.preventDefault();
+            if (resolved || !stageIsActive || token !== stageToken) return;
+            resolved = true;
+            window.clearTimeout(missTimer);
+            timers.delete(missTimer);
+            activeTargets.delete(target);
+            target.classList.add("target-hit");
+            schedule(() => target.remove(), 180);
+            hitBalls += 1;
+            gameMessage.textContent = hitBalls === BALLS_PER_STAGE ? "Waa sax!" : `${hitBalls}/5 — Waa sax!`;
+            if (hitBalls === BALLS_PER_STAGE) schedule(completeStage, 220);
+        }, { passive: false });
+
+        if (spawnedBalls < BALLS_PER_STAGE) {
+            schedule(() => spawnBall(token), Math.round(lifetime * 0.52));
         }
     }
 
-    function clearAllGameTimers() {
-        clearTimer(targetTimeout);
-        clearTimer(actionTimeout);
-        clearTimer(overlayTimeout);
-
-        targetTimeout = null;
-        actionTimeout = null;
-        overlayTimeout = null;
-    }
-
-
-    /* =====================================================
-       SCREEN READER ANNOUNCEMENTS
-    ===================================================== */
-
-    function announce(message) {
-        if (!gameAnnouncement) {
-            return;
-        }
-
-        gameAnnouncement.textContent =
-            "";
-
-        window.setTimeout(() => {
-            gameAnnouncement.textContent =
-                message;
-        }, 20);
-    }
-
-
-    /* =====================================================
-       GAME DISPLAY
-    ===================================================== */
-
-    function getCurrentStageTime() {
-        return STAGE_TIMES[
-            currentStage - 1
-        ];
-    }
-
-    function getCurrentStageTimeMilliseconds() {
-        return (
-            getCurrentStageTime() *
-            1000
-        );
-    }
-
-    function updateGameDisplay() {
-        currentStageDisplay.textContent =
-            String(currentStage);
-
-        currentCircleDisplay.textContent =
-            String(currentCircle);
-
-        stageTimerDisplay.textContent =
-            getCurrentStageTime()
-                .toFixed(2)
-                .replace(/0$/, "");
-
-        const completedStages =
-            currentStage - 1;
-
-        const progressPercentage =
-            (
-                completedStages /
-                TOTAL_STAGES
-            ) *
-            100;
-
-        stageProgressFill.style.width =
-            `${progressPercentage}%`;
-    }
-
-    function updateStageBoxes(
-        completedStages
-    ) {
-        stageBoxes.forEach(
-            (box, index) => {
-                const stageNumber =
-                    index + 1;
-
-                box.classList.remove(
-                    "completed",
-                    "next-stage"
-                );
-
-                if (
-                    stageNumber <=
-                    completedStages
-                ) {
-                    box.classList.add(
-                        "completed"
-                    );
-                } else if (
-                    stageNumber ===
-                        completedStages + 1 &&
-                    completedStages <
-                        TOTAL_STAGES
-                ) {
-                    box.classList.add(
-                        "next-stage"
-                    );
-                }
-            }
-        );
-    }
-
-    function updateRemainingStagesMessage(
-        completedStage
-    ) {
-        const remainingStages =
-            TOTAL_STAGES -
-            completedStage;
-
-        if (remainingStages === 1) {
-            remainingStagesText.textContent =
-                "Hal marxalad ayaa kuu hadhay.";
-
-            return;
-        }
-
-        if (remainingStages === 0) {
-            remainingStagesText.textContent =
-                "Dhammaan marxaladaha waad dhammaystirtay.";
-
-            return;
-        }
-
-        remainingStagesText.textContent =
-            `${remainingStages} marxaladood ayaa kuu hadhay.`;
-    }
-
-
-    /* =====================================================
-       TARGET POSITION
-    ===================================================== */
-
-    function placeTargetRandomly() {
-        const gameAreaWidth =
-            gameArea.clientWidth;
-
-        const gameAreaHeight =
-            gameArea.clientHeight;
-
-        const targetWidth =
-            targetButton.offsetWidth ||
-            150;
-
-        const targetHeight =
-            targetButton.offsetHeight ||
-            150;
-
-        const horizontalPadding = 18;
-        const topPadding = 75;
-        const bottomPadding = 18;
-
-        const minimumX =
-            horizontalPadding;
-
-        const maximumX =
-            Math.max(
-                minimumX,
-                gameAreaWidth -
-                    targetWidth -
-                    horizontalPadding
-            );
-
-        const minimumY =
-            topPadding;
-
-        const maximumY =
-            Math.max(
-                minimumY,
-                gameAreaHeight -
-                    targetHeight -
-                    bottomPadding
-            );
-
-        const randomX =
-            minimumX +
-            Math.random() *
-            (
-                maximumX -
-                minimumX
-            );
-
-        const randomY =
-            minimumY +
-            Math.random() *
-            (
-                maximumY -
-                minimumY
-            );
-
-        targetButton.style.left =
-            `${Math.round(randomX)}px`;
-
-        targetButton.style.top =
-            `${Math.round(randomY)}px`;
-    }
-
-
-    /* =====================================================
-       TARGET VISIBILITY
-    ===================================================== */
-
-    function hideTarget() {
-        targetIsActive = false;
-
-        clearTimer(targetTimeout);
-
-        targetTimeout = null;
-
-        targetButton.classList.add(
-            "hidden"
-        );
-
-        targetButton.classList.remove(
-            "target-hit"
-        );
-
-        targetRing.classList.remove(
-            "ring-shrinking"
-        );
-
-        targetRing.style.animationDuration =
-            "";
-    }
-
-    function restartRingAnimation(
-        durationSeconds
-    ) {
-        targetRing.classList.remove(
-            "ring-shrinking"
-        );
-
-        void targetRing.offsetWidth;
-
-        targetRing.style.animationDuration =
-            `${durationSeconds}s`;
-
-        targetRing.classList.add(
-            "ring-shrinking"
-        );
-    }
-
-    function showTarget() {
-        if (
-            !gameIsRunning ||
-            inputIsLocked ||
-            gameHasFinished
-        ) {
-            return;
-        }
-
-        hideTarget();
-
-        targetButton.classList.remove(
-            "hidden"
-        );
-
-        placeTargetRandomly();
-
-        const stageTime =
-            getCurrentStageTime();
-
-        restartRingAnimation(
-            stageTime
-        );
-
-        targetIsActive = true;
-
-        gameMessage.textContent =
-            "Hadda riix!";
-
-        announce(
-            `Marxaladda ${currentStage}, goobada ${currentCircle}.`
-        );
-
-        targetTimeout =
-            window.setTimeout(
-                handleMiss,
-                getCurrentStageTimeMilliseconds()
-            );
-    }
-
-
-    /* =====================================================
-       STAGE START
-    ===================================================== */
-
-    function startCurrentStage() {
-        if (
-            !gameIsRunning ||
-            gameHasFinished
-        ) {
-            return;
-        }
-
-        clearAllGameTimers();
-        hideTarget();
-
-        inputIsLocked = true;
-        currentCircle = 1;
-
-        updateGameDisplay();
-
-        gameMessage.textContent =
-            `Marxaladda ${currentStage} — Is diyaari...`;
-
-        announce(
-            `Marxaladda ${currentStage} ayaa bilaabanaysa.`
-        );
-
-        actionTimeout =
-            window.setTimeout(() => {
-                inputIsLocked = false;
-
-                showTarget();
-            }, STAGE_READY_DURATION);
-    }
-
-
-    /* =====================================================
-       SUCCESSFUL TARGET CLICK
-    ===================================================== */
-
-    function handleTargetHit() {
-        if (
-            !targetIsActive ||
-            inputIsLocked ||
-            !gameIsRunning ||
-            gameHasFinished
-        ) {
-            return;
-        }
-
-        targetIsActive = false;
-        inputIsLocked = true;
-
-        clearTimer(targetTimeout);
-
-        targetTimeout = null;
-
-        targetRing.classList.remove(
-            "ring-shrinking"
-        );
-
-        targetButton.classList.add(
-            "target-hit"
-        );
-
-        gameMessage.textContent =
-            "Waa sax!";
-
-        announce(
-            "Waa sax."
-        );
-
-        actionTimeout =
-            window.setTimeout(() => {
-                hideTarget();
-
-                if (
-                    currentCircle <
-                    CIRCLES_PER_STAGE
-                ) {
-                    currentCircle += 1;
-
-                    currentCircleDisplay.textContent =
-                        String(
-                            currentCircle
-                        );
-
-                    gameMessage.textContent =
-                        "Midka xiga...";
-
-                    actionTimeout =
-                        window.setTimeout(
-                            () => {
-                                inputIsLocked =
-                                    false;
-
-                                showTarget();
-                            },
-                            CIRCLE_PAUSE_DURATION
-                        );
-
+    function waitUntilGameIsVisible() {
+        const token = stageToken;
+        gameMessage.textContent = "Hoos u soco—markaad ciyaarta aragto kubbaduhu way bilaabanayaan.";
+        const beginAfterDelay = () => {
+            if (!gameIsRunning || gameHasFinished || token !== stageToken || document.hidden) return;
+            const rect = gameArea.getBoundingClientRect();
+            const visibleHeight = Math.min(rect.bottom, innerHeight) - Math.max(rect.top, 0);
+            if (visibleHeight < Math.min(180, rect.height * 0.35)) return;
+            visibilityObserver?.disconnect();
+            visibilityObserver = null;
+            gameMessage.textContent = "Is diyaari...";
+            schedule(() => {
+                if (token !== stageToken || document.hidden) {
+                    waitUntilGameIsVisible();
                     return;
                 }
-
-                completeCurrentStage();
-            }, 320);
+                stageIsActive = true;
+                spawnBall(token);
+            }, FIRST_BALL_DELAY);
+        };
+        visibilityObserver = new IntersectionObserver(entries => {
+            if (entries.some(entry => entry.isIntersecting && entry.intersectionRatio >= 0.35)) beginAfterDelay();
+        }, { threshold: [0.35, 0.5] });
+        visibilityObserver.observe(gameArea);
+        beginAfterDelay();
     }
 
-
-    /* =====================================================
-       MISS ANIMATION
-    ===================================================== */
-
-    function showMissAnimation() {
-        missAnimation.classList.remove(
-            "hidden"
-        );
-
-        const cross =
-            missAnimation.querySelector(
-                "span"
-            );
-
-        if (cross) {
-            cross.style.animation =
-                "none";
-
-            void cross.offsetWidth;
-
-            cross.style.animation =
-                "";
-        }
-    }
-
-    function hideMissAnimation() {
-        missAnimation.classList.add(
-            "hidden"
-        );
-    }
-
-    function handleMiss() {
-        if (
-            !targetIsActive ||
-            !gameIsRunning ||
-            gameHasFinished
-        ) {
-            return;
-        }
-
-        targetIsActive = false;
-        inputIsLocked = true;
-
-        clearTimer(targetTimeout);
-
-        targetTimeout = null;
-
-        targetRing.classList.remove(
-            "ring-shrinking"
-        );
-
-        targetButton.classList.add(
-            "hidden"
-        );
-
-        gameMessage.textContent =
-            "Waad seegtay.";
-
-        showMissAnimation();
-
-        announce(
-            "Waad seegtay."
-        );
-
-        actionTimeout =
-            window.setTimeout(() => {
-                hideMissAnimation();
-
-                missedOverlay.classList
-                    .remove("hidden");
-
-                announce(
-                    `Marxaladda ${currentStage} waxay dib uga bilaabanaysaa goobada koowaad.`
-                );
-            }, MISS_ANIMATION_DURATION);
-    }
-
-
-    /* =====================================================
-       STAGE COMPLETION
-    ===================================================== */
-
-    function completeCurrentStage() {
-        inputIsLocked = true;
-
-        hideTarget();
-
-        const completedStage =
-            currentStage;
-
-        if (completedStage < TOTAL_STAGES) {
-            goTo(
-                `streak-game.html?stage=${completedStage + 1}`
-            );
-            return;
-        }
-
-        completedStageAwaitingContinue =
-            completedStage;
-
-        completedStageNumber.textContent =
-            String(completedStage);
-
-        updateStageBoxes(
-            completedStage
-        );
-
-        updateRemainingStagesMessage(
-            completedStage
-        );
-
-        stageProgressFill.style.width =
-            `${
-                (
-                    completedStage /
-                    TOTAL_STAGES
-                ) *
-                100
-            }%`;
-
-        stageCompleteOverlay.classList
-            .remove("hidden");
-
-        announce(
-            `Marxaladda ${completedStage} waa la dhammaystiray.`
-        );
-
-    }
-
-    function continueAfterCompletedStage() {
-        if (awaitingStageStart) {
-            awaitingStageStart = false;
-            stageCompleteOverlay.classList.add("hidden");
-            beginButton.disabled = false;
-            beginGame();
-            return;
-        }
-
-        if (!completedStageAwaitingContinue) {
-            return;
-        }
-
-        const completedStage =
-            completedStageAwaitingContinue;
-
-        completedStageAwaitingContinue = 0;
-
-        stageCompleteOverlay.classList
-            .add("hidden");
-
-        finishEntireGame();
-    }
-
-    function retryCurrentStage() {
+    function startCurrentStage() {
+        clearStage();
+        spawnedBalls = 0;
+        hitBalls = 0;
+        updateDisplay();
         missedOverlay.classList.add("hidden");
+        stageCompleteOverlay.classList.add("hidden");
+        retryStageButton.classList.remove("stage-ready");
+        waitUntilGameIsVisible();
+    }
+
+    async function finishEntireGame() {
+        if (gameHasFinished) return;
+        gameHasFinished = true;
+        gameIsRunning = false;
+        clearStage();
+        const updatedStreak = await awardActivityStreakRewardSafely("minigame", 2);
+        const pending = getPendingStreakAnimation();
+        const initialValue = pending ? pending.previous : updatedStreak;
+        finalStreakNumber.textContent = String(initialValue);
+        gameScreen.classList.add("hidden");
+        stageCompleteOverlay.classList.add("hidden");
+        successScreen.classList.remove("hidden");
+        updateAllStreakProgressDisplays(initialValue);
+        updateStreakFlameDisplays();
+        renderStreakFlame(byId("finalStreakFlame"), initialValue);
+        launchCompletionConfetti();
+        setResultsMode("streak");
+        requestAnimationFrame(() => requestAnimationFrame(playPendingStreakAnimation));
+        announce(`Hambalyo. streakgaaga hadda waa ${updatedStreak} maalmood.`);
+    }
+
+    function beginGame() {
+        if (beginButton.disabled || gameIsRunning || gameHasFinished) return;
+        beginButton.disabled = true;
+        gameIsRunning = true;
+        introScreen.classList.add("hidden");
+        successScreen.classList.add("hidden");
+        gameScreen.classList.remove("hidden");
         startCurrentStage();
     }
 
-
-    /* =====================================================
-       FINAL SUCCESS
-    ===================================================== */
-
-    async function finishEntireGame() {
-        if (gameHasFinished) {
-            return;
-        }
-
-        gameHasFinished = true;
-        gameIsRunning = false;
-        inputIsLocked = true;
-
-        clearAllGameTimers();
-        hideTarget();
-
-        const updatedStreak = await awardActivityStreakRewardSafely("minigame", 2);
-
-        const pendingReward = getPendingStreakAnimation();
-
-        finalStreakNumber.textContent =
-            String(
-                pendingReward
-                    ? pendingReward.previous
-                    : updatedStreak
-            );
-
-        updateStreakFlameDisplays();
-
-        const finalFlameContainer =
-            byId("finalStreakFlame") ||
-            query(
-                "[data-final-streak-flame]"
-            );
-
-        if (finalFlameContainer) {
-            renderStreakFlame(
-                finalFlameContainer,
-                updatedStreak
-            );
-
-            for (let index = 0; index < 14; index += 1) {
-                const spark = document.createElement("span");
-                spark.className = "flame-spark";
-                spark.style.setProperty(
-                    "--spark-angle",
-                    `${Math.round((360 / 14) * index)}deg`
-                );
-                finalFlameContainer.appendChild(spark);
-            }
-
-            requestAnimationFrame(playPendingStreakAnimation);
-        }
-
-        gameScreen.classList.add(
-            "hidden"
-        );
-
-        successScreen.classList.remove(
-            "hidden"
-        );
-
-        launchCompletionConfetti();
-
-        setResultsMode("streak");
-
-        announce(
-            `Hambalyo. streakgaaga hadda waa ${updatedStreak} maalmood.`
-        );
-    }
-
-
-    /* =====================================================
-       BEGIN GAME
-    ===================================================== */
-
-    function beginGame() {
-        if (
-            beginButton.disabled ||
-            gameIsRunning ||
-            gameHasFinished
-        ) {
-            return;
-        }
-
-        beginButton.disabled = true;
-
-        clearAllGameTimers();
-
-        currentStage = startingStage;
-        currentCircle = 1;
-
-        targetIsActive = false;
-        inputIsLocked = true;
-        gameIsRunning = true;
-        gameHasFinished = false;
-
-        introScreen.classList.add(
-            "hidden"
-        );
-
-        successScreen.classList.add(
-            "hidden"
-        );
-
-        gameScreen.classList.remove(
-            "hidden"
-        );
-
-        missedOverlay.classList.add(
-            "hidden"
-        );
-
-        stageCompleteOverlay.classList.add(
-            "hidden"
-        );
-
-        hideMissAnimation();
-
-        updateStageBoxes(
-            currentStage - 1
-        );
-        updateGameDisplay();
-
-        requestAnimationFrame(() => {
+    continueStageButton.addEventListener("click", () => {
+        continueStageButton.classList.remove("stage-ready");
+        stageCompleteOverlay.classList.add("hidden");
+        if (currentStage >= TOTAL_STAGES) finishEntireGame();
+        else {
+            currentStage += 1;
             startCurrentStage();
-        });
-    }
-
-
-    /* =====================================================
-       TUTORIAL BUTTON
-    ===================================================== */
-
-    function unlockBeginButton() {
-        beginButton.disabled = false;
-
-        beginButton.removeAttribute(
-            "aria-hidden"
-        );
-
-        beginButton.classList.remove(
-            "hidden"
-        );
-
-        tutorialStatus.classList.add(
-            "finished"
-        );
-
-        requestAnimationFrame(() => {
-            requestAnimationFrame(() => {
-                beginButton.classList.add(
-                    "show"
-                );
-            });
-        });
-
-        window.setTimeout(() => {
-            tutorialStatus.textContent =
-                "Diyaar ma tahay?";
-
-            tutorialStatus.classList.remove(
-                "finished"
-            );
-        }, 380);
-
-        announce(
-            "Badhanka Bilow hadda waa diyaar."
-        );
-    }
-
-
-    /* =====================================================
-       GAME EVENTS
-    ===================================================== */
-
-    targetButton.addEventListener(
-    "pointerdown",
-    event => {
-        event.preventDefault();
-        handleTargetHit();
-    },
-    {
-        passive: false
-    }
-);
-    beginButton.addEventListener(
-        "click",
-        beginGame
-    );
-
-    continueStageButton.addEventListener(
-        "click",
-        continueAfterCompletedStage
-    );
-
-    retryStageButton.addEventListener(
-        "click",
-        retryCurrentStage
-    );
-
-    viewResultsButton.addEventListener(
-        "click",
-        () => {
-            setResultsMode("streak");
-
-            goTo("results.html");
         }
-    );
+    });
+    retryStageButton.addEventListener("click", startCurrentStage);
+    beginButton.addEventListener("click", beginGame);
+    viewResultsButton.addEventListener("click", () => {
+        setResultsMode("streak");
+        goTo("results.html");
+    });
+    document.addEventListener("visibilitychange", () => {
+        if (document.hidden && stageIsActive) showMissed();
+    });
 
-    window.addEventListener(
-        "resize",
-        () => {
-            if (
-                targetIsActive &&
-                !targetButton.classList
-                    .contains("hidden")
-            ) {
-                placeTargetRandomly();
-            }
-        }
-    );
-
-    document.addEventListener(
-        "visibilitychange",
-        () => {
-            if (
-                document.hidden &&
-                targetIsActive &&
-                gameIsRunning &&
-                !gameHasFinished
-            ) {
-                handleMiss();
-            }
-        }
-    );
-
-
-    /* =====================================================
-       INITIAL GAME STATE
-    ===================================================== */
-
-    gameScreen.classList.add(
-        "hidden"
-    );
-
-    successScreen.classList.add(
-        "hidden"
-    );
-
-    stageCompleteOverlay.classList.add(
-        "hidden"
-    );
-
-    missedOverlay.classList.add(
-        "hidden"
-    );
-
-    targetButton.classList.add(
-        "hidden"
-    );
-
-    missAnimation.classList.add(
-        "hidden"
-    );
-
+    targetTemplate.classList.add("hidden");
     beginButton.disabled = true;
-
-    beginButton.setAttribute(
-        "aria-hidden",
-        "true"
-    );
-
-    beginButton.classList.add(
-        "hidden"
-    );
-
-    beginButton.classList.remove(
-        "show"
-    );
-
-    updateStageBoxes(
-        startingStage - 1
-    );
-    updateGameDisplay();
-
-    if (startingStage > 1) {
-        introScreen.classList.add("hidden");
-        completedStageNumber.textContent =
-            String(startingStage - 1);
-        updateStageBoxes(startingStage - 1);
-        updateRemainingStagesMessage(startingStage - 1);
-        stageCompleteOverlay.classList.remove("hidden");
-        announce(
-            `Stage ${startingStage} waa diyaar. Hoos u soco oo Sii wad taabo.`
-        );
-    } else {
-        introScreen.hidden = false;
-        introScreen.classList.remove("hidden");
-        window.setTimeout(
-            unlockBeginButton,
-            TUTORIAL_DURATION
-        );
-    }
+    beginButton.classList.add("hidden");
+    introScreen.hidden = false;
+    introScreen.classList.remove("hidden");
+    updateDisplay();
+    window.setTimeout(() => {
+        beginButton.disabled = false;
+        beginButton.classList.remove("hidden");
+        requestAnimationFrame(() => beginButton.classList.add("show"));
+        tutorialStatus.textContent = "Diyaar ma tahay?";
+    }, 1200);
 }
 
 
@@ -4317,14 +3588,14 @@ document.addEventListener(
             return;
         }
 
-        synchronizeStreakStorage();
-        await processMissedStreakDaysSafely();
+        document.body.classList.add("loaded");
 
-        requestAnimationFrame(() => {
-            document.body.classList.add(
-                "loaded"
-            );
-        });
+        try {
+            synchronizeStreakStorage();
+            await processMissedStreakDaysSafely();
+        } catch (error) {
+            console.warn("Streak startup recovered safely.", error);
+        }
 
         prepareNameInput();
         fillPlayerNameElements();
@@ -4332,7 +3603,7 @@ document.addEventListener(
         updateProgressBar();
 
         prepareReliableHomepageState();
-        loadReturningHomepageAds();
+        window.setTimeout(initializeAdsterraAds, 350);
         prepareResultsPageMode();
         launchPendingCompletionConfetti();
 
