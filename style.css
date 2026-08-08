@@ -3859,3 +3859,60 @@ body:not(.fade-out) { pointer-events: auto; }
 @media (prefers-reduced-motion: reduce) {
   .continue-streak-result-hero { animation: none; }
 }
+
+
+/* Ads load first, above content, in one vertical column */
+body.has-top-adsterra {
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: flex-start !important;
+  align-items: center !important;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+.site-adsterra-ads.site-adsterra-ads-top {
+  position: relative;
+  z-index: 3;
+  order: -10;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 18px;
+  width: min(100%, 340px);
+  margin: 0 auto 30px;
+  padding: 8px 10px 18px;
+  overflow: visible;
+}
+.site-adsterra-ads-top .page-native-ad,
+.site-adsterra-ads-top .page-banner-ad,
+.site-adsterra-ads-top .page-social-ad {
+  display: block;
+  flex: none;
+  width: 300px;
+  max-width: 100%;
+  margin: 0 auto;
+  overflow: hidden;
+  border-radius: 16px;
+  background: rgba(255,255,255,.55);
+}
+.site-adsterra-ads-top .page-native-ad { min-height: 328px; }
+.site-adsterra-ads-top .page-banner-ad { min-height: 278px; }
+.site-adsterra-ads-top .page-social-ad { min-height: 118px; }
+.site-adsterra-ads-top iframe {
+  display: block;
+  width: 300px;
+  max-width: 100%;
+  margin: 0 auto;
+  border: 0;
+  background: transparent;
+}
+.site-adsterra-ads-top .page-native-ad iframe { height: 300px; }
+.site-adsterra-ads-top .page-banner-ad iframe { height: 250px; }
+.site-adsterra-ads-top .page-social-ad iframe { width: 100%; height: 90px; }
+body.has-top-adsterra > main,
+body.has-top-adsterra > .content,
+body.has-top-adsterra > .container {
+  flex: none;
+  width: min(100%, 680px);
+}
