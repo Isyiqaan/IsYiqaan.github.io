@@ -33,7 +33,9 @@
         const maybeStart = () => {
             if (started || !userInteracted || !adAreaVisible) return;
             started = true;
-            const nativeHost = host.querySelector(".page-native-ad");
+        window.setTimeout(() => {
+        if (!document.body.contains(host)) return;
+        const nativeHost = host.querySelector(".page-native-ad");
             const bannerHost = host.querySelector(".page-banner-ad");
             nativeHost.querySelector(".ad-safe-placeholder")?.remove();
             nativeHost.appendChild(createFrame(
@@ -60,14 +62,16 @@
                 );
                 socialFrame.width = "100%";
                 document.body.appendChild(socialFrame);
-            }, 5200);
-        };
+        }, 5200);
+        }, 1800);
+    };
         const markInteraction = () => {
             userInteracted = true;
             maybeStart();
         };
-        window.addEventListener("scroll", markInteraction, { passive: true, once: true });
         window.addEventListener("pointerdown", markInteraction, { passive: true, once: true });
+    window.addEventListener("touchstart", markInteraction, { passive: true, once: true });
+    window.addEventListener("wheel", markInteraction, { passive: true, once: true });
         window.addEventListener("keydown", markInteraction, { once: true });
         const observer = new IntersectionObserver(entries => {
             adAreaVisible = entries.some(entry => entry.isIntersecting);
