@@ -2091,7 +2091,7 @@ function loadReturningHomepageAds() {
    ADSTERRA ADS
 ========================================================= */
 
-function initializeAdsterraAds() {
+function initializeAdsterraAds(userAlreadyInteracted = false) {
     if (document.getElementById("siteAdsterraAds")) return;
 
     const host = document.createElement("section");
@@ -2105,7 +2105,7 @@ function initializeAdsterraAds() {
     if (footer?.parentNode) footer.parentNode.insertBefore(host, footer);
     else document.body.appendChild(host);
 
-    let userInteracted = false;
+    let userInteracted = Boolean(userAlreadyInteracted);
     let adAreaVisible = false;
     let started = false;
     const createFrame = (title, source, height, className) => {
@@ -2170,6 +2170,19 @@ function initializeAdsterraAds() {
     }, { rootMargin: "120px 0px", threshold: 0.01 });
     observer.observe(host);
 }
+function armAdsterraAdsAfterRealInteraction() {
+    let armed = false;
+    const arm = () => {
+        if (armed) return;
+        armed = true;
+        window.setTimeout(() => initializeAdsterraAds(true), 1800);
+    };
+    window.addEventListener("pointerdown", arm, { passive: true, once: true });
+    window.addEventListener("touchstart", arm, { passive: true, once: true });
+    window.addEventListener("wheel", arm, { passive: true, once: true });
+    window.addEventListener("keydown", arm, { once: true });
+}
+
 
 /* =========================================================
    RESULTS PAGE
@@ -3644,7 +3657,7 @@ document.addEventListener(
         updateProgressBar();
 
         prepareReliableHomepageState();
-        window.setTimeout(initializeAdsterraAds, 350);
+        armAdsterraAdsAfterRealInteraction();
         prepareResultsPageMode();
         launchPendingCompletionConfetti();
 
