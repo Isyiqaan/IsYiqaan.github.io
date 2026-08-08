@@ -3819,3 +3819,43 @@ body:not(.fade-out) { pointer-events: auto; }
   .live-game-target { width: 126px; height: 126px; }
   .live-game-target .target-ring { width: 124px; height: 124px; }
 }
+
+
+/* Primary results action: quiz to streak */
+.continue-streak-result-hero {
+  position: relative;
+  z-index: 3;
+  display: block;
+  width: min(100%, 520px);
+  min-height: 68px;
+  margin: 18px auto 28px;
+  border: 2px solid rgba(255,255,255,.92);
+  border-radius: 22px;
+  color: #fff;
+  background: linear-gradient(135deg, #ff6f9f, #b85ee7 55%, #784ee8);
+  box-shadow: 0 16px 38px rgba(165,71,194,.42), 0 0 0 7px rgba(255,125,180,.14), 0 0 30px rgba(255,184,91,.38);
+  font-size: clamp(1.08rem, 4.6vw, 1.36rem);
+  font-weight: 900;
+  letter-spacing: .01em;
+  animation: continueStreakHeroGlow 1.7s ease-in-out infinite;
+}
+.continue-streak-result-hero::after {
+  content: "Hel +2 streak";
+  display: block;
+  margin-top: 4px;
+  font-size: .72em;
+  font-weight: 700;
+  opacity: .9;
+}
+.continue-streak-result-hero:hover,
+.continue-streak-result-hero:focus-visible {
+  transform: translateY(-3px) scale(1.025);
+  box-shadow: 0 20px 44px rgba(165,71,194,.52), 0 0 0 9px rgba(255,125,180,.19), 0 0 42px rgba(255,190,91,.56);
+}
+@keyframes continueStreakHeroGlow {
+  0%,100% { transform: scale(1); filter: brightness(1); }
+  50% { transform: scale(1.025); filter: brightness(1.09); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .continue-streak-result-hero { animation: none; }
+}
