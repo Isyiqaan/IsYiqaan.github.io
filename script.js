@@ -3379,9 +3379,10 @@ function initializeStreakGame() {
     const FIRST_BALL_DELAY = 1000;
     const STAGE_TIMES = [2.0, 1.95, 1.9, 1.85, 1.8, 1.75, 1.7, 1.65, 1.6, 1.55];
     const requestedStage = Number.parseInt(new URLSearchParams(location.search).get("stage"), 10);
-    let currentStage = Number.isFinite(requestedStage)
+    const startingStage = Number.isFinite(requestedStage)
         ? Math.min(TOTAL_STAGES, Math.max(1, requestedStage))
         : 1;
+    let currentStage = startingStage;
     let gameIsRunning = false;
     let gameHasFinished = false;
     let stageIsActive = false;
