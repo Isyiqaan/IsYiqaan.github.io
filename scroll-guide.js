@@ -1,7 +1,7 @@
 "use strict";
 
 (function () {
-    function initializeAds() {
+    function initializeAds(userAlreadyInteracted = false) {
         if (document.getElementById("siteAdsterraAds")) return;
     
         const host = document.createElement("section");
@@ -15,7 +15,7 @@
         if (footer?.parentNode) footer.parentNode.insertBefore(host, footer);
         else document.body.appendChild(host);
     
-        let userInteracted = false;
+        let userInteracted = Boolean(userAlreadyInteracted);
         let adAreaVisible = false;
         let started = false;
         const createFrame = (title, source, height, className) => {
@@ -80,6 +80,19 @@
         }, { rootMargin: "120px 0px", threshold: 0.01 });
         observer.observe(host);
     }
+    function armAdsAfterRealInteraction() {
+        let armed = false;
+        const arm = () => {
+            if (armed) return;
+            armed = true;
+            window.setTimeout(() => initializeAds(true), 1800);
+        };
+        window.addEventListener("pointerdown", arm, { passive: true, once: true });
+        window.addEventListener("touchstart", arm, { passive: true, once: true });
+        window.addEventListener("wheel", arm, { passive: true, once: true });
+        window.addEventListener("keydown", arm, { once: true });
+    }
+
 
     function initializeGuide() {
         if (document.querySelector(".scroll-down-guide")) return;
@@ -114,7 +127,7 @@
     function start() {
         document.body.classList.add("loaded");
         initializeGuide();
-        window.setTimeout(initializeAds, 350);
+        armAdsAfterRealInteraction();
     }
     if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", start, { once: true });
     else start();
