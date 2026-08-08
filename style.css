@@ -3780,3 +3780,42 @@ body.streak-game-page {
 .new-player-streak-mini[hidden] {
     display: none;
 }
+
+
+/* 2026-08-08 interaction, ad, and five-ball stability */
+.site-adsterra-ads {
+  position: relative;
+  z-index: 2;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 300px));
+  justify-content: center;
+  align-items: start;
+  gap: 18px;
+  width: min(100%, 660px);
+  margin: 28px auto;
+}
+.site-adsterra-ads .page-native-ad,
+.site-adsterra-ads .page-banner-ad {
+  width: min(100%, 300px);
+  min-height: 278px;
+  overflow: hidden;
+  border-radius: 16px;
+}
+.live-game-target { z-index: 5; }
+.stage-overlay-button {
+  opacity: 0;
+  transform: translateY(14px);
+  pointer-events: none;
+  transition: opacity 260ms ease, transform 260ms ease;
+}
+.stage-overlay-button.stage-ready {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+body:not(.fade-out) { pointer-events: auto; }
+@media (max-width: 680px) {
+  .site-adsterra-ads { grid-template-columns: minmax(0, 300px); }
+  .live-game-target { width: 126px; height: 126px; }
+  .live-game-target .target-ring { width: 124px; height: 124px; }
+}
