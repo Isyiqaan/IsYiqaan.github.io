@@ -1916,11 +1916,6 @@ function initializeScrollDownGuide() {
 
     window.addEventListener("scroll", update, { passive: true });
     window.addEventListener("resize", update);
-    new MutationObserver(update).observe(document.body, {
-        subtree: true,
-        attributes: true,
-        attributeFilter: ["class", "hidden"]
-    });
     window.setTimeout(update, 250);
     window.setTimeout(update, 1200);
 }
