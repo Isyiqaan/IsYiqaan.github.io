@@ -3921,3 +3921,38 @@ body.has-top-adsterra > .container {
   content: none;
   display: none;
 }
+
+
+/* 2026-08-09: force every top ad stack above page content */
+body:has(> .site-adsterra-ads-top) {
+  display: block !important;
+  min-height: 100vh;
+  overflow-x: hidden !important;
+}
+body:has(> .site-adsterra-ads-top) > .site-adsterra-ads-top {
+  display: flex !important;
+  flex-direction: column !important;
+  clear: both;
+  width: min(100%, 340px) !important;
+  min-height: 642px;
+  margin: 0 auto 30px !important;
+}
+body:has(> .site-adsterra-ads-top) > main,
+body:has(> .site-adsterra-ads-top) > .content,
+body:has(> .site-adsterra-ads-top) > .container {
+  display: block;
+  clear: both;
+  width: min(100%, 680px) !important;
+  max-width: 680px;
+  margin: 0 auto !important;
+}
+@media (max-width: 720px) {
+  body:has(> .site-adsterra-ads-top) {
+    padding-inline: 12px;
+  }
+  body:has(> .site-adsterra-ads-top) > main,
+  body:has(> .site-adsterra-ads-top) > .content,
+  body:has(> .site-adsterra-ads-top) > .container {
+    width: 100% !important;
+  }
+}
