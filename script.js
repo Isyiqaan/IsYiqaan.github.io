@@ -21,23 +21,23 @@ const WEBSITE_LINK =
 const leaderboardPlayers = [
     {
         name: "S/l boy",
-        startingStreak: 10
+        startingStreak: 48
     },
     {
         name: "Dilaaga 💀",
-        startingStreak: 8
+        startingStreak: 30
     },
     {
         name: "Samsam 🌺",
-        startingStreak: 6
+        startingStreak: 21
     },
     {
         name: "Ahmed",
-        startingStreak: 4
+        startingStreak: 12
     },
     {
         name: "Ghost",
-        startingStreak: 2
+        startingStreak: 3
     }
 ];
 
