@@ -13,7 +13,7 @@
 const TOTAL_QUESTIONS = 10;
 const PAGE_TRANSITION_TIME = 380;
 
-const LEADERBOARD_START_DATE = "2026-08-08";
+const LEADERBOARD_START_DATE = "2026-08-20";
 
 const WEBSITE_LINK =
     "https://isyiqaan.github.io/";
